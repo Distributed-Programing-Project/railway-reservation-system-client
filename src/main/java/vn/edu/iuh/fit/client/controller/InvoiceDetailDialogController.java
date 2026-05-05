@@ -42,39 +42,69 @@ import java.util.function.Supplier;
 
 public class InvoiceDetailDialogController {
 
-    @FXML private Label lblInvoiceId;
-    @FXML private Label lblIssueDate;
-    @FXML private Label lblInvoiceType;
-    @FXML private Label lblCustomer;
-    @FXML private Label lblEmployee;
-    @FXML private Label lblPhone;
-    @FXML private Label lblTotalAmount;
-    @FXML private Label lblVatLabel;
-    @FXML private Label lblVatInfo;
+    @FXML
+    private Label lblInvoiceId;
+    @FXML
+    private Label lblIssueDate;
+    @FXML
+    private Label lblInvoiceType;
+    @FXML
+    private Label lblCustomer;
+    @FXML
+    private Label lblEmployee;
+    @FXML
+    private Label lblPhone;
+    @FXML
+    private Label lblTotalAmount;
+    @FXML
+    private Label lblVatLabel;
+    @FXML
+    private Label lblVatInfo;
 
-    @FXML private TableView<InvoiceLineItemDTO> tableItems;
-    @FXML private TableColumn<InvoiceLineItemDTO, String> colPassenger;
-    @FXML private TableColumn<InvoiceLineItemDTO, String> colIdCard;
-    @FXML private TableColumn<InvoiceLineItemDTO, String> colTicketType;
-    @FXML private TableColumn<InvoiceLineItemDTO, String> colTrain;
-    @FXML private TableColumn<InvoiceLineItemDTO, String> colSeat;
-    @FXML private TableColumn<InvoiceLineItemDTO, String> colRoute;
-    @FXML private TableColumn<InvoiceLineItemDTO, String> colDepartTime;
-    @FXML private TableColumn<InvoiceLineItemDTO, String> colSubTotal;
-    @FXML private TableColumn<InvoiceLineItemDTO, String> colDiscount;
-    @FXML private TableColumn<InvoiceLineItemDTO, String> colInsurance;
-    @FXML private TableColumn<InvoiceLineItemDTO, String> colFinal;
-    @FXML private TableColumn<InvoiceLineItemDTO, String> colStatus;
+    @FXML
+    private TableView<InvoiceLineItemDTO> tableItems;
+    @FXML
+    private TableColumn<InvoiceLineItemDTO, String> colPassenger;
+    @FXML
+    private TableColumn<InvoiceLineItemDTO, String> colIdCard;
+    @FXML
+    private TableColumn<InvoiceLineItemDTO, String> colTicketType;
+    @FXML
+    private TableColumn<InvoiceLineItemDTO, String> colTrain;
+    @FXML
+    private TableColumn<InvoiceLineItemDTO, String> colSeat;
+    @FXML
+    private TableColumn<InvoiceLineItemDTO, String> colRoute;
+    @FXML
+    private TableColumn<InvoiceLineItemDTO, String> colDepartTime;
+    @FXML
+    private TableColumn<InvoiceLineItemDTO, String> colSubTotal;
+    @FXML
+    private TableColumn<InvoiceLineItemDTO, String> colDiscount;
+    @FXML
+    private TableColumn<InvoiceLineItemDTO, String> colInsurance;
+    @FXML
+    private TableColumn<InvoiceLineItemDTO, String> colFinal;
+    @FXML
+    private TableColumn<InvoiceLineItemDTO, String> colStatus;
 
-    @FXML private VBox paneExchange;
-    @FXML private Label lblOrigTrain;
-    @FXML private Label lblOrigSeat;
-    @FXML private Label lblOrigRoute;
-    @FXML private Label lblOrigDepartTime;
+    @FXML
+    private VBox paneExchange;
+    @FXML
+    private Label lblOrigTrain;
+    @FXML
+    private Label lblOrigSeat;
+    @FXML
+    private Label lblOrigRoute;
+    @FXML
+    private Label lblOrigDepartTime;
 
-    @FXML private Button btnPrint;
-    @FXML private Button btnClose;
-    @FXML private StackPane loadingOverlay;
+    @FXML
+    private Button btnPrint;
+    @FXML
+    private Button btnClose;
+    @FXML
+    private StackPane loadingOverlay;
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private static final NumberFormat MONEY_FORMAT = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
@@ -92,7 +122,8 @@ public class InvoiceDetailDialogController {
     private void setupTable() {
         colPassenger.setCellValueFactory(c -> new ReadOnlyStringWrapper(orEmpty(c.getValue().getPassengerName())));
         colIdCard.setCellValueFactory(c -> new ReadOnlyStringWrapper(orEmpty(c.getValue().getPassengerIdCard())));
-        colTicketType.setCellValueFactory(c -> new ReadOnlyStringWrapper(formatTicketType(c.getValue().getTicketType())));
+        colTicketType
+                .setCellValueFactory(c -> new ReadOnlyStringWrapper(formatTicketType(c.getValue().getTicketType())));
         colTrain.setCellValueFactory(c -> new ReadOnlyStringWrapper(orEmpty(c.getValue().getTrainName())));
         colSeat.setCellValueFactory(c -> {
             String carriage = orEmpty(c.getValue().getCarriageName());
@@ -112,14 +143,14 @@ public class InvoiceDetailDialogController {
             Double sub = c.getValue().getSubTotal();
             return new ReadOnlyStringWrapper(sub != null ? MONEY_FORMAT.format(sub) + " đ" : "");
         });
-        colDiscount.setCellValueFactory(c ->
-            new ReadOnlyStringWrapper(MONEY_FORMAT.format(c.getValue().getDiscount()) + " đ"));
-        colInsurance.setCellValueFactory(c ->
-            new ReadOnlyStringWrapper(MONEY_FORMAT.format(c.getValue().getInsurance()) + " đ"));
-        colFinal.setCellValueFactory(c ->
-            new ReadOnlyStringWrapper(MONEY_FORMAT.format(c.getValue().getFinalAmount()) + " đ"));
-        colStatus.setCellValueFactory(c ->
-            new ReadOnlyStringWrapper(c.getValue().isReturned() ? "Đã hoàn" : "Bình thường"));
+        colDiscount.setCellValueFactory(
+                c -> new ReadOnlyStringWrapper(MONEY_FORMAT.format(c.getValue().getDiscount()) + " đ"));
+        colInsurance.setCellValueFactory(
+                c -> new ReadOnlyStringWrapper(MONEY_FORMAT.format(c.getValue().getInsurance()) + " đ"));
+        colFinal.setCellValueFactory(
+                c -> new ReadOnlyStringWrapper(MONEY_FORMAT.format(c.getValue().getFinalAmount()) + " đ"));
+        colStatus.setCellValueFactory(
+                c -> new ReadOnlyStringWrapper(c.getValue().isReturned() ? "Đã hoàn" : "Bình thường"));
     }
 
     private void loadInvoiceDetail(String invoiceId) {
@@ -137,17 +168,18 @@ public class InvoiceDetailDialogController {
             if (res.isSuccess() && res.getData() instanceof InvoiceDetailResponseDTO invoiceDetailResponseDTO) {
                 currentInvoice = invoiceDetailResponseDTO;
                 populateDialog(invoiceDetailResponseDTO);
-                if (autoPrint) handlePrint();
+                if (autoPrint)
+                    handlePrint();
             } else {
                 showAlert(Alert.AlertType.ERROR, "Lỗi",
-                    res.getMessage() != null ? res.getMessage() : "Không thể tải chi tiết hoá đơn");
+                        res.getMessage() != null ? res.getMessage() : "Không thể tải chi tiết hoá đơn");
                 handleClose();
             }
         }));
         task.setOnFailed(e -> Platform.runLater(() -> {
             setLoading(false);
             showAlert(Alert.AlertType.ERROR, "Lỗi kết nối",
-                "Không thể kết nối đến server: " + task.getException().getMessage());
+                    "Không thể kết nối đến server: " + task.getException().getMessage());
             handleClose();
         }));
         Thread thread = new Thread(task);
@@ -165,9 +197,12 @@ public class InvoiceDetailDialogController {
 
         String typeLabel = formatInvoiceType(dto.getType());
         String typeStyle = switch (dto.getType() != null ? dto.getType() : InvoiceType.SALE) {
-            case SALE     -> "-fx-background-color:#e7f5ee;-fx-text-fill:#0f6d3f;-fx-padding:4 12;-fx-background-radius:999;-fx-font-weight:800;-fx-font-size:12px;";
-            case REFUND   -> "-fx-background-color:#fde8e8;-fx-text-fill:#c0392b;-fx-padding:4 12;-fx-background-radius:999;-fx-font-weight:800;-fx-font-size:12px;";
-            case EXCHANGE -> "-fx-background-color:#fff3e6;-fx-text-fill:#8a4b00;-fx-padding:4 12;-fx-background-radius:999;-fx-font-weight:800;-fx-font-size:12px;";
+            case SALE ->
+                "-fx-background-color:#e7f5ee;-fx-text-fill:#0f6d3f;-fx-padding:4 12;-fx-background-radius:999;-fx-font-weight:800;-fx-font-size:12px;";
+            case REFUND ->
+                "-fx-background-color:#fde8e8;-fx-text-fill:#c0392b;-fx-padding:4 12;-fx-background-radius:999;-fx-font-weight:800;-fx-font-size:12px;";
+            case EXCHANGE ->
+                "-fx-background-color:#fff3e6;-fx-text-fill:#8a4b00;-fx-padding:4 12;-fx-background-radius:999;-fx-font-weight:800;-fx-font-size:12px;";
         };
         lblInvoiceType.setText(typeLabel);
         lblInvoiceType.setStyle(typeStyle);
@@ -178,7 +213,7 @@ public class InvoiceDetailDialogController {
             lblVatInfo.setVisible(true);
             lblVatInfo.setManaged(true);
             lblVatInfo.setText("MST: " + dto.getTaxCode()
-                + (dto.getCompanyName() != null ? " — " + dto.getCompanyName() : ""));
+                    + (dto.getCompanyName() != null ? " — " + dto.getCompanyName() : ""));
         }
 
         List<InvoiceLineItemDTO> invoiceLineItems = dto.getDetails();
@@ -192,22 +227,24 @@ public class InvoiceDetailDialogController {
     }
 
     private void populateExchangeSection(List<InvoiceLineItemDTO> invoiceLineItems) {
-        if (invoiceLineItems == null || invoiceLineItems.isEmpty()) return;
+        if (invoiceLineItems == null || invoiceLineItems.isEmpty())
+            return;
         OriginalTicketInfoDTO originalTicketInfoDTO = invoiceLineItems.stream()
-            .map(InvoiceLineItemDTO::getOriginalTicketInfo)
-            .filter(info -> info != null)
-            .findFirst()
-            .orElse(null);
+                .map(InvoiceLineItemDTO::getOriginalTicketInfo)
+                .filter(info -> info != null)
+                .findFirst()
+                .orElse(null);
 
-        if (originalTicketInfoDTO == null) return;
+        if (originalTicketInfoDTO == null)
+            return;
 
         paneExchange.setVisible(true);
         paneExchange.setManaged(true);
         lblOrigTrain.setText(orEmpty(originalTicketInfoDTO.getOriginalTrainName()));
         lblOrigSeat.setText("Toa " + orEmpty(originalTicketInfoDTO.getOriginalCarriageName())
-            + " — Ghế " + orEmpty(originalTicketInfoDTO.getOriginalSeatCode()));
+                + " — Ghế " + orEmpty(originalTicketInfoDTO.getOriginalSeatCode()));
         lblOrigRoute.setText(orEmpty(originalTicketInfoDTO.getOriginalDepartureStation())
-            + " → " + orEmpty(originalTicketInfoDTO.getOriginalArrivalStation()));
+                + " → " + orEmpty(originalTicketInfoDTO.getOriginalArrivalStation()));
         LocalDateTime origDep = originalTicketInfoDTO.getOriginalDepartureTime();
         lblOrigDepartTime.setText(origDep != null ? DATE_FORMAT.format(origDep) : "");
     }
@@ -228,7 +265,7 @@ public class InvoiceDetailDialogController {
                     PrinterJob printerJob = PrinterJob.createPrinterJob();
                     if (printerJob == null) {
                         showAlert(Alert.AlertType.ERROR, "Lỗi máy in",
-                            "Không tìm thấy máy in. Vui lòng kiểm tra cài đặt.");
+                                "Không tìm thấy máy in. Vui lòng kiểm tra cài đặt.");
                         return;
                     }
                     boolean proceed = printerJob.showPrintDialog(btnPrint.getScene().getWindow());
@@ -246,15 +283,17 @@ public class InvoiceDetailDialogController {
         } catch (Exception e) {
             System.err.println("ERROR: Failed to render print template: " + e.getMessage());
             showAlert(Alert.AlertType.ERROR, "Lỗi in",
-                "Không thể tạo bản in. Vui lòng thử lại.");
+                    "Không thể tạo bản in. Vui lòng thử lại.");
         }
     }
 
     @FXML
     private void handleClose() {
-        if (btnClose.getScene() == null) return;
+        if (btnClose.getScene() == null)
+            return;
         Stage stage = (Stage) btnClose.getScene().getWindow();
-        if (stage != null) stage.close();
+        if (stage != null)
+            stage.close();
     }
 
     private String buildPrintHtml(InvoiceDetailResponseDTO dto) {
@@ -263,60 +302,67 @@ public class InvoiceDetailDialogController {
 
         StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE html><html><head><meta charset='UTF-8'><style>")
-          .append(css).append("</style></head><body>");
+                .append(css).append("</style></head><body>");
         sb.append("<div class='invoice-container'>");
 
         // Header
         sb.append("<table class='header-table'><tr>")
-          .append("<td class='title-cell'><h1>HOÁ ĐƠN BÁN VÉ TÀU</h1>")
-          .append("<p>Loại: ").append(formatInvoiceType(dto.getType())).append("</p></td>")
-          .append("<td class='info-cell'><p>Mã HĐ: ").append(orEmpty(dto.getId())).append("</p>")
-          .append("<p>Ngày: ").append(dto.getIssueDate() != null ? DATE_FORMAT.format(dto.getIssueDate()) : "").append("</p></td>")
-          .append("</tr></table>");
+                .append("<td class='title-cell'><h1>HOÁ ĐƠN BÁN VÉ TÀU</h1>")
+                .append("<p>Loại: ").append(formatInvoiceType(dto.getType())).append("</p></td>")
+                .append("<td class='info-cell'><p>Mã HĐ: ").append(orEmpty(dto.getId())).append("</p>")
+                .append("<p>Ngày: ").append(dto.getIssueDate() != null ? DATE_FORMAT.format(dto.getIssueDate()) : "")
+                .append("</p></td>")
+                .append("</tr></table>");
 
         // Party info
         sb.append("<div class='party-info'>")
-          .append("<p><b>Khách hàng:</b> ").append(orEmpty(dto.getCustomerName()))
-          .append(" &nbsp;|&nbsp; SĐT: ").append(orEmpty(dto.getCustomerPhoneNumber())).append("</p>")
-          .append("<p><b>Nhân viên:</b> ").append(orEmpty(dto.getEmployeeName())).append("</p>");
+                .append("<p><b>Khách hàng:</b> ").append(orEmpty(dto.getCustomerName()))
+                .append(" &nbsp;|&nbsp; SĐT: ").append(orEmpty(dto.getCustomerPhoneNumber())).append("</p>")
+                .append("<p><b>Nhân viên:</b> ").append(orEmpty(dto.getEmployeeName())).append("</p>");
         if (dto.getTaxCode() != null && !dto.getTaxCode().isBlank()) {
             sb.append("<p><b>MST:</b> ").append(dto.getTaxCode());
-            if (dto.getCompanyName() != null) sb.append(" — ").append(dto.getCompanyName());
+            if (dto.getCompanyName() != null)
+                sb.append(" — ").append(dto.getCompanyName());
             sb.append("</p>");
         }
         sb.append("</div><hr class='separator'/>");
 
         // Items table
         sb.append("<div class='items-table'><table><thead><tr>")
-          .append("<th>STT</th><th>Hành khách</th><th>CCCD</th><th>Đối tượng</th>")
-          .append("<th>Tàu/Toa/Ghế</th><th>Tuyến đường</th><th>Giờ khởi hành</th>")
-          .append("<th>Giá gốc</th><th>Giảm giá</th><th>Bảo hiểm</th><th>Thành tiền</th>")
-          .append("</tr></thead><tbody>");
+                .append("<th>STT</th><th>Hành khách</th><th>CCCD</th><th>Đối tượng</th>")
+                .append("<th>Tàu/Toa/Ghế</th><th>Tuyến đường</th><th>Giờ khởi hành</th>")
+                .append("<th>Giá gốc</th><th>Giảm giá</th><th>Bảo hiểm</th><th>Thành tiền</th>")
+                .append("</tr></thead><tbody>");
 
         List<InvoiceLineItemDTO> invoiceLineItems = dto.getDetails();
         if (invoiceLineItems != null) {
             int stt = 1;
             for (InvoiceLineItemDTO lineItem : invoiceLineItems) {
                 sb.append("<tr>")
-                  .append("<td>").append(stt++).append("</td>")
-                  .append("<td>").append(orEmpty(lineItem.getPassengerName())).append("</td>")
-                  .append("<td>").append(orEmpty(lineItem.getPassengerIdCard())).append("</td>")
-                  .append("<td>").append(formatTicketType(lineItem.getTicketType())).append("</td>")
-                  .append("<td>").append(orEmpty(lineItem.getTrainName()))
-                  .append(" T").append(orEmpty(lineItem.getCarriageName()))
-                  .append("-G").append(orEmpty(lineItem.getSeatCode())).append("</td>")
-                  .append("<td>").append(orEmpty(lineItem.getDepartureStation()))
-                  .append(" → ").append(orEmpty(lineItem.getArrivalStation())).append("</td>")
-                  .append("<td>").append(lineItem.getDepartureTime() != null ? DATE_FORMAT.format(lineItem.getDepartureTime()) : "").append("</td>")
-                  .append("<td>").append(lineItem.getSubTotal() != null ? moneyFmt.format(lineItem.getSubTotal()) : "").append("</td>")
-                  .append("<td>").append(moneyFmt.format(lineItem.getDiscount())).append("</td>")
-                  .append("<td>").append(moneyFmt.format(lineItem.getInsurance())).append("</td>")
-                  .append("<td><b>").append(moneyFmt.format(lineItem.getFinalAmount())).append("</b></td>")
-                  .append("</tr>");
+                        .append("<td>").append(stt++).append("</td>")
+                        .append("<td>").append(orEmpty(lineItem.getPassengerName())).append("</td>")
+                        .append("<td>").append(orEmpty(lineItem.getPassengerIdCard())).append("</td>")
+                        .append("<td>").append(formatTicketType(lineItem.getTicketType())).append("</td>")
+                        .append("<td>").append(orEmpty(lineItem.getTrainName()))
+                        .append(" T").append(orEmpty(lineItem.getCarriageName()))
+                        .append("-G").append(orEmpty(lineItem.getSeatCode())).append("</td>")
+                        .append("<td>").append(orEmpty(lineItem.getDepartureStation()))
+                        .append(" → ").append(orEmpty(lineItem.getArrivalStation())).append("</td>")
+                        .append("<td>")
+                        .append(lineItem.getDepartureTime() != null ? DATE_FORMAT.format(lineItem.getDepartureTime())
+                                : "")
+                        .append("</td>")
+                        .append("<td>")
+                        .append(lineItem.getSubTotal() != null ? moneyFmt.format(lineItem.getSubTotal()) : "")
+                        .append("</td>")
+                        .append("<td>").append(moneyFmt.format(lineItem.getDiscount())).append("</td>")
+                        .append("<td>").append(moneyFmt.format(lineItem.getInsurance())).append("</td>")
+                        .append("<td><b>").append(moneyFmt.format(lineItem.getFinalAmount())).append("</b></td>")
+                        .append("</tr>");
                 if (lineItem.isReturned()) {
                     sb.append("<tr><td colspan='11' style='color:#c0392b;font-style:italic;'>")
-                      .append("  → Vé này đã hoàn — Số tiền hoàn: ")
-                      .append(moneyFmt.format(lineItem.getRefundAmount())).append(" đ</td></tr>");
+                            .append("  → Vé này đã hoàn — Số tiền hoàn: ")
+                            .append(moneyFmt.format(lineItem.getRefundAmount())).append(" đ</td></tr>");
                 }
             }
         }
@@ -324,15 +370,15 @@ public class InvoiceDetailDialogController {
 
         // Summary
         sb.append("<div class='summary-section'><table>")
-          .append("<tr><td class='no-border'></td><td><b>TỔNG CỘNG:</b></td>")
-          .append("<td><b>").append(moneyFmt.format(dto.getTotalAmount())).append(" đ</b></td></tr>")
-          .append("</table></div>");
+                .append("<tr><td class='no-border'></td><td><b>TỔNG CỘNG:</b></td>")
+                .append("<td><b>").append(moneyFmt.format(dto.getTotalAmount())).append(" đ</b></td></tr>")
+                .append("</table></div>");
 
         // Signature
         sb.append("<table class='signature-table'><tr>")
-          .append("<td><p class='sign-title'>Khách hàng</p><p class='sign-note'>(Ký, ghi rõ họ tên)</p></td>")
-          .append("<td><p class='sign-title'>Nhân viên lập</p><p class='sign-note'>(Ký, ghi rõ họ tên)</p></td>")
-          .append("</tr></table>");
+                .append("<td><p class='sign-title'>Khách hàng</p><p class='sign-note'>(Ký, ghi rõ họ tên)</p></td>")
+                .append("<td><p class='sign-title'>Nhân viên lập</p><p class='sign-note'>(Ký, ghi rõ họ tên)</p></td>")
+                .append("</tr></table>");
 
         sb.append("</div></body></html>");
         return sb.toString();
@@ -340,12 +386,14 @@ public class InvoiceDetailDialogController {
 
     private String readCss() {
         try (InputStream in = getClass().getResourceAsStream("/client/ui/css/invoice-style.css")) {
-            if (in == null) return "";
+            if (in == null)
+                return "";
             try (Reader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
                 StringBuilder sb = new StringBuilder();
                 char[] buf = new char[2048];
                 int read;
-                while ((read = reader.read(buf)) >= 0) sb.append(buf, 0, read);
+                while ((read = reader.read(buf)) >= 0)
+                    sb.append(buf, 0, read);
                 return sb.toString();
             }
         } catch (Exception e) {
@@ -357,7 +405,8 @@ public class InvoiceDetailDialogController {
     private void setLoading(boolean loading) {
         loadingOverlay.setVisible(loading);
         loadingOverlay.setManaged(loading);
-        if (loading) loadingOverlay.toFront();
+        if (loading)
+            loadingOverlay.toFront();
     }
 
     private void showAlert(Alert.AlertType type, String title, String msg) {
@@ -368,7 +417,8 @@ public class InvoiceDetailDialogController {
     }
 
     private String formatInvoiceType(InvoiceType type) {
-        if (type == null) return "";
+        if (type == null)
+            return "";
         return switch (type) {
             case SALE -> "Bán vé";
             case REFUND -> "Trả vé";
@@ -377,7 +427,8 @@ public class InvoiceDetailDialogController {
     }
 
     private String formatTicketType(TicketType type) {
-        if (type == null) return "";
+        if (type == null)
+            return "";
         return switch (type) {
             case NORMAL -> "Người lớn";
             case CHILD -> "Trẻ em";

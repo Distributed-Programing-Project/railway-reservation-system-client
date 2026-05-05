@@ -1,8 +1,43 @@
 package vn.edu.iuh.fit.client.controller;
 
-import javafx.application.Platform;import javafx.beans.property.ReadOnlyStringWrapper;import javafx.concurrent.Task;import javafx.fxml.FXML;import javafx.fxml.FXMLLoader;import javafx.scene.Parent;import javafx.scene.Scene;import javafx.scene.control.Alert;import javafx.scene.control.Button;import javafx.scene.control.ButtonType;import javafx.scene.control.ComboBox;import javafx.scene.control.Label;import javafx.scene.control.TableCell;import javafx.scene.control.TableColumn;import javafx.scene.control.TableView;import javafx.scene.control.TextField;import javafx.scene.layout.HBox;import javafx.scene.layout.StackPane;import javafx.stage.Modality;import javafx.stage.Stage;import javafx.util.StringConverter;import vn.edu.iuh.fit.client.service.SessionManager;import vn.edu.iuh.fit.client.service.SocketRequestService;import vn.edu.iuh.fit.common.command.ActionType;import vn.edu.iuh.fit.common.constant.InvoiceType;import vn.edu.iuh.fit.common.dto.InvoiceFilterDTO;import vn.edu.iuh.fit.common.dto.InvoicePageDTO;import vn.edu.iuh.fit.common.dto.InvoiceSummaryDTO;import vn.edu.iuh.fit.common.request.Request;import vn.edu.iuh.fit.common.response.Response;
+import java.io.IOException;
+import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-import java.io.IOException;import java.text.NumberFormat;import java.time.LocalDate;import java.time.format.DateTimeFormatter;import java.util.Locale;import java.util.function.Consumer;import java.util.function.Supplier;
+import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.concurrent.Task;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.util.StringConverter;
+import vn.edu.iuh.fit.client.service.SessionManager;
+import vn.edu.iuh.fit.client.service.SocketRequestService;
+import vn.edu.iuh.fit.common.command.ActionType;
+import vn.edu.iuh.fit.common.constant.InvoiceType;
+import vn.edu.iuh.fit.common.dto.InvoiceFilterDTO;
+import vn.edu.iuh.fit.common.dto.InvoicePageDTO;
+import vn.edu.iuh.fit.common.dto.InvoiceSummaryDTO;
+import vn.edu.iuh.fit.common.request.Request;
+import vn.edu.iuh.fit.common.response.Response;
 
 public class InvoiceManagementController {
 
@@ -64,15 +99,18 @@ public class InvoiceManagementController {
         int currentYear = LocalDate.now().getYear();
 
         cmbDay.getItems().add(null);
-        for (int d = 1; d <= 31; d++) cmbDay.getItems().add(d);
+        for (int d = 1; d <= 31; d++)
+            cmbDay.getItems().add(d);
         cmbDay.setConverter(nullableIntConverter("Ngày"));
 
         cmbMonth.getItems().add(null);
-        for (int m = 1; m <= 12; m++) cmbMonth.getItems().add(m);
+        for (int m = 1; m <= 12; m++)
+            cmbMonth.getItems().add(m);
         cmbMonth.setConverter(nullableIntConverter("Tháng"));
 
         cmbYear.getItems().add(null);
-        for (int y = currentYear - 4; y <= currentYear + 1; y++) cmbYear.getItems().add(y);
+        for (int y = currentYear - 4; y <= currentYear + 1; y++)
+            cmbYear.getItems().add(y);
         cmbYear.setConverter(nullableIntConverter("Năm"));
 
         cmbType.getItems().add(null);
@@ -80,7 +118,8 @@ public class InvoiceManagementController {
         cmbType.setConverter(new StringConverter<>() {
             @Override
             public String toString(InvoiceType t) {
-                if (t == null) return "Tất cả loại";
+                if (t == null)
+                    return "Tất cả loại";
                 return switch (t) {
                     case SALE -> "Bán vé (SALE)";
                     case REFUND -> "Trả vé (REFUND)";
@@ -100,32 +139,32 @@ public class InvoiceManagementController {
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         colId.setCellValueFactory(cell -> {
             String invoiceId = cell.getValue().getId();
-            if (invoiceId == null) return new ReadOnlyStringWrapper("");
+            if (invoiceId == null)
+                return new ReadOnlyStringWrapper("");
             return new ReadOnlyStringWrapper(
                     invoiceId.length() > 13 ? invoiceId.substring(0, 13) + "…" : invoiceId);
         });
-        colCustomer.setCellValueFactory(cell ->
-                new ReadOnlyStringWrapper(orEmpty(cell.getValue().getCustomerName())));
-        colEmployee.setCellValueFactory(cell ->
-                new ReadOnlyStringWrapper(orEmpty(cell.getValue().getEmployeeName())));
+        colCustomer.setCellValueFactory(cell -> new ReadOnlyStringWrapper(orEmpty(cell.getValue().getCustomerName())));
+        colEmployee.setCellValueFactory(cell -> new ReadOnlyStringWrapper(orEmpty(cell.getValue().getEmployeeName())));
         colDate.setCellValueFactory(cell -> {
             var issueDate = cell.getValue().getIssueDate();
             return new ReadOnlyStringWrapper(issueDate != null ? DATE_FORMAT.format(issueDate) : "");
         });
-        colType.setCellValueFactory(cell ->
-                new ReadOnlyStringWrapper(formatInvoiceType(cell.getValue().getType())));
-        colCount.setCellValueFactory(cell ->
-                new ReadOnlyStringWrapper(String.valueOf(cell.getValue().getTicketCount())));
-        colAmount.setCellValueFactory(cell ->
-                new ReadOnlyStringWrapper(MONEY_FORMAT.format(cell.getValue().getTotalAmount()) + " đ"));
+        colType.setCellValueFactory(cell -> new ReadOnlyStringWrapper(formatInvoiceType(cell.getValue().getType())));
+        colCount.setCellValueFactory(
+                cell -> new ReadOnlyStringWrapper(String.valueOf(cell.getValue().getTicketCount())));
+        colAmount.setCellValueFactory(
+                cell -> new ReadOnlyStringWrapper(MONEY_FORMAT.format(cell.getValue().getTotalAmount()) + " đ"));
 
         colActions.setCellFactory(col -> new TableCell<>() {
             private final Button btnView = new Button("🔍 Xem");
             private final Button btnPrint = new Button("🖨 In HĐ");
 
             {
-                btnView.setStyle("-fx-background-color:#0066cc;-fx-text-fill:white;-fx-font-size:12px;-fx-font-weight:700;-fx-padding:6 14;-fx-background-radius:8;-fx-cursor:hand;");
-                btnPrint.setStyle("-fx-background-color:#008000;-fx-text-fill:white;-fx-font-size:12px;-fx-font-weight:700;-fx-padding:6 14;-fx-background-radius:8;-fx-cursor:hand;");
+                btnView.setStyle(
+                        "-fx-background-color:#0066cc;-fx-text-fill:white;-fx-font-size:12px;-fx-font-weight:700;-fx-padding:6 14;-fx-background-radius:8;-fx-cursor:hand;");
+                btnPrint.setStyle(
+                        "-fx-background-color:#008000;-fx-text-fill:white;-fx-font-size:12px;-fx-font-weight:700;-fx-padding:6 14;-fx-background-radius:8;-fx-cursor:hand;");
                 btnView.setOnAction(e -> openDetailDialog(getTableView().getItems().get(getIndex()), false));
                 btnPrint.setOnAction(e -> openDetailDialog(getTableView().getItems().get(getIndex()), true));
             }
@@ -161,8 +200,7 @@ public class InvoiceManagementController {
                         showAlert(Alert.AlertType.INFORMATION, "Không có dữ liệu",
                                 res.getMessage() != null ? res.getMessage() : "Không tìm thấy hoá đơn phù hợp");
                     }
-                }
-        );
+                });
     }
 
     private InvoiceFilterDTO buildFilter() {
@@ -264,7 +302,8 @@ public class InvoiceManagementController {
 
     private void setLoading(boolean loading) {
         loadingOverlay.setVisible(loading);
-        if (loading) loadingOverlay.toFront();
+        if (loading)
+            loadingOverlay.toFront();
     }
 
     private void showAlert(Alert.AlertType type, String title, String msg) {
@@ -275,7 +314,8 @@ public class InvoiceManagementController {
     }
 
     private String formatInvoiceType(InvoiceType type) {
-        if (type == null) return "";
+        if (type == null)
+            return "";
         return switch (type) {
             case SALE -> "Bán vé";
             case REFUND -> "Trả vé";

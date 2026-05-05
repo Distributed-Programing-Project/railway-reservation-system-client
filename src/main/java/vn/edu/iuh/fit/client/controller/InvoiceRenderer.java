@@ -1,37 +1,38 @@
 package vn.edu.iuh.fit.client.controller;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UncheckedIOException;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.nio.file.Files;
 import java.text.NumberFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javafx.scene.image.Image;
-import org.thymeleaf.context.Context;
 import org.thymeleaf.TemplateEngine;
-import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
-import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder.FontStyle;
+import org.thymeleaf.context.Context;
 import org.thymeleaf.templateresolver.StringTemplateResolver;
+
+import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder.FontStyle;
+import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
+
+import javafx.scene.image.Image;
 import vn.edu.iuh.fit.client.session.SaleWizardState;
 import vn.edu.iuh.fit.client.session.SaleWizardState.BuyerDraft;
 import vn.edu.iuh.fit.common.dto.IssuedTicketDTO;
@@ -76,7 +77,9 @@ final class InvoiceRenderer {
           + ", file=" + pdf.getAbsolutePath());
       return pdf;
     } catch (Exception e) {
-      throw new IllegalStateException("Unable to render invoice preview PDF", e);
+      System.err.println("[InvoiceRenderer] ===== LỖI XUẤT PDF HÓA ĐƠN =====");
+      e.printStackTrace(); // Tới đây Console sẽ xả lỗi gốc ra, sếp nhìn là biết bị gì ngay
+      throw new IllegalStateException("Unable to render invoice review PDF: " + e.getMessage(), e);
     }
   }
 
@@ -96,7 +99,8 @@ final class InvoiceRenderer {
 
   private static Map<String, Object> buildTemplateData(SaleCreateResponseDTO dto, SaleWizardState state) {
     Map<String, Object> data = new HashMap<>();
-    LocalDate invoiceDate = dto != null && dto.getInvoiceDate() != null ? dto.getInvoiceDate().toLocalDate() : LocalDate.now();
+    LocalDate invoiceDate = dto != null && dto.getInvoiceDate() != null ? dto.getInvoiceDate().toLocalDate()
+        : LocalDate.now();
     String yearFull = String.valueOf(invoiceDate.getYear());
     String yearShort = yearFull.substring(2);
 
@@ -197,10 +201,13 @@ final class InvoiceRenderer {
     }
   }
 
+  // CẬP NHẬT: Ghi log tiếng Việt rõ ràng, chỉ đích danh nguyên nhân
   private static InputStream requireResourceStream(String path) {
     InputStream in = InvoiceRenderer.class.getResourceAsStream(path);
     if (in == null) {
-      throw new IllegalStateException("Missing font resource " + path);
+      System.err.println("[LỖI NGHIÊM TRỌNG] Không tìm thấy file font: " + path + " trong resources của repo client!");
+      throw new IllegalStateException("Missing font resource " + path
+          + ". Hãy chắc chắn thư mục 'fonts' nằm đúng vị trí trong client/src/main/resources/");
     }
     return in;
   }
@@ -280,7 +287,8 @@ final class InvoiceRenderer {
       sb.append(" | ").append(ticket.getTrainCode());
     }
     if (!"--".equals(safe(ticket.getCarriageName())) || !("--".equals(safe(ticket.getSeatNumber())))) {
-      sb.append(" | Toa ").append(safe(ticket.getCarriageName())).append(" - Ghế ").append(safe(ticket.getSeatNumber()));
+      sb.append(" | Toa ").append(safe(ticket.getCarriageName())).append(" - Ghế ")
+          .append(safe(ticket.getSeatNumber()));
     }
     if (ticket.isChildUnder6()) {
       sb.append(" | Trẻ <6");
@@ -315,7 +323,7 @@ final class InvoiceRenderer {
     if (value < 0) {
       return "âm " + numberToWords(-value);
     }
-    String[] units = {"", " nghìn", " triệu", " tỷ", " nghìn tỷ", " triệu tỷ"};
+    String[] units = { "", " nghìn", " triệu", " tỷ", " nghìn tỷ", " triệu tỷ" };
     StringBuilder result = new StringBuilder();
     int group = 0;
     while (value > 0) {
@@ -334,7 +342,7 @@ final class InvoiceRenderer {
   }
 
   private static String threeDigitsToWords(int number) {
-    String[] digitWords = {"không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"};
+    String[] digitWords = { "không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín" };
     int hundreds = number / 100;
     int tens = (number % 100) / 10;
     int ones = number % 10;

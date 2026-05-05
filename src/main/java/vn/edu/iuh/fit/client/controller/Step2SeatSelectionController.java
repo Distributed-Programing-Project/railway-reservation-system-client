@@ -1,7 +1,6 @@
 package vn.edu.iuh.fit.client.controller;
 
 import java.text.NumberFormat;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -9,7 +8,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -20,14 +18,12 @@ import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
@@ -51,10 +47,10 @@ import vn.edu.iuh.fit.common.response.Response;
 public class Step2SeatSelectionController {
   private static final NumberFormat MONEY = NumberFormat.getInstance(new Locale("vi", "VN"));
 
-  private static final String STYLE_AVAILABLE = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 0.5px; -fx-text-fill: black;";
-  private static final String STYLE_SOLD = "-fx-background-color: #D90000; -fx-text-fill: white;";
-  private static final String STYLE_SELECTED = "-fx-background-color: #008000; -fx-text-fill: white;";
-  private static final String STYLE_HELD_OTHER = "-fx-background-color: #9e9e9e; -fx-text-fill: white;";
+  private static final String STYLE_AVAILABLE = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 0.5px; -fx-text-fill: black; -fx-padding: 0; -fx-font-weight: bold;";
+  private static final String STYLE_SOLD = "-fx-background-color: #D90000; -fx-text-fill: white; -fx-padding: 0; -fx-font-weight: bold;";
+  private static final String STYLE_SELECTED = "-fx-background-color: #008000; -fx-text-fill: white; -fx-padding: 0; -fx-font-weight: bold;";
+  private static final String STYLE_HELD_OTHER = "-fx-background-color: #9e9e9e; -fx-text-fill: white; -fx-padding: 0; -fx-font-weight: bold;";
 
   @FXML
   private VBox toaContainer;
@@ -167,7 +163,8 @@ public class Step2SeatSelectionController {
     if (!validateBeforeNext()) {
       return;
     }
-    // Step 3 is not rendering seat map; stop polling to avoid unnecessary refreshes.
+    // Step 3 is not rendering seat map; stop polling to avoid unnecessary
+    // refreshes.
     stopSeatMapPolling();
     if (coordinator != null) {
       // Step 3 remains stub in this phase.
@@ -315,7 +312,8 @@ public class Step2SeatSelectionController {
     outboundTask.setOnFailed(e -> showError("Sơ đồ ghế", "Không thể tải sơ đồ ghế chiều đi."));
     executor.submit(outboundTask);
 
-    boolean roundTrip = state.getTicketCategory() == TicketCategory.ROUND_TRIP && state.getSelectedReturnSchedule() != null;
+    boolean roundTrip = state.getTicketCategory() == TicketCategory.ROUND_TRIP
+        && state.getSelectedReturnSchedule() != null;
     if (roundTrip) {
       ScheduleSaleCardDTO ret = state.getSelectedReturnSchedule();
       Task<Response> returnTask = new Task<>() {
@@ -346,7 +344,8 @@ public class Step2SeatSelectionController {
 
     seatByScheduleDetailId.clear();
     List<SeatMapSeatDTO> seats = carriage.getSeats() == null ? List.of() : carriage.getSeats();
-    seats.stream().filter(s -> s.getScheduleDetailId() != null).forEach(s -> seatByScheduleDetailId.put(s.getScheduleDetailId(), s));
+    seats.stream().filter(s -> s.getScheduleDetailId() != null)
+        .forEach(s -> seatByScheduleDetailId.put(s.getScheduleDetailId(), s));
 
     populateGridPane(gridSeats, seats);
   }
@@ -416,9 +415,11 @@ public class Step2SeatSelectionController {
 
   private Button createSeatButton(SeatMapSeatDTO seat) {
     Button btn = new Button(String.valueOf(seat.getSeatNumber()));
-    btn.setPrefSize(40, 40);
+    btn.setPrefSize(45, 40);
+    btn.setMinSize(45, 40);
 
-    SeatAvailabilityStatus status = seat.getSeatStatus() != null ? seat.getSeatStatus() : SeatAvailabilityStatus.AVAILABLE;
+    SeatAvailabilityStatus status = seat.getSeatStatus() != null ? seat.getSeatStatus()
+        : SeatAvailabilityStatus.AVAILABLE;
     boolean inCart = isSeatInCart(seat.getScheduleDetailId(), activeDirection);
 
     if (status == SeatAvailabilityStatus.SOLD) {
@@ -460,7 +461,8 @@ public class Step2SeatSelectionController {
 
     List<SelectedSeatDraft> cart = cartFor(activeDirection);
     if (cart.size() >= 10) {
-      showWarning("Giữ chỗ", "Mỗi lượt (" + (activeDirection == TripDirection.OUTBOUND ? "chiều đi" : "chiều về") + ") chỉ được mua tối đa 10 vé.");
+      showWarning("Giữ chỗ", "Mỗi lượt (" + (activeDirection == TripDirection.OUTBOUND ? "chiều đi" : "chiều về")
+          + ") chỉ được mua tối đa 10 vé.");
       return;
     }
 
@@ -570,7 +572,8 @@ public class Step2SeatSelectionController {
     Task<Response> task = new Task<>() {
       @Override
       protected Response call() {
-        return saleClientService.holdSeats(schedule.getScheduleId(), sdIds, coordinator.getState().getClientSessionId());
+        return saleClientService.holdSeats(schedule.getScheduleId(), sdIds,
+            coordinator.getState().getClientSessionId());
       }
     };
 
@@ -601,7 +604,8 @@ public class Step2SeatSelectionController {
     executor.submit(task);
   }
 
-  private List<SeatMapSeatDTO> findContiguousAvailableRun(List<SeatMapSeatDTO> sortedSeats, int count, TripDirection direction) {
+  private List<SeatMapSeatDTO> findContiguousAvailableRun(List<SeatMapSeatDTO> sortedSeats, int count,
+      TripDirection direction) {
     List<SeatMapSeatDTO> best = List.of();
     List<SeatMapSeatDTO> current = new ArrayList<>();
     int lastSeatNumber = -1;
@@ -653,7 +657,8 @@ public class Step2SeatSelectionController {
     Task<Response> task = new Task<>() {
       @Override
       protected Response call() {
-        return saleClientService.releaseHeldSeats(schedule.getScheduleId(), ids, coordinator.getState().getClientSessionId());
+        return saleClientService.releaseHeldSeats(schedule.getScheduleId(), ids,
+            coordinator.getState().getClientSessionId());
       }
     };
     task.setOnSucceeded(e -> {
@@ -685,7 +690,8 @@ public class Step2SeatSelectionController {
 
     CarriageSeatMapDTO carriage = comboToa.getValue();
 
-    SelectedSeatDraft draft = new SelectedSeatDraft(activeDirection, schedule.getScheduleId(), seat.getScheduleDetailId());
+    SelectedSeatDraft draft = new SelectedSeatDraft(activeDirection, schedule.getScheduleId(),
+        seat.getScheduleDetailId());
     draft.setCarriageId(carriage != null ? carriage.getCarriageId() : null);
     draft.setCarriageNumber(carriage != null ? carriage.getCarriageNumber() : null);
     draft.setSeatId(seat.getSeatId());
@@ -736,7 +742,8 @@ public class Step2SeatSelectionController {
 
   private ScheduleSaleCardDTO scheduleFor(TripDirection direction) {
     SaleWizardState state = coordinator.getState();
-    return direction == TripDirection.OUTBOUND ? state.getSelectedOutboundSchedule() : state.getSelectedReturnSchedule();
+    return direction == TripDirection.OUTBOUND ? state.getSelectedOutboundSchedule()
+        : state.getSelectedReturnSchedule();
   }
 
   private List<CarriageSeatMapDTO> getActiveSeatMapCarriages() {
@@ -776,7 +783,8 @@ public class Step2SeatSelectionController {
     lbl.setStyle("-fx-font-weight: bold; -fx-padding: 8 0 2 0; -fx-text-fill: #333;");
 
     Button btnClearAll = new Button("Xóa tất cả");
-    btnClearAll.setStyle("-fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 5 10px; -fx-background-color: #c0392b");
+    btnClearAll
+        .setStyle("-fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 5 10px; -fx-background-color: #c0392b");
     btnClearAll.setOnAction(e -> releaseAllInDirection(direction));
 
     HBox box = new HBox(10, lbl, btnClearAll);
@@ -799,7 +807,8 @@ public class Step2SeatSelectionController {
     HBox box = new HBox(10, lblSeat, lblPrice, btnRemove);
     box.setAlignment(Pos.CENTER_LEFT);
     box.setPadding(new Insets(8));
-    box.setStyle("-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-background-radius: 5;");
+    box.setStyle(
+        "-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-background-radius: 5;");
     return box;
   }
 
@@ -814,7 +823,8 @@ public class Step2SeatSelectionController {
     Task<Response> task = new Task<>() {
       @Override
       protected Response call() {
-        return saleClientService.releaseHeldSeats(schedule.getScheduleId(), List.of(draft.getScheduleDetailId()), coordinator.getState().getClientSessionId());
+        return saleClientService.releaseHeldSeats(schedule.getScheduleId(), List.of(draft.getScheduleDetailId()),
+            coordinator.getState().getClientSessionId());
       }
     };
     task.setOnSucceeded(e -> {
@@ -852,7 +862,8 @@ public class Step2SeatSelectionController {
     Task<Response> task = new Task<>() {
       @Override
       protected Response call() {
-        return saleClientService.releaseHeldSeats(schedule.getScheduleId(), ids, coordinator.getState().getClientSessionId());
+        return saleClientService.releaseHeldSeats(schedule.getScheduleId(), ids,
+            coordinator.getState().getClientSessionId());
       }
     };
     task.setOnSucceeded(e -> {
@@ -898,7 +909,8 @@ public class Step2SeatSelectionController {
       return false;
     }
 
-    boolean roundTrip = state.getTicketCategory() == TicketCategory.ROUND_TRIP && state.getSelectedReturnSchedule() != null;
+    boolean roundTrip = state.getTicketCategory() == TicketCategory.ROUND_TRIP
+        && state.getSelectedReturnSchedule() != null;
     if (roundTrip) {
       if (state.getReturnSeats().isEmpty()) {
         showWarning("Bước 2", "Vui lòng chọn ít nhất một chỗ cho chiều về.");
@@ -1048,7 +1060,8 @@ public class Step2SeatSelectionController {
         toRemove.add(item);
         continue;
       }
-      SeatAvailabilityStatus status = seat.getSeatStatus() != null ? seat.getSeatStatus() : SeatAvailabilityStatus.AVAILABLE;
+      SeatAvailabilityStatus status = seat.getSeatStatus() != null ? seat.getSeatStatus()
+          : SeatAvailabilityStatus.AVAILABLE;
       if (status != SeatAvailabilityStatus.HELD || !seat.isHeldByMe()) {
         toRemove.add(item);
       }
@@ -1056,7 +1069,8 @@ public class Step2SeatSelectionController {
 
     if (!toRemove.isEmpty()) {
       cart.removeAll(toRemove);
-      showWarning("Giỏ vé", "Một số ghế đã hết giữ chỗ (" + (direction == TripDirection.OUTBOUND ? "chiều đi" : "chiều về") + "). Vui lòng chọn lại.");
+      showWarning("Giỏ vé", "Một số ghế đã hết giữ chỗ ("
+          + (direction == TripDirection.OUTBOUND ? "chiều đi" : "chiều về") + "). Vui lòng chọn lại.");
     }
   }
 
@@ -1091,7 +1105,8 @@ public class Step2SeatSelectionController {
       return;
     }
 
-    List<String> outboundIds = state.getOutboundSeats().stream().map(SelectedSeatDraft::getScheduleDetailId).filter(Objects::nonNull).toList();
+    List<String> outboundIds = state.getOutboundSeats().stream().map(SelectedSeatDraft::getScheduleDetailId)
+        .filter(Objects::nonNull).toList();
     if (!outboundIds.isEmpty()) {
       Task<Response> task = new Task<>() {
         @Override
@@ -1102,10 +1117,12 @@ public class Step2SeatSelectionController {
       executor.submit(task);
     }
 
-    boolean roundTrip = state.getTicketCategory() == TicketCategory.ROUND_TRIP && state.getSelectedReturnSchedule() != null;
+    boolean roundTrip = state.getTicketCategory() == TicketCategory.ROUND_TRIP
+        && state.getSelectedReturnSchedule() != null;
     if (roundTrip) {
       ScheduleSaleCardDTO ret = state.getSelectedReturnSchedule();
-      List<String> returnIds = state.getReturnSeats().stream().map(SelectedSeatDraft::getScheduleDetailId).filter(Objects::nonNull).toList();
+      List<String> returnIds = state.getReturnSeats().stream().map(SelectedSeatDraft::getScheduleDetailId)
+          .filter(Objects::nonNull).toList();
       if (!returnIds.isEmpty()) {
         Task<Response> task = new Task<>() {
           @Override
@@ -1133,7 +1150,8 @@ public class Step2SeatSelectionController {
 
     ScheduleSaleCardDTO outbound = state.getSelectedOutboundSchedule();
     if (outbound != null && !state.getOutboundSeats().isEmpty()) {
-      List<String> ids = state.getOutboundSeats().stream().map(SelectedSeatDraft::getScheduleDetailId).filter(Objects::nonNull).toList();
+      List<String> ids = state.getOutboundSeats().stream().map(SelectedSeatDraft::getScheduleDetailId)
+          .filter(Objects::nonNull).toList();
       Task<Response> task = new Task<>() {
         @Override
         protected Response call() {
@@ -1145,7 +1163,8 @@ public class Step2SeatSelectionController {
 
     ScheduleSaleCardDTO ret = state.getSelectedReturnSchedule();
     if (ret != null && !state.getReturnSeats().isEmpty()) {
-      List<String> ids = state.getReturnSeats().stream().map(SelectedSeatDraft::getScheduleDetailId).filter(Objects::nonNull).toList();
+      List<String> ids = state.getReturnSeats().stream().map(SelectedSeatDraft::getScheduleDetailId)
+          .filter(Objects::nonNull).toList();
       Task<Response> task = new Task<>() {
         @Override
         protected Response call() {
@@ -1155,7 +1174,8 @@ public class Step2SeatSelectionController {
       executor.submit(task);
     }
 
-    // UX choice for Phase 3: back to Step 1 clears cart to avoid leaking holds / mismatched schedules.
+    // UX choice for Phase 3: back to Step 1 clears cart to avoid leaking holds /
+    // mismatched schedules.
     state.getOutboundSeats().clear();
     state.getReturnSeats().clear();
 
