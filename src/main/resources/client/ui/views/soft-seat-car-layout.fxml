@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Pos?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Root là VBox tương ứng với trainCarriageLayout trong code cũ -->
+<VBox xmlns="http://javafx.com/javafx" 
+      xmlns:fx="http://javafx.com/fxml"
+      fx:id="trainCarriageLayout" alignment="CENTER" spacing="30">
+
+    <!-- Khối ghế trên -->
+    <HBox alignment="CENTER" spacing="10">
+        <!-- Vùng ghế trên-trái -->
+        <VBox spacing="2">
+            <HBox fx:id="topLeftRow1" spacing="8" />
+            <HBox fx:id="topLeftRow2" spacing="8" />
+        </VBox>
+        <Region styleClass="aisle-divider" />
+        <!-- Vùng ghế trên-phải -->
+        <VBox spacing="2">
+            <HBox fx:id="topRightRow1" spacing="8" />
+            <HBox fx:id="topRightRow2" spacing="8" />
+        </VBox>
+    </HBox>
+
+    <!-- Khối ghế dưới -->
+    <HBox alignment="CENTER" spacing="10">
+        <!-- Vùng ghế dưới-trái -->
+        <VBox spacing="2">
+            <HBox fx:id="bottomLeftRow1" spacing="8" />
+            <HBox fx:id="bottomLeftRow2" spacing="8" />
+        </VBox>
+        <Region styleClass="aisle-divider" />
+        <!-- Vùng ghế dưới-phải -->
+        <VBox spacing="2">
+            <HBox fx:id="bottomRightRow1" spacing="8" />
+            <HBox fx:id="bottomRightRow2" spacing="8" />
+        </VBox>
+    </HBox>
+
+</VBox>

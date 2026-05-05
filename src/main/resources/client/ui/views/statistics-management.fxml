@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="vn.edu.iuh.fit.client.controller.StatisticsManagementController"
+           stylesheets="@../css/statistics-management-styles.css">
+
+    <ScrollPane fitToWidth="true" styleClass="content-scroll">
+        <VBox spacing="0">
+
+            <!-- Header -->
+            <HBox styleClass="page-header" alignment="CENTER_LEFT" spacing="20">
+                <Label text="Quản Lý Thống Kê" styleClass="page-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblPeriod" styleClass="period-label"/>
+            </HBox>
+            <Separator/>
+
+            <!-- Input tabs -->
+            <TabPane tabClosingPolicy="UNAVAILABLE" styleClass="input-tab-pane">
+
+                <!-- Tab: Theo ngày -->
+                <Tab text="Theo ngày">
+                    <VBox spacing="12" styleClass="tab-content">
+                        <FlowPane hgap="12" vgap="12" alignment="CENTER_LEFT">
+                            <Label text="Chọn ngày:" styleClass="field-label"/>
+                            <DatePicker fx:id="dpDay" prefWidth="160"/>
+                            <Button text="Xem thống kê"
+                                    minWidth="120"
+                                    styleClass="primary-button"
+                                    onAction="#handleViewDay"/>
+                        </FlowPane>
+                        <HBox fx:id="empRowDay" spacing="12" alignment="CENTER_LEFT">
+                            <Label text="Nhân viên:" styleClass="field-label"/>
+                            <ComboBox fx:id="cbEmployeeDay" prefWidth="300" promptText="Tất cả nhân viên"/>
+                        </HBox>
+                    </VBox>
+                </Tab>
+
+                <!-- Tab: Theo tuần -->
+                <Tab text="Theo tuần">
+                    <VBox spacing="12" styleClass="tab-content">
+                        <FlowPane hgap="12" vgap="12" alignment="CENTER_LEFT">
+                            <Label text="Chọn ngày trong tuần:" styleClass="field-label"/>
+                            <DatePicker fx:id="dpWeek" prefWidth="160"/>
+                            <Button text="Xem thống kê"
+                                    minWidth="120"
+                                    styleClass="primary-button"
+                                    onAction="#handleViewWeek"/>
+                        </FlowPane>
+                        <Label fx:id="lblWeekRange" styleClass="week-range-label"/>
+                        <HBox fx:id="empRowWeek" spacing="12" alignment="CENTER_LEFT">
+                            <Label text="Nhân viên:" styleClass="field-label"/>
+                            <ComboBox fx:id="cbEmployeeWeek" prefWidth="300" promptText="Tất cả nhân viên"/>
+                        </HBox>
+                    </VBox>
+                </Tab>
+
+                <!-- Tab: Theo tháng -->
+                <Tab text="Theo tháng">
+                    <VBox spacing="12" styleClass="tab-content">
+                        <FlowPane hgap="12" vgap="12" alignment="CENTER_LEFT">
+                            <Label text="Tháng:" styleClass="field-label"/>
+                            <ComboBox fx:id="cbMonth" prefWidth="130"/>
+                            <Label text="Năm:" styleClass="field-label"/>
+                            <ComboBox fx:id="cbYear" prefWidth="100"/>
+                            <Button text="Xem thống kê"
+                                    minWidth="120"
+                                    styleClass="primary-button"
+                                    onAction="#handleViewMonth"/>
+                        </FlowPane>
+                        <HBox fx:id="empRowMonth" spacing="12" alignment="CENTER_LEFT">
+                            <Label text="Nhân viên:" styleClass="field-label"/>
+                            <ComboBox fx:id="cbEmployeeMonth" prefWidth="300" promptText="Tất cả nhân viên"/>
+                        </HBox>
+                    </VBox>
+                </Tab>
+
+            </TabPane>
+
+            <Separator/>
+
+            <!-- KPI Cards -->
+            <VBox fx:id="kpiPane" spacing="12" styleClass="kpi-section">
+                <!-- Row 1 -->
+                <HBox spacing="12">
+                    <VBox styleClass="stat-card card-blue" HBox.hgrow="ALWAYS">
+                        <Label text="VÉ BÁN" styleClass="stat-label"/>
+                        <Label fx:id="lblTicketsSold" text="—" styleClass="stat-value"/>
+                    </VBox>
+                    <VBox styleClass="stat-card card-orange" HBox.hgrow="ALWAYS">
+                        <Label text="VÉ HOÀN" styleClass="stat-label"/>
+                        <Label fx:id="lblTicketsRefunded" text="—" styleClass="stat-value"/>
+                    </VBox>
+                    <VBox styleClass="stat-card card-blue" HBox.hgrow="ALWAYS">
+                        <Label text="ĐỔI VÉ" styleClass="stat-label"/>
+                        <Label fx:id="lblExchangeCount" text="—" styleClass="stat-value"/>
+                    </VBox>
+                    <VBox styleClass="stat-card card-green" HBox.hgrow="ALWAYS">
+                        <Label text="DOANH THU THUẦN" styleClass="stat-label"/>
+                        <Label fx:id="lblNetRevenue" text="—" styleClass="stat-value stat-highlight"/>
+                    </VBox>
+                </HBox>
+                <!-- Row 2 -->
+                <HBox spacing="12">
+                    <VBox styleClass="stat-card card-blue" HBox.hgrow="ALWAYS">
+                        <Label text="DOANH THU GỘP" styleClass="stat-label"/>
+                        <Label fx:id="lblGrossRevenue" text="—" styleClass="stat-value"/>
+                    </VBox>
+                    <VBox styleClass="stat-card card-orange" HBox.hgrow="ALWAYS">
+                        <Label text="TỔNG GIẢM GIÁ" styleClass="stat-label"/>
+                        <Label fx:id="lblDiscount" text="—" styleClass="stat-value"/>
+                    </VBox>
+                    <VBox styleClass="stat-card card-blue" HBox.hgrow="ALWAYS">
+                        <Label text="PHÍ BẢO HIỂM" styleClass="stat-label"/>
+                        <Label fx:id="lblInsurance" text="—" styleClass="stat-value"/>
+                    </VBox>
+                    <VBox styleClass="stat-card card-red" HBox.hgrow="ALWAYS">
+                        <Label text="TIỀN HOÀN" styleClass="stat-label"/>
+                        <Label fx:id="lblRefundAmount" text="—" styleClass="stat-value"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Breakdown: BarChart + TableView (Week/Month only) -->
+            <VBox fx:id="breakdownPane" spacing="12" styleClass="breakdown-section">
+                <Label text="Chi tiết theo ngày" styleClass="section-title"/>
+                <BarChart fx:id="barChart" prefHeight="240" animated="false" legendVisible="false">
+                    <xAxis><CategoryAxis label="Ngày"/></xAxis>
+                    <yAxis><NumberAxis label="Triệu VND"/></yAxis>
+                </BarChart>
+                <TableView fx:id="breakdownTable" prefHeight="210" styleClass="data-table">
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                    </columnResizePolicy>
+                    <columns>
+                        <TableColumn fx:id="colBreakdownDay"      text="Ngày"/>
+                        <TableColumn fx:id="colBreakdownSold"     text="Vé bán"/>
+                        <TableColumn fx:id="colBreakdownRefunded" text="Vé hoàn"/>
+                        <TableColumn fx:id="colBreakdownRevenue"  text="Doanh thu"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+    <!-- Loading overlay -->
+    <StackPane fx:id="loadingOverlay" visible="false" styleClass="loading-overlay">
+        <VBox alignment="CENTER" spacing="12" styleClass="loading-container">
+            <ProgressIndicator prefWidth="48" prefHeight="48"/>
+            <Label text="Đang tải..." styleClass="field-label"/>
+        </VBox>
+    </StackPane>
+
+</StackPane>

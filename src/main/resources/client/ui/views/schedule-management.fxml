@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="vn.edu.iuh.fit.client.controller.ScheduleController"
+           stylesheets="@../css/schedule-management.css"
+           prefWidth="1200" prefHeight="700">
+
+    <BorderPane>
+        <center>
+            <VBox spacing="16">
+                <padding>
+                    <Insets top="24" right="28" bottom="24" left="28"/>
+                </padding>
+
+                <!-- Header -->
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label text="Quản Lý Lịch Trình" styleClass="title-1"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Thêm" onAction="#handleAddSchedule" styleClass="button-outlined, accent"/>
+                    <Button text="Gen Lịch Trình" onAction="#handleGenerateSchedules" styleClass="success"/>
+                </HBox>
+
+                <!-- Filter Row 1: Combos -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <ComboBox fx:id="startStationCombo" promptText="Ga đi" prefWidth="165"/>
+                    <ComboBox fx:id="endStationCombo" promptText="Ga đến" prefWidth="165"/>
+                    <ComboBox fx:id="trainCombo" promptText="Mã tàu" prefWidth="130"/>
+                    <ComboBox fx:id="statusCombo" promptText="Trạng thái" prefWidth="160"/>
+                </HBox>
+
+                <!-- Filter Row 2: Date pickers + buttons -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Từ ngày:"/>
+                    <DatePicker fx:id="fromDatePicker" prefWidth="150"/>
+                    <Label text="Đến ngày:"/>
+                    <DatePicker fx:id="toDatePicker" prefWidth="150"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="btnFilter" text="Lọc" onAction="#handleFilter" styleClass="accent"/>
+                    <Button text="Làm mới" onAction="#handleRefresh" styleClass="button-flat"/>
+                </HBox>
+
+                <!-- Result count -->
+                <Label fx:id="lblResultCount" text="" styleClass="text-caption"/>
+
+                <!-- Table -->
+                <TableView fx:id="scheduleTable" VBox.vgrow="ALWAYS" styleClass="striped">
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                    </columnResizePolicy>
+                    <columns>
+                        <TableColumn fx:id="idColumn" text="Mã Lịch Trình" minWidth="140"/>
+                        <TableColumn fx:id="trainColumn" text="Tàu" prefWidth="80"/>
+                        <TableColumn fx:id="routeColumn" text="Tuyến" minWidth="90"/>
+                        <TableColumn fx:id="departureStationColumn" text="Ga đi" minWidth="120"/>
+                        <TableColumn fx:id="destinationStationColumn" text="Ga đến" minWidth="120"/>
+                        <TableColumn fx:id="departureColumn" text="Khởi hành" minWidth="130"/>
+                        <TableColumn fx:id="arrivalColumn" text="Đến dự kiến" minWidth="130"/>
+                        <TableColumn fx:id="statusColumn" text="Trạng Thái" minWidth="120"/>
+                    </columns>
+                </TableView>
+
+                <!-- Pagination + action buttons -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <HBox spacing="5" alignment="CENTER_LEFT" styleClass="segmented-button-bar">
+                        <Button fx:id="prevButton" text="Trang trước" onAction="#handlePrevPage"/>
+                        <Button fx:id="nextButton" text="Trang sau" onAction="#handleNextPage"/>
+                    </HBox>
+                    <Label fx:id="pageLabel" text="Trang 1" styleClass="text-caption"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="btnViewSeatsDetail" text="Chi tiết" onAction="#handleViewSeatsDetail" styleClass="button-outlined"/>
+                    <Button fx:id="btnEditSchedule" text="Sửa" onAction="#handleEditSchedule" styleClass="accent"/>
+                    <Button fx:id="btnPublishSchedule" text="Phát triển" onAction="#handlePublishSchedule" styleClass="success"/>
+                    <Button fx:id="btnDisableSchedule" text="Vô hiệu hóa" onAction="#handleDisableSchedule" styleClass="danger"/>
+                </HBox>
+            </VBox>
+        </center>
+    </BorderPane>
+
+</StackPane>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Region?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:id="berthNodePane" styleClass="berth">
+            
+    <center>
+        <Label fx:id="numberLabel" styleClass="berth-label" />
+    </center>
+
+    <left>
+        <Region fx:id="backLeft" styleClass="berth-back" />
+    </left>
+    
+    <right>
+        <Region fx:id="backRight" styleClass="berth-back" />
+    </right>
+
+    <bottom>
+        <Region fx:id="backBottom" styleClass="berth-back" />
+    </bottom>
+    
+</BorderPane>

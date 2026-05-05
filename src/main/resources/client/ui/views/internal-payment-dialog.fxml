@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="vn.edu.iuh.fit.client.controller.InternalPaymentDialogController"
+      stylesheets="@../css/styles.css"
+      spacing="12"
+      prefWidth="560">
+
+    <padding>
+        <Insets top="18" right="18" bottom="18" left="18"/>
+    </padding>
+
+    <Label text="Thanh toán Online (Nội bộ)" styleClass="page-title"/>
+
+    <HBox spacing="14">
+        <ImageView fx:id="imgQr" fitWidth="220" fitHeight="220" preserveRatio="true"/>
+
+        <VBox spacing="8" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblAmount" text="Số tiền: --" style="-fx-font-weight: bold;"/>
+            <Label fx:id="lblRef" text="REF: --"/>
+            <Label fx:id="lblExpire" text="Hết hạn: --"/>
+            <Label fx:id="lblOrder" text="Order: --"/>
+
+            <Label text="Nội dung QR:" style="-fx-font-weight: bold;"/>
+            <TextArea fx:id="txtPayload" editable="false" wrapText="true" prefRowCount="5"/>
+        </VBox>
+    </HBox>
+
+    <Label wrapText="true"
+           text="Sandbox nội bộ: Không dùng API ngân hàng thật. Nhấn 'Giả lập: Chuyển khoản thành công' để xác nhận tiền đã vào tài khoản và chốt đơn."/>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Giả lập: Chuyển khoản thành công" onAction="#handleSimulateSuccess" styleClass="primary-button"/>
+        <Button text="Đóng" onAction="#handleClose" styleClass="secondary-button"/>
+    </HBox>
+</VBox>

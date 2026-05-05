@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Pos?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- VBox chính bao bọc tiêu đề và khung nội dung -->
+<VBox xmlns="http://javafx.com/javafx" 
+      xmlns:fx="http://javafx.com/fxml" 
+      alignment="CENTER" spacing="5">
+      
+    <children>
+        <!-- Tiêu đề của toa (ví dụ: "Toa số 1: Ngồi Mềm") -->
+        <Label fx:id="titleLabel" styleClass="carriage-title" />
+        
+        <!-- Khung toa màu xanh, chứa vùng nội dung ở giữa -->
+        <StackPane fx:id="contentArea" styleClass="train-carriage" 
+                   minWidth="770.0" prefWidth="770.0" maxWidth="770.0"
+                   minHeight="190.0" prefHeight="190.0" maxHeight="190.0">
+            <!-- Sơ đồ toa sẽ được đặt vào đây bởi Controller -->
+        </StackPane>
+    </children>
+</VBox>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="vn.edu.iuh.fit.client.controller.LoginController"
+           stylesheets="@../css/styles.css"
+           styleClass="root"
+           prefWidth="1040" prefHeight="585">
+
+    <VBox alignment="CENTER" spacing="25" 
+          styleClass="login-card"
+          maxWidth="420" minWidth="420"
+          maxHeight="550" minHeight="550">
+        
+        <padding>
+            <Insets top="50" right="45" bottom="50" left="45"/>
+        </padding>
+
+        <StackPane.alignment>CENTER_RIGHT</StackPane.alignment>
+        <StackPane.margin>
+            <Insets right="50"/>
+        </StackPane.margin>
+
+        <VBox alignment="CENTER" spacing="10">
+            <Label text="Đăng Nhập Hệ Thống" styleClass="title"/>
+            <Label text="Vui lòng nhập thông tin đăng nhập" styleClass="subtitle"/>
+        </VBox>
+
+        <Region prefHeight="10"/>
+
+        <VBox spacing="10">
+            <Label text="Tên đăng nhập / Email" styleClass="field-label"/>
+            <TextField fx:id="usernameField" 
+                       promptText="Nhập tên đăng nhập hoặc email"
+                       styleClass="text-field"
+                       prefHeight="45"/>
+        </VBox>
+
+        <VBox spacing="10">
+            <Label text="Mật khẩu" styleClass="field-label"/>
+            <PasswordField fx:id="passwordField" 
+                           promptText="Nhập mật khẩu"
+                           styleClass="password-field"
+                           onAction="#handleLogin"
+                           prefHeight="45"/>
+        </VBox>
+
+        <HBox alignment="CENTER_RIGHT">
+            <Hyperlink text="Quên mật khẩu?" 
+                       styleClass="hyperlink"/>
+        </HBox>
+
+        <Button fx:id="loginButton"
+                text="Đăng Nhập"
+                maxWidth="Infinity"
+                prefHeight="50"
+                styleClass="login-button"
+                onAction="#handleLogin">
+            <VBox.margin>
+                <Insets top="10"/>
+            </VBox.margin>
+        </Button>
+
+        <Button fx:id="helpButton"
+                text="Trợ giúp"
+                maxWidth="Infinity"
+                prefHeight="40"
+                style="-fx-background-color: #f8f9fa; -fx-text-fill: #495057; -fx-border-color: #dee2e6; -fx-border-width: 1.5px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-font-size: 14px; -fx-font-weight: 500; -fx-cursor: hand;"
+                onAction="#handleHelp">
+            <VBox.margin>
+                <Insets top="5"/>
+            </VBox.margin>
+        </Button>
+
+        <Region prefHeight="5"/>
+    </VBox>
+
+    <!-- Loading Overlay -->
+    <StackPane fx:id="loadingOverlay" visible="false" style="-fx-background-color: rgba(0, 0, 0, 0.6);">
+        <VBox alignment="CENTER" spacing="15">
+            <ProgressIndicator prefWidth="60" prefHeight="60"/>
+            <Label text="Đang đăng nhập..." style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: 500;"/>
+        </VBox>
+    </StackPane>
+
+</StackPane>

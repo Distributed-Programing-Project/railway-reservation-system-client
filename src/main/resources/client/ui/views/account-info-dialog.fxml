@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="vn.edu.iuh.fit.client.controller.AccountInfoDialogController"
+      stylesheets="@../css/employee-management-styles.css"
+      spacing="16"
+      prefWidth="420"
+      style="-fx-padding: 28; -fx-background-color: white;">
+
+    <Label text="Thông tin tài khoản" styleClass="dialog-title"/>
+
+    <!-- Warning banner -->
+    <HBox styleClass="warning-banner" alignment="CENTER_LEFT" spacing="8">
+        <Label text="⚠" style="-fx-font-size: 16px; -fx-text-fill: #8a4b00;"/>
+        <Label text="Mật khẩu chỉ hiển thị một lần duy nhất. Hãy ghi lại ngay!"
+               styleClass="warning-text" wrapText="true"/>
+    </HBox>
+
+    <!-- Credentials -->
+    <VBox spacing="14" styleClass="credentials-box">
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <Label text="Tên đăng nhập:" styleClass="field-label" minWidth="130"/>
+            <Label fx:id="lblUsername" styleClass="credential-value"/>
+        </HBox>
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <Label text="Mật khẩu tạm thời:" styleClass="field-label" minWidth="130"/>
+            <Label fx:id="lblPassword" styleClass="credential-value credential-password"/>
+        </HBox>
+    </VBox>
+
+    <Region VBox.vgrow="ALWAYS"/>
+
+    <HBox alignment="CENTER_RIGHT">
+        <Button fx:id="btnClose" text="Đã ghi nhận, Đóng"
+                styleClass="primary-button" onAction="#handleClose"/>
+    </HBox>
+
+</VBox>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="vn.edu.iuh.fit.client.controller.HelpLoginDialogController"
+      styleClass="help-dialog"
+      stylesheets="@../css/help-login-dialog.css"
+      spacing="20"
+      prefWidth="550"
+      prefHeight="600">
+    
+    <padding>
+        <Insets top="0" right="0" bottom="0" left="0"/>
+    </padding>
+    
+    <!-- Header -->
+    <HBox styleClass="header" alignment="CENTER_LEFT" spacing="15">
+        <padding>
+            <Insets top="25" right="30" bottom="25" left="30"/>
+        </padding>
+        <VBox spacing="5">
+            <Label text="Hướng dẫn cài đặt" styleClass="header-title"/>
+            <Label text="Không thể đăng nhập? Làm theo hướng dẫn bên dưới" styleClass="header-subtitle"/>
+        </VBox>
+    </HBox>
+    
+    <!-- Content -->
+    <ScrollPane fitToWidth="true" styleClass="content-scroll">
+        <VBox spacing="25" styleClass="content">
+            <padding>
+                <Insets top="20" right="30" bottom="20" left="30"/>
+            </padding>
+            
+            <!-- Step 1 -->
+            <VBox spacing="10" styleClass="step-box">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="1" styleClass="step-number"/>
+                    <Label text="Cài đặt SQL Server Express" styleClass="step-title"/>
+                </HBox>
+                <VBox spacing="8" styleClass="step-content">
+                    <padding>
+                        <Insets left="45"/>
+                    </padding>
+                    <Label text="• Tải về miễn phí tại:" styleClass="step-text"/>
+                    <Hyperlink text="https://www.microsoft.com/sql-server/sql-server-downloads" 
+                              styleClass="step-link"/>
+                    <Label text="• Chọn phiên bản Express khi tải" styleClass="step-text"/>
+                </VBox>
+            </VBox>
+            
+            <!-- Step 2 -->
+            <VBox spacing="10" styleClass="step-box">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="2" styleClass="step-number"/>
+                    <Label text="Tạo tài khoản SQL Server" styleClass="step-title"/>
+                </HBox>
+                <VBox spacing="8" styleClass="step-content">
+                    <padding>
+                        <Insets left="45"/>
+                    </padding>
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="Username:" styleClass="step-label"/>
+                        <Label text="sa" styleClass="step-value"/>
+                    </HBox>
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="Password:" styleClass="step-label"/>
+                        <Label text="123456" styleClass="step-value"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+            
+            <!-- Step 3 -->
+            <VBox spacing="10" styleClass="step-box">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="3" styleClass="step-number"/>
+                    <Label text="Mở SQL Server Management Studio" styleClass="step-title"/>
+                </HBox>
+                <VBox spacing="8" styleClass="step-content">
+                    <padding>
+                        <Insets left="45"/>
+                    </padding>
+                    <Label text="Tìm và mở ứng dụng SSMS đã cài đặt" styleClass="step-text"/>
+                </VBox>
+            </VBox>
+            
+            <!-- Step 4 -->
+            <VBox spacing="10" styleClass="step-box">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="4" styleClass="step-number"/>
+                    <Label text="Restore Database" styleClass="step-title"/>
+                </HBox>
+                <VBox spacing="8" styleClass="step-content">
+                    <padding>
+                        <Insets left="45"/>
+                    </padding>
+                    <Label text="• Chuột phải vào 'Databases' - 'Restore Database'" styleClass="step-text"/>
+                    <Label text="• Chọn 'Device' - Add" styleClass="step-text"/>
+                    <Label text="• Chọn file 'data/HeThongVeTau_ver3.bak'" styleClass="step-text"/>
+                    <Label text="• Nhấn OK để hoàn tất" styleClass="step-text"/>
+                </VBox>
+            </VBox>
+            
+            <!-- Step 5 -->
+            <VBox spacing="10" styleClass="step-box">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="5" styleClass="step-number"/>
+                    <Label text="Chạy lại ứng dụng" styleClass="step-title"/>
+                </HBox>
+                <VBox spacing="8" styleClass="step-content">
+                    <padding>
+                        <Insets left="45"/>
+                    </padding>
+                    <Label text="Khởi động lại ứng dụng và đăng nhập" styleClass="step-text"/>
+                </VBox>
+            </VBox>
+            
+            <!-- Footer Note -->
+            <VBox spacing="8" styleClass="footer-note">
+                <Label text="Lưu ý quan trọng" styleClass="footer-title"/>
+                <Label text="Nếu vẫn gặp vấn đề sau khi làm theo hướng dẫn, vui lòng liên hệ với người tạo ứng dụng để được hỗ trợ." 
+                       wrapText="true" styleClass="footer-text"/>
+            </VBox>
+            
+        </VBox>
+    </ScrollPane>
+    
+    <!-- Button -->
+    <HBox alignment="CENTER" styleClass="button-bar">
+        <padding>
+            <Insets top="15" right="30" bottom="25" left="30"/>
+        </padding>
+        <Button text="Đã hiểu" styleClass="close-button" prefWidth="150" prefHeight="40" onAction="#handleClose"/>
+    </HBox>
+    
+</VBox>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="vn.edu.iuh.fit.client.controller.ConfigureTrainDialogController"
+      stylesheets="@../css/train-management.css"
+      spacing="14" prefWidth="740" prefHeight="560"
+      style="-fx-padding: 24;">
+
+    <Label text="Cấu hình lại tàu" styleClass="dialog-title"/>
+
+    <VBox styleClass="box-section" spacing="4">
+        <Label fx:id="lblTrainTitle" styleClass="text-lg"/>
+        <Label text="Lưu ý: Không thể cấu hình nếu tàu đang có lịch trình tương lai chưa hủy."
+               styleClass="warning-text" wrapText="true"/>
+    </VBox>
+
+    <!-- Carriage panels -->
+    <HBox spacing="16" VBox.vgrow="ALWAYS" alignment="TOP_CENTER">
+
+        <!-- LEFT: Pool -->
+        <VBox spacing="8" HBox.hgrow="ALWAYS" prefWidth="280" maxWidth="Infinity">
+            <Label text="Pool toa rỗng" styleClass="panel-title"/>
+
+            <ComboBox fx:id="cmbPoolFilter"
+                      styleClass="filter-combo"
+                      maxWidth="Infinity"/>
+
+            <ListView fx:id="poolList"
+                      VBox.vgrow="ALWAYS"
+                      prefHeight="340"
+                      maxWidth="Infinity"/>
+        </VBox>
+
+        <!-- MIDDLE: Transfer buttons -->
+        <VBox spacing="8" alignment="CENTER" prefWidth="120" minWidth="120" maxWidth="120">
+            <Button text="Thêm →"
+                    styleClass="primary-button"
+                    prefWidth="110"
+                    onAction="#handleAddCarriage"/>
+
+            <Button text="← Bỏ toa"
+                    styleClass="secondary-button"
+                    prefWidth="110"
+                    onAction="#handleRemoveCarriage"/>
+
+            <Separator prefWidth="110"/>
+
+            <Button text="↑ Lên"
+                    styleClass="secondary-button"
+                    prefWidth="110"
+                    onAction="#handleMoveUp"/>
+
+            <Button text="↓ Xuống"
+                    styleClass="secondary-button"
+                    prefWidth="110"
+                    onAction="#handleMoveDown"/>
+        </VBox>
+
+        <!-- RIGHT: Current config -->
+        <VBox spacing="8" HBox.hgrow="ALWAYS" prefWidth="280" maxWidth="Infinity">
+            <HBox alignment="CENTER_LEFT" spacing="8">
+                <Label text="Cấu hình hiện tại" styleClass="panel-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblCarriageCount"
+                       text="0 / 16 toa"
+                       styleClass="count-badge count-badge-warn"/>
+            </HBox>
+
+            <ListView fx:id="currentList"
+                      VBox.vgrow="ALWAYS"
+                      prefHeight="340"
+                      maxWidth="Infinity"/>
+        </VBox>
+
+    </HBox>
+    <!-- Actions -->
+    <HBox alignment="CENTER_RIGHT" spacing="10">
+        <Button fx:id="btnCancel" text="Hủy"
+                styleClass="secondary-button" onAction="#handleCancel"/>
+        <Button text="Lưu cấu hình"
+                styleClass="primary-button" onAction="#handleSave"/>
+    </HBox>
+
+</VBox>

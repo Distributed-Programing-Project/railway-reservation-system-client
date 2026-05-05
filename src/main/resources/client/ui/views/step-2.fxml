@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.shape.Rectangle?>
+
+<VBox fx:id="toaContainer" spacing="20.0" style="-fx-background-color: #ffffff;"
+      styleClass="banve-content-wrapper" stylesheets="/client/ui/css/ban-ve.css"
+      xmlns="http://javafx.com/javafx/25"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="vn.edu.iuh.fit.client.controller.Step2SeatSelectionController"
+>
+
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+
+    <children>
+        <!-- Tiêu đề chính -->
+        <Label alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308"
+               styleClass="banve-title" text="BÁN VÉ TÀU" textAlignment="CENTER">
+            <font>
+                <Font size="38.0" />
+            </font>
+        </Label>
+
+        <!-- Thanh bước -->
+        <HBox alignment="CENTER" spacing="20.0" styleClass="step-indicator-box">
+            <children>
+                <Label alignment="CENTER" styleClass="step-button, step-button-done" text="Bước 1: Chọn chuyến tàu" />
+                <Label alignment="CENTER" styleClass="step-button, step-button-active" text="Bước 2: Chọn chỗ ngồi" />
+                <Label alignment="CENTER" styleClass="step-button" text="Bước 3: Thông tin hành khách" />
+                <Label alignment="CENTER" styleClass="step-button" text="Bước 4: Thanh toán" />
+            </children>
+        </HBox>
+
+        <HBox spacing="30.0" VBox.vgrow="ALWAYS">
+            <children>
+                <!-- LEFT SECTION -->
+                <VBox fx:id="leftSection" spacing="20.0" HBox.hgrow="ALWAYS">
+                    
+                     <!--Box Thông tin chuyến tàu--> 
+                    <VBox styleClass="box-section">
+                        <Label text="Thông tin chuyến tàu đã chọn" styleClass="box-title-bold"/>
+                        <HBox spacing="20.0" styleClass="box-content"> <children>
+                            <VBox spacing="10" styleClass="train-info-label" HBox.hgrow="ALWAYS"> <children>
+                                    <Label fx:id="labelTenTauDi" style="-fx-font-weight: bold;"/>
+                                    <HBox spacing="5.0">
+                                        <Label text="Khởi hành:"/>
+                                        <Label fx:id="labelKhoiHanhDi"/>
+                                    </HBox>
+                                    <HBox spacing="5.0">
+                                        <Label text="Đến nơi:"/>
+                                        <Label fx:id="labelDenNoiDi"/>
+                                    </HBox>
+                                </children>
+                                <padding>
+                                    <Insets right="10.0" /> </padding>
+                            </VBox>
+
+                            <VBox fx:id="boxThongTinVe" spacing="10" styleClass="train-info-label" HBox.hgrow="ALWAYS"
+                                  managed="false" visible="false"> <children>
+                                     <Label fx:id="labelTenTauVe" style="-fx-font-weight: bold;"/>
+                                    <HBox spacing="5.0">
+                                        <Label text="Khởi hành:"/>
+                                        <Label fx:id="labelKhoiHanhVe"/>
+                                    </HBox>
+                                    <HBox spacing="5.0">
+                                        <Label text="Đến nơi:"/>
+                                        <Label fx:id="labelDenNoiVe"/>
+                                    </HBox>
+                                </children>
+                                 <style>
+                                     -fx-border-color: #e0e0e0 transparent transparent transparent;
+                                     -fx-border-width: 0 0 0 1;
+                                 </style>
+                                 <padding>
+                                     <Insets left="10.0" />
+                                 </padding>
+                            </VBox>
+                        </children>
+                        </HBox>
+                    </VBox>
+
+                     <!--Box chọn toa & sơ đồ chỗ ngồi--> 
+                    <VBox fx:id="toaSection" styleClass="box-section" spacing="10.0" VBox.vgrow="ALWAYS">
+                        <HBox spacing="10.0" alignment="CENTER_LEFT">
+                            <Label text="Chọn toa:"/>
+                            <ComboBox fx:id="comboToa" prefWidth="250.0"/>
+                        </HBox>
+
+                         <!--Chú thích màu--> 
+                        <HBox spacing="10.0" alignment="CENTER_LEFT">
+                            <HBox alignment="CENTER" spacing="5.0">
+                                <Rectangle width="20" height="20" style="-fx-fill: white; -fx-stroke: black;"/>
+                                <Label text="Trống"/>
+                            </HBox>
+                            <HBox alignment="CENTER" spacing="5.0">
+                                <Rectangle width="20" height="20" style="-fx-fill: red;"/>
+                                <Label text="Đã bán"/>
+                            </HBox>
+                            <HBox alignment="CENTER" spacing="5.0">
+                                <Rectangle width="20" height="20" style="-fx-fill: green;"/>
+                                <Label text="Đang giao dịch"/>
+                            </HBox>
+                        </HBox>
+
+                        <Label text="Lưu ý: Chọn ghế và nhấn 'Thêm vào giỏ'. Tối đa 10 vé/giao dịch."
+                               styleClass="note-label"/>
+
+                         <!--Sơ đồ chỗ ngồi--> 
+                        <GridPane fx:id="gridSeats" hgap="5" vgap="5" alignment="CENTER_LEFT"/>
+                    </VBox>
+                </VBox>
+
+                <!-- RIGHT SECTION -->
+                <VBox fx:id="rightSection" spacing="15.0" prefWidth="380.0"> <VBox styleClass="box-section" spacing="10.0" VBox.vgrow="ALWAYS">
+        
+                        <Label text="Giỏ vé" styleClass="box-title-bold" alignment="CENTER"/>
+
+                        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" 
+                                    style="-fx-background-color: transparent; -fx-background: transparent;" 
+                                    VBox.vgrow="ALWAYS">
+                            <content>
+                                <VBox fx:id="ticketListContainer" spacing="10.0" 
+                                      style="-fx-padding: 0 5 0 0;"> </VBox>
+                            </content>
+                        </ScrollPane>
+
+                        <VBox spacing="10.0" style="-fx-border-color: #ddd transparent transparent transparent; -fx-padding: 10 0 0 0;">
+                            <Label fx:id="labelTongTien" text="Tổng tiền: 0 VND" 
+                                   style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #333;"/>
+
+                            <Button fx:id="btnMuaVe"
+                                    text="Mua vé"
+                                    onAction="#handleTiepTheo"
+                                    styleClass="nav-button, nav-button-primary"
+                                    maxWidth="Infinity"/>
+                        </VBox>
+                    </VBox>
+                </VBox>
+            </children>
+        </HBox>
+
+        <!-- FOOTER - Nút Quay lại -->
+        <HBox alignment="BOTTOM_RIGHT" spacing="10"
+              style="-fx-padding: 12 20 12 20; -fx-background-color: transparent;">
+            <children>
+                <Button fx:id="btnQuayLai"
+                        onAction="#handleQuayLai"
+                        text="Quay lại"
+                        styleClass="nav-button, nav-button-secondary"
+                        prefWidth="120" />
+            </children>
+        </HBox>
+    </children>
+</VBox>

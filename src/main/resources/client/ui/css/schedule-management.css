@@ -1,0 +1,143 @@
+/* --- schedule-management.css --- */
+
+/* 1. Tổng thể Layout */
+.main-content {
+  -fx-background-color: -color-bg-default;
+}
+
+/* 2. Tiêu đề trang */
+.page-title {
+  -fx-font-size: 28px;
+  -fx-font-weight: 700;
+  -fx-text-fill: -color-fg-default;
+  /* Khoảng cách dưới tiêu đề */
+  -fx-padding: 0 0 10 0;
+}
+
+.title-1 {
+  -fx-font-size: 28px;
+  -fx-font-weight: 700;
+  -fx-text-fill: -color-fg-default;
+}
+
+.title-2 {
+  -fx-font-size: 20px;
+  -fx-font-weight: 700;
+  -fx-text-fill: -color-fg-default;
+}
+
+.text-caption {
+  -fx-text-fill: -color-fg-muted;
+}
+
+.text-bold {
+  -fx-font-weight: 700;
+}
+
+/* 3. Tùy chỉnh TableView (Dữ liệu lịch trình) */
+.data-table {
+  -fx-background-color: -color-bg-default;
+  -fx-border-color: -color-border-muted;
+  -fx-border-width: 1;
+  -fx-border-radius: 4;
+}
+
+/* Làm cho header của bảng phẳng và hiện đại hơn */
+.data-table .column-header-background {
+  -fx-background-color: -color-bg-subtle;
+  -fx-border-color: transparent transparent -color-border-default transparent;
+}
+
+.data-table .column-header {
+  -fx-background-color: transparent;
+  -fx-size: 40px;
+}
+
+.data-table .column-header .label {
+  -fx-text-fill: -color-fg-muted;
+  -fx-font-weight: bold;
+  -fx-alignment: CENTER_LEFT;
+}
+
+/* 4. Tùy chỉnh ComboBox (Bộ lọc) */
+.filter-combo {
+  -fx-border-radius: 4;
+}
+
+/* 5. Trạng thái các nút bấm (Sử dụng Utility Classes của AtlantaFX là chính) */
+/* Nhưng ta vẫn có thể bổ sung hiệu ứng hover đặc thù nếu cần */
+.add-button {
+  -fx-cursor: hand;
+}
+
+.primary-button {
+  -fx-cursor: hand;
+}
+
+.danger-button {
+  /* Thay vì đỏ cứng, dùng biến danger của AtlantaFX */
+  -fx-background-color: -color-danger-emphasis;
+  -fx-text-fill: -color-fg-on-emphasis;
+}
+.danger-button:hover {
+  -fx-background-color: -color-danger-hover;
+}
+
+/* 6. Phân trang (Pagination Label) */
+.page-label {
+  -fx-text-fill: -color-accent-fg;
+  -fx-padding: 0 10 0 10;
+}
+
+/* 7. Cells tùy chỉnh: Nếu bạn muốn màu sắc động cho cột "Trạng thái" */
+/* Bạn có thể thêm các class này vào TableCell trong code Java */
+.status-active {
+  -fx-text-fill: -color-success-fg;
+  -fx-font-weight: bold;
+}
+
+.status-delayed {
+  -fx-text-fill: -color-warning-fg;
+  -fx-font-weight: bold;
+}
+
+.status-cancelled {
+  -fx-text-fill: -color-danger-fg;
+  -fx-font-weight: bold;
+}
+
+.status-muted {
+  -fx-background-color: -color-neutral-muted;
+  -fx-text-fill: -color-fg-muted;
+}
+
+.status-info,
+.status-ready {
+  -fx-background-color: -color-accent-muted;
+  -fx-text-fill: -color-accent-fg;
+}
+
+.status-success {
+  -fx-background-color: -color-success-muted;
+  -fx-text-fill: -color-success-fg;
+}
+
+.status-warning {
+  -fx-background-color: -color-attention-muted;
+  -fx-text-fill: -color-attention-fg;
+}
+
+.status-danger {
+  -fx-background-color: -color-danger-muted;
+  -fx-text-fill: -color-danger-fg;
+}
+
+.status-success-text {
+  -fx-text-fill: -color-success-fg;
+  -fx-font-weight: 700;
+}
+
+.status-danger-text {
+  -fx-text-fill: -color-danger-fg;
+  -fx-font-weight: 700;
+}

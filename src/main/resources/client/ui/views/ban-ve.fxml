@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+
+<BorderPane prefHeight="700.0" prefWidth="1200.0"
+            stylesheets="/client/ui/css/ban-ve.css"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="vn.edu.iuh.fit.client.controller.BanVeController">
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
+
+    <center>
+        <StackPane fx:id="contentPane" styleClass="content-pane" BorderPane.alignment="CENTER"/>
+    </center>
+</BorderPane>
+

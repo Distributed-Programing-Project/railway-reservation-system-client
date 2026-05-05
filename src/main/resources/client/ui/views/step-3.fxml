@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="20.0" style="-fx-background-color: #ffffff;"
+      styleClass="banve-content-wrapper" stylesheets="/client/ui/css/ban-ve.css"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="vn.edu.iuh.fit.client.controller.Step3PassengerController">
+
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+
+    <children>
+        <Label alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308"
+               styleClass="banve-title" text="BÁN VÉ TÀU" textAlignment="CENTER">
+            <font>
+                <Font size="38.0" />
+            </font>
+        </Label>
+
+        <HBox alignment="CENTER" spacing="20.0" styleClass="step-indicator-box">
+            <children>
+                <Label alignment="CENTER" styleClass="step-button, step-button-done" text="Bước 1: Chọn chuyến tàu" />
+                <Label alignment="CENTER" styleClass="step-button, step-button-done" text="Bước 2: Chọn chỗ ngồi" />
+                <Label alignment="CENTER" styleClass="step-button, step-button-active" text="Bước 3: Thông tin hành khách" />
+                <Label alignment="CENTER" styleClass="step-button" text="Bước 4: Thanh toán" />
+            </children>
+        </HBox>
+        
+        <VBox styleClass="box-section" VBox.vgrow="ALWAYS">
+             <children>
+                <Label text="Thông tin hành khách" styleClass="box-title-bold" />
+                
+                <HBox fx:id="headerRow" alignment="CENTER_LEFT" spacing="10.0" style="-fx-padding: 10px; -fx-border-color: #ccc; -fx-border-width: 0 0 2px 0;" maxWidth="Infinity">
+                     <children>
+                        <Label text="Họ tên" fx:id="headerHanhKhach" prefWidth="250.0" HBox.hgrow="ALWAYS" />
+                        <Label text="Thông tin chuyến tàu" fx:id="headerChuyenTau" prefWidth="180.0" HBox.hgrow="ALWAYS" />
+                        <Label text="Thông tin chỗ ngồi" fx:id="headerChoNgoi" prefWidth="120.0" HBox.hgrow="SOMETIMES" />
+                        <Label text="Giá vé" fx:id="headerGiaVe" prefWidth="100.0" HBox.hgrow="SOMETIMES" />
+                        <Label text="Giảm đối tượng" fx:id="headerGiamGia" prefWidth="100.0" HBox.hgrow="SOMETIMES" />
+                        <Label text="Bảo hiểm" fx:id="headerBaoHiem" prefWidth="100.0" HBox.hgrow="SOMETIMES" />
+                        <Label text="Thành tiền" fx:id="headerThanhTien" prefWidth="120.0" HBox.hgrow="ALWAYS" />
+                     </children>
+                </HBox>
+
+                <ScrollPane fx:id="scrollPaneHanhKhach" fitToWidth="true" VBox.vgrow="ALWAYS">
+                     <content>
+                        <VBox fx:id="containerHanhKhach" spacing="5.0" />
+                     </content>
+                </ScrollPane>
+
+                <HBox fx:id="totalRow" alignment="CENTER_RIGHT" styleClass="total-row">
+                     <children>
+                        <Label text="TỔNG CỘNG:" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+                        <Label fx:id="lblTongThanhTien" text="0 VNĐ" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #c0392b; -fx-padding: 0 0 0 15px;" />
+                     </children>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                </HBox>
+
+             </children>
+        </VBox>
+
+        <VBox styleClass="box-section" spacing="15.0" minHeight="180.0" VBox.vgrow="NEVER">
+             <children>
+                <Label text="Thông tin người mua vé" styleClass="box-title-bold" />
+                <GridPane hgap="10.0" vgap="10.0">
+                    <columnConstraints>
+                      <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="-Infinity" />
+                      <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+                      <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="-Infinity" />
+                      <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <Label text="Họ tên:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                        <TextField fx:id="txtNguoiMuaHoTen" GridPane.columnIndex="1" GridPane.rowIndex="0" maxWidth="300.0"/>
+
+                        <Label text="Số CMND/Hộ chiếu:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                        <TextField fx:id="txtNguoiMuaSoGiayTo" promptText="087xxxxxxx" GridPane.columnIndex="3" GridPane.rowIndex="0" maxWidth="300.0"/>
+
+                        <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                        <TextField fx:id="txtNguoiMuaEmail" promptText="vidu@email.com" GridPane.columnIndex="1" GridPane.rowIndex="1" maxWidth="300.0"/>
+
+                        <Label text="Số điện thoại:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                        <TextField fx:id="txtNguoiMuaSDT" promptText="09xxxxxxxx" GridPane.columnIndex="3" GridPane.rowIndex="1" maxWidth="300.0"/>
+                     </children>
+                </GridPane>
+             </children>
+        </VBox>
+
+        <HBox alignment="CENTER_RIGHT" spacing="15.0">
+            <children>
+                <Button fx:id="btnQuayLai" 
+                        onAction="#handleQuayLai" 
+                        text="Quay lại" 
+                        styleClass="nav-button, nav-button-secondary" 
+                        prefWidth="120.0" />
+                
+                <Button fx:id="btnTiepTheo" 
+                        onAction="#handleTiepTheo" 
+                        text="Tiếp theo" 
+                        styleClass="nav-button, nav-button-primary" 
+                        prefWidth="120.0" />
+            </children>
+            <VBox.margin>
+                <Insets top="20.0" />
+            </VBox.margin>
+        </HBox>
+    </children>
+</VBox>

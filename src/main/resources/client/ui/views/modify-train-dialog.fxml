@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Pos?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx" 
+            xmlns:fx="http://javafx.com/fxml" 
+            prefHeight="500.0" prefWidth="1200.0">
+
+    <!-- === SECTION 1: THANH TRACK TÀU (TRÊN CÙNG) === -->
+    <top>
+        <BorderPane style="-fx-background-color: #f4f4f4; -fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;">
+            <padding>
+                <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+            </padding>
+            <center>
+                <!-- THAY ĐỔI CÁC THUỘC TÍNH CỦA SCROLLPANE -->
+                <ScrollPane fx:id="trainTrackScrollPane" 
+                			minHeight="90"
+                            fitToHeight="false" 
+                            fitToWidth="false" 
+                            hbarPolicy="AS_NEEDED" 
+                            vbarPolicy="NEVER" 
+                            styleClass="edge-to-edge-scrollpane">
+                    <content>
+                        <!-- THAY ĐỔI: Chuyển alignment thành TOP_LEFT -->
+                        <HBox fx:id="trainTrackContainer" alignment="TOP_LEFT" spacing="5.0" minHeight="70.0">
+                            
+                        </HBox>
+                    </content>
+                </ScrollPane>
+            </center>
+            <right>
+                <!-- HBox chứa Mác tàu giờ nằm ở bên phải và có kích thước cố định -->
+                <HBox alignment="CENTER" spacing="5.0" minWidth="200.0" prefWidth="150.0">
+                    <children>
+                        <Label text="Mác tàu:" style="-fx-font-weight: bold;" />
+                        <!-- THU NGẮN TEXTFIELD -->
+                        <TextField fx:id="trainIdTextField" promptText="(trống)" prefWidth="90.0" />
+                    </children>
+                </HBox>
+            </right>
+        </BorderPane>
+    </top>
+
+    <!-- === SECTION 2: CẤU TRÚC TOA CHI TIẾT (Ở GIỮA) === -->
+   <center>
+        <HBox alignment="CENTER" spacing="10.0">
+            <padding>
+                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+            </padding>
+            <children>
+                <!-- ✅ THÊM onAction VÀO ĐÂY -->
+                <Button fx:id="navLeftButton" text="&lt;" styleClass="navigation-button" />
+                <!-- Vùng hiển thị chính, StackPane để đặt nút "Bỏ toa" lên trên -->
+                <StackPane fx:id="carriageDetailContainer" HBox.hgrow="ALWAYS">
+                    <children>
+                        <!-- Nhãn mặc định khi chưa chọn toa -->
+                        <Label fx:id="defaultCenterLabel" text="Hãy chọn 1 toa" style="-fx-font-size: 18px; -fx-text-fill: grey;" />
+                        <!-- Nút "Bỏ toa", sẽ được ẩn/hiện bởi Controller -->
+                        <Button fx:id="removeCarriageButton" mnemonicParsing="false" styleClass="remove-button" text="Bỏ toa" StackPane.alignment="TOP_RIGHT">
+                            <StackPane.margin>
+                                <Insets right="10.0" top="10.0" />
+                            </StackPane.margin>
+                        </Button>
+                    </children>
+                </StackPane>
+                <!-- ✅ THÊM onAction VÀO ĐÂY -->
+                <Button fx:id="navRightButton" text="&gt;" styleClass="navigation-button" />
+            </children>
+        </HBox>
+    </center>
+
+    <!-- === SECTION 3: CHÚ THÍCH VÀ NÚT THOÁT (DƯỚI CÙNG) === -->
+    <bottom>
+        <BorderPane style="-fx-background-color: #f4f4f4; -fx-border-color: #e0e0e0; -fx-border-width: 1 0 0 0;">
+            <padding>
+                <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+            </padding>
+            <left>
+                <HBox fx:id="legendContainer" alignment="CENTER_LEFT" spacing="15.0" />
+            </left>
+            <right>
+                <!-- ✅ THÊM NÚT LƯU VÀO ĐÂY -->
+                <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                    <children>
+                        <Button fx:id="saveButton" mnemonicParsing="false" text="Lưu" styleClass="primary-button" />
+                        <Button fx:id="exitButton" mnemonicParsing="false" text="Thoát" />
+                    </children>
+                </HBox>
+            </right>
+        </BorderPane>
+    </bottom>
+</BorderPane>

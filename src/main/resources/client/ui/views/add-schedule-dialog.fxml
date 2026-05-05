@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="vn.edu.iuh.fit.client.controller.AddScheduleDialogController"
+      spacing="15" prefWidth="500" prefHeight="720">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label fx:id="dialogTitle" text="Thêm Lịch Trình Mới" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+    <Separator/>
+
+    <!-- Tuyến đường -->
+    <VBox spacing="5">
+        <Label text="Tuyến Đường:"/>
+        <ComboBox fx:id="routeCombo" maxWidth="Infinity" promptText="Chọn tuyến"/>
+    </VBox>
+
+    <!-- Tàu -->
+    <VBox spacing="5">
+        <Label text="Tàu:"/>
+        <ComboBox fx:id="trainCombo" maxWidth="Infinity" promptText="Chọn tàu"/>
+    </VBox>
+
+    <!-- Ngày khởi hành -->
+    <VBox spacing="5">
+        <Label text="Ngày Khởi Hành:"/>
+        <DatePicker fx:id="departureDatePicker" maxWidth="Infinity" promptText="Chọn ngày"/>
+    </VBox>
+
+    <!-- Giờ khởi hành -->
+    <HBox spacing="10">
+        <VBox spacing="5" HBox.hgrow="ALWAYS">
+            <Label text="Giờ khởi hành:"/>
+            <ComboBox fx:id="hourCombo" maxWidth="Infinity" promptText="Giờ"/>
+        </VBox>
+        <VBox spacing="5" HBox.hgrow="ALWAYS">
+            <Label text="Phút khởi hành:"/>
+            <ComboBox fx:id="minuteCombo" maxWidth="Infinity" promptText="Phút"/>
+        </VBox>
+    </HBox>
+
+    <Separator/>
+
+    <!-- Ngày đến dự kiến -->
+    <VBox spacing="5">
+        <Label text="Ngày Đến Dự Kiến:"/>
+        <DatePicker fx:id="arrivalDatePicker" maxWidth="Infinity" promptText="Chọn ngày"/>
+    </VBox>
+
+    <!-- Giờ đến -->
+    <HBox spacing="10">
+        <VBox spacing="5" HBox.hgrow="ALWAYS">
+            <Label text="Giờ đến:"/>
+            <ComboBox fx:id="arrivalHourCombo" maxWidth="Infinity" promptText="Giờ"/>
+        </VBox>
+        <VBox spacing="5" HBox.hgrow="ALWAYS">
+            <Label text="Phút đến:"/>
+            <ComboBox fx:id="arrivalMinuteCombo" maxWidth="Infinity" promptText="Phút"/>
+        </VBox>
+    </HBox>
+
+    <Region VBox.vgrow="ALWAYS"/>
+
+    <!-- Buttons -->
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button fx:id="btnCancel" text="Hủy" prefWidth="100" styleClass="secondary-button" onAction="#handleCancel"/>
+        <Button fx:id="btnSave" text="Lưu" prefWidth="100" styleClass="primary-button" onAction="#handleSave"/>
+    </HBox>
+</VBox>

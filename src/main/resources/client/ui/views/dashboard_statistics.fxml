@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="vn.edu.iuh.fit.client.controller.DashboardStatisticsController"
+      stylesheets="@../css/dashboard-statistics.css"
+      spacing="25"
+      styleClass="main-content">
+
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
+
+
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <VBox spacing="5" HBox.hgrow="ALWAYS">
+            <Label text="Báo Cáo Hệ Thống" styleClass="welcome-title"/>
+            <Label fx:id="welcomeSubtitle" text="Dữ liệu cập nhật..." styleClass="welcome-subtitle"/>
+        </VBox>
+        <Button text="Làm mới dữ liệu" styleClass="refresh-button" onAction="#handleRefreshData"/>
+        <Button text="Quản lý lịch trình" styleClass="refresh-button" onAction="#handleOpenSchedule"/>
+    </HBox>
+    <GridPane hgap="20" vgap="20">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="25"/>
+            <ColumnConstraints percentWidth="25"/>
+            <ColumnConstraints percentWidth="25"/>
+            <ColumnConstraints percentWidth="25"/>
+        </columnConstraints>
+
+
+        <VBox styleClass="stat-card, card-blue" spacing="5" GridPane.columnIndex="0">
+            <Label text="TỔNG TUYẾN ĐƯỜNG" styleClass="stat-label"/>
+            <Label fx:id="totalRoutesLabel" text="0" styleClass="stat-value"/>
+            <Label text="Đang vận hành" styleClass="stat-note"/>
+        </VBox>
+
+        <VBox styleClass="stat-card, card-orange" spacing="5" GridPane.columnIndex="1">
+            <Label text="LỊCH TRÌNH HÔM NAY" styleClass="stat-label"/>
+            <Label fx:id="todaySchedulesLabel" text="0" styleClass="stat-value"/>
+            <Label text="Chuyến khởi hành" styleClass="stat-note"/>
+        </VBox>
+
+        <VBox styleClass="stat-card, card-green" spacing="5" GridPane.columnIndex="2">
+            <Label text="TỔNG SỐ TÀU" styleClass="stat-label"/>
+            <Label fx:id="totalTrainsLabel" text="0" styleClass="stat-value"/>
+            <Label text="Sẵn sàng phục vụ" styleClass="stat-note"/>
+        </VBox>
+
+        <VBox styleClass="stat-card, card-red" spacing="5" GridPane.columnIndex="3">
+            <Label text="DOANH THU THÁNG" styleClass="stat-label"/>
+            <Label fx:id="revenueLabel" text="0" styleClass="stat-value"/>
+            <Label text="Tổng thu hóa đơn" styleClass="stat-note"/>
+        </VBox>
+    </GridPane>
+
+    <HBox spacing="20" VBox.vgrow="ALWAYS">
+        <VBox spacing="12" styleClass="panel" HBox.hgrow="ALWAYS">
+
+            <Label text="Biểu Đồ Doanh Thu 7 Ngày (Triệu VNĐ)" styleClass="panel-title"/>
+            <BarChart fx:id="revenueChart" legendVisible="false" animated="false">
+                <xAxis><CategoryAxis side="BOTTOM" tickLabelFill="#7f8c8d"/></xAxis>
+                <yAxis><NumberAxis side="LEFT" forceZeroInRange="true"/></yAxis>
+            </BarChart>
+        </VBox>
+
+        <VBox spacing="12" styleClass="panel" minWidth="400">
+            <Label text="Phân Bổ Trạng Thái Lịch Trình" styleClass="panel-title"/>
+            <PieChart fx:id="scheduleStatusChart" legendVisible="true" labelsVisible="true" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </HBox>
+
+   <VBox spacing="12" styleClass="panel" VBox.vgrow="NEVER">
+        <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+        <Label text="Hoạt Động Gần Đây" styleClass="panel-title"/>
+        <ListView fx:id="activitiesList" styleClass="activities-list" VBox.vgrow="ALWAYS" prefHeight="180" />
+    </VBox>
+
+</VBox>

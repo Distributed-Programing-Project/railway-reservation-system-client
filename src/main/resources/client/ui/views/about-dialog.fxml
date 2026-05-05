@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      spacing="15" alignment="CENTER"
+      prefWidth="500" prefHeight="400"
+      style="-fx-background-color: white; -fx-padding: 30;">
+
+    <Label text="🚂 Hệ Thống Quản Lý Bán Vé Tàu" 
+           style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+    
+    <Separator prefWidth="400"/>
+    
+    <VBox spacing="8" alignment="CENTER_LEFT" maxWidth="450">
+        <Label text="Phiên bản: 1.0.0" 
+               style="-fx-font-size: 14px; -fx-text-fill: #34495e;"/>
+        
+        <Label text="Ngày phát hành: Tháng 12/2025" 
+               style="-fx-font-size: 14px; -fx-text-fill: #34495e;"/>
+        
+        <Label text="" style="-fx-min-height: 10px;"/>
+        
+        <Label text="Mô tả:" 
+               style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        
+        <Label text="Hệ thống quản lý bán vé tàu điện tử, hỗ trợ đặt vé, quản lý lịch trình, thống kê doanh thu và quản lý nhân viên." 
+               wrapText="true"
+               style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+        
+        <Label text="" style="-fx-min-height: 10px;"/>
+        
+        <Label text="Nhóm phát triển:" 
+               style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        
+        <Label text="• Đại học Công nghiệp Thành phố Hồ Chí Minh" 
+               style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+        
+        <Label text="• Môn: Phát Triển Ứng Dụng Nhóm 12" 
+               style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+        
+        <Label text="" style="-fx-min-height: 10px;"/>
+        
+        <Label text="Công nghệ sử dụng:" 
+               style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        
+        <Label text="• JavaFX 22 - Giao diện người dùng" 
+               style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+        
+        <Label text="• SQL Server - Cơ sở dữ liệu" 
+               style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+        
+        <Label text="• Maven - Quản lý dự án" 
+               style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+    </VBox>
+    
+    <Region VBox.vgrow="ALWAYS"/>
+    
+    <Button text="Đóng"
+            style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 40; -fx-background-radius: 5; -fx-cursor: hand;"/>
+</VBox>

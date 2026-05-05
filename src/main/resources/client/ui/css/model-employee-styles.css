@@ -1,0 +1,42 @@
+.root {
+    -fx-font-family: "Arial";
+    -fx-background-color: #ffffff;
+}
+
+.label {
+    -fx-text-fill: #0d6efd;
+    -fx-font-weight: bold;
+}
+
+.text-field, .password-field, .combo-box, .date-picker {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ced4da;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 6;
+}
+
+.text-field:focused, .password-field:focused, .combo-box:focused, .date-picker:focused {
+    -fx-border-color: #0d6efd;
+}
+
+.button {
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #ced4da;
+    -fx-text-fill: #0d6efd;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+}
+
+.button:hover {
+    -fx-background-color: #e2e6ea;
+}
+
+.table-view {
+    -fx-border-color: #dddddd;
+}
+
+.table-view .column-header {
+    -fx-background-color: #f1f3f5;
+    -fx-font-weight: bold;
+}

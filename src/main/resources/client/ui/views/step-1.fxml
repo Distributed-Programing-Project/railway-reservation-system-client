@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox fx:id="contentArea" spacing="20.0" style="-fx-background-color: #ffffff;" styleClass="banve-content-wrapper" stylesheets="/client/ui/css/ban-ve.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vn.edu.iuh.fit.client.controller.Step1SaleController">
+
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+
+    <children>
+        <Label alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" styleClass="banve-title" text="BÁN VÉ TÀU" textAlignment="CENTER">
+            <font>
+                <Font size="38.0" />
+            </font>
+        </Label>
+
+        <HBox alignment="CENTER" spacing="20.0" styleClass="step-indicator-box">
+            <children>
+                <Label alignment="CENTER" styleClass="step-button, step-button-active" text="Bước 1: Chọn chuyến tàu" />
+                <Label alignment="CENTER" styleClass="step-button" text="Bước 2: Chọn chỗ ngồi" />
+                <Label alignment="CENTER" styleClass="step-button" text="Bước 3: Thông tin hành khách" />
+                <Label alignment="CENTER" styleClass="step-button" text="Bước 4: Thanh toán" />
+            </children>
+        </HBox>
+
+        <TitledPane collapsible="false" styleClass="section-title-pane box-border" text="Thông tin hành trình">
+            <content>
+                <GridPane hgap="10.0" vgap="10.0">
+                    <columnConstraints>
+                        <ColumnConstraints />
+                        <ColumnConstraints />
+                        <ColumnConstraints />
+                        <ColumnConstraints />
+                        <ColumnConstraints />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints />
+                    </rowConstraints>
+                    <children>
+                        <Label styleClass="lblText" text="Ga đi:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                        <ComboBox fx:id="comboGaDi" promptText="Chọn ga đi" styleClass="custom-combo-box" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        
+                        <Label styleClass="lblText" text="Ga đến:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                        <ComboBox fx:id="comboGaDen" promptText="Chọn ga đến" styleClass="custom-combo-box" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+                        
+                        <Label styleClass="lblText" text="Ngày đi:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                        <DatePicker fx:id="datePickerNgayKhoiHanh" maxWidth="1.7976931348623157E308" styleClass="date-picker" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        
+                        <Label styleClass="lblText" text="Ngày về:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                        <DatePicker fx:id="dateNgayVe" maxWidth="1.7976931348623157E308" styleClass="date-picker" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                        
+                        <HBox alignment="CENTER_LEFT" spacing="15.0" GridPane.columnIndex="4" GridPane.rowIndex="0">
+                            <children>
+                                <RadioButton fx:id="radioMotChieu" selected="true" styleClass="lblText" text="Một chiều">
+                                    <toggleGroup>
+                                        <ToggleGroup fx:id="tripTypeGroup" />
+                                    </toggleGroup>
+                                </RadioButton>
+                                <RadioButton fx:id="radioKhuHoi" styleClass="lblText" text="Khứ hồi" toggleGroup="$tripTypeGroup" />
+                            </children>
+                        </HBox>
+                        
+                        <Button fx:id="btnTimChuyen" onAction="#handleTimKiem" prefHeight="40.0" prefWidth="140.0" styleClass="btnTimKiem" text="Tìm kiếm" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                    </children>
+                </GridPane>
+            </content>
+        </TitledPane>
+        
+        <Pane fx:id="paneDanhSachChuyenTau" prefHeight="800.0" prefWidth="200.0" style="-fx-background-color: #F8F8F8; -fx-border-color: #000; -fx-border-width: 0.5px;">
+            <children>
+                <Label layoutX="21.0" layoutY="9.0" text="Danh sách chuyến tàu">
+                    <font>
+                        <Font name="System Bold" size="24.0" />
+                    </font>
+                </Label>
+            </children>
+        </Pane>
+    </children>
+    
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+
+    <children>
+        <HBox alignment="CENTER_RIGHT" spacing="15.0">
+            <children>
+                <Button fx:id="btnQuayLai" 
+                        onAction="#handleQuayLai" 
+                        text="Quay lại" 
+                        styleClass="nav-button, nav-button-secondary" 
+                        prefWidth="120.0" />
+                
+                <Button fx:id="btnTiepTheo" 
+                        onAction="#handleTiepTheo" 
+                        text="Tiếp theo" 
+                        styleClass="nav-button, nav-button-primary" 
+                        prefWidth="120.0" />
+            </children>
+            <VBox.margin>
+                <Insets top="20.0" />
+            </VBox.margin>
+        </HBox>
+    </children>
+    
+    
+</VBox>

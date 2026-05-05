@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="vn.edu.iuh.fit.client.controller.GenerateSchedulesDialogController"
+      stylesheets="@../css/schedule-management.css"
+      spacing="20" style="-fx-padding: 30; -fx-background-color: #f8f9fa;">
+
+    <fx:define>
+        <ToggleGroup fx:id="daysGroup"/>
+    </fx:define>
+
+    <Label text="Tự Động Tạo Lịch Trình" 
+           style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+    
+    <Separator/>
+
+    <!-- Chọn Tuyến -->
+    <VBox spacing="10">
+        <Label text="Chọn Tuyến Đường:" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+        <ComboBox fx:id="routeCombo" promptText="Chọn tuyến..." prefWidth="400"/>
+        <Label fx:id="routeInfoLabel" text="" 
+               style="-fx-font-size: 12px; -fx-text-fill: #666; -fx-font-style: italic;"/>
+    </VBox>
+
+    <!-- Chọn Tàu -->
+    <VBox spacing="10">
+        <Label text="Chọn Tàu:" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+        <ComboBox fx:id="trainCombo" promptText="Chọn tàu..." prefWidth="400"/>
+    </VBox>
+
+    <!-- Ngày bắt đầu -->
+    <VBox spacing="10">
+        <Label text="Ngày Bắt Đầu:" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+        <DatePicker fx:id="startDatePicker" promptText="Chọn ngày bắt đầu..." prefWidth="400"/>
+        <Label text="(Lịch trình sẽ được tạo từ ngày này)" 
+               style="-fx-font-size: 12px; -fx-text-fill: #666; -fx-font-style: italic;"/>
+    </VBox>
+
+    <!-- Giờ khởi hành -->
+    <VBox spacing="10">
+        <Label text="Giờ Khởi Hành (HH:mm):" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+        <TextField fx:id="departureTimeField" promptText="VD: 08:30" prefWidth="400"/>
+    </VBox>
+
+    <!-- Số ngày -->
+    <VBox spacing="10">
+        <Label text="Số Ngày Gen:" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+        <HBox spacing="15">
+            <RadioButton fx:id="radio7Days" text="7 ngày" toggleGroup="$daysGroup" selected="true"/>
+            <RadioButton fx:id="radio30Days" text="30 ngày" toggleGroup="$daysGroup"/>
+        </HBox>
+    </VBox>
+
+    <!-- Khứ hồi -->
+    <VBox spacing="10">
+        <CheckBox fx:id="roundTripCheckbox" text="Tạo lịch trình khứ hồi (chiều về cùng ngày, cách 4 giờ)" 
+                  style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+        <Label text="(Nếu chọn, mỗi ngày sẽ có 2 lịch trình: đi và về)" 
+               style="-fx-font-size: 12px; -fx-text-fill: #666; -fx-font-style: italic;"/>
+    </VBox>
+
+    <Separator/>
+
+    <!-- Buttons -->
+    <HBox spacing="15" alignment="CENTER">
+        <Button fx:id="btnGenerate" text="Tạo Lịch Trình"
+                style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 10 30;"
+                onAction="#handleGenerate"/>
+        <Button text="Hủy" 
+                style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 30;"
+                onAction="#handleCancel"/>
+    </HBox>
+
+</VBox>

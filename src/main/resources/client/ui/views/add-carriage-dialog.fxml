@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            styleClass="dialog-pane"
+            prefWidth="860.0" prefHeight="420.0">
+            
+    <!-- Header của Dialog -->
+    <top>
+        <HBox alignment="CENTER_LEFT" styleClass="dialog-header">
+            <padding>
+                <Insets top="10" right="20" bottom="10" left="20" />
+            </padding>
+            <Label text="Đăng Kí Toa Mới" styleClass="dialog-title" />
+            <Region HBox.hgrow="ALWAYS" />
+            <!-- Có thể thêm nút đóng ở đây nếu muốn -->
+        </HBox>
+    </top>
+
+    <!-- Nội dung chính -->
+    <center>
+        <VBox spacing="15">
+            <padding>
+                <Insets top="20" right="30" bottom="20" left="30" />
+            </padding>
+
+            <!-- Phần chọn Loại Toa -->
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="Loại toa:" styleClass="form-label" />
+                <ComboBox fx:id="carriageTypeComboBox" prefWidth="250.0" />
+            </HBox>
+
+            <!-- Vùng chứa sơ đồ toa tàu -->
+            <!-- Đây là nơi Java sẽ "vẽ" sơ đồ toa vào -->
+            <StackPane fx:id="carriageLayoutContainer" VBox.vgrow="ALWAYS" 
+                       styleClass="carriage-layout-container"
+                       alignment="CENTER">
+                <!-- Nội dung sẽ được thêm từ Controller -->
+            </StackPane>
+        </VBox>
+    </center>
+
+    <!-- Chân trang chứa các nút hành động -->
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="15" styleClass="action-buttons-pane">
+            <padding>
+                <Insets top="15" right="30" bottom="20" left="30" />
+            </padding>
+            <Button fx:id="closeButton" text="Thoát (Bỏ lưu)" styleClass="secondary-button" />
+            <Button fx:id="addButton" text="Thêm" styleClass="primary-button" />
+        </HBox>
+    </bottom>
+    
+</BorderPane>

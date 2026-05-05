@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" 
+            xmlns:fx="http://javafx.com/fxml/1"
+            styleClass="dashboard-container"
+            stylesheets="@../css/employee-dashboard.css">
+    
+    <top>
+        <VBox styleClass="dashboard-header">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <Label text="Dashboard Nhân Viên" styleClass="dashboard-title">
+                <font><Font name="System Bold" size="24"/></font>
+            </Label>
+            <HBox spacing="20">
+                <Label fx:id="lblCurrentTime" text="" styleClass="time-label"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Help" styleClass="btn-secondary"/>
+                <Button text="About" styleClass="btn-secondary"/>
+                <Label fx:id="lblEmployeeName" text="Tên Nhân Viên" styleClass="employee-label"/>
+            </HBox>
+        </VBox>
+    </top>
+    
+    <center>
+        <VBox spacing="20">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            
+           <!-- Statistics Cards -->
+            <HBox spacing="20" styleClass="stats-container">
+                <!-- Card 1: Doanh số hôm nay -->
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
+                    <Label text="Doanh số hôm nay" styleClass="stat-label"/>
+                    <Label fx:id="lblDoanhSoHomNay" text="124" styleClass="stat-value">
+                        <font><Font name="System Bold" size="32"/></font>
+                    </Label>
+                    <Label text="Vé bán trong ca làm việc hiện tại" styleClass="stat-desc"/>
+                </VBox>
+
+                <!-- Card 2: Tổng vé đã bán -->
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
+                    <Label text="Tổng vé đã bán" styleClass="stat-label"/>
+                    <Label fx:id="lblTongVeDaBan" text="872" styleClass="stat-value">
+                        <font><Font name="System Bold" size="32"/></font>
+                    </Label>
+                    <Label text="Tổng số vé đã thanh toán" styleClass="stat-desc"/>
+                </VBox>
+
+                <!-- Card 3: Doanh thu ước tính -->
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
+                    <Label text="Doanh thu ước tính" styleClass="stat-label"/>
+                    <Label fx:id="lblDoanhThu" text="4.520.000 đ" styleClass="stat-value">
+                        <font><Font name="System Bold" size="28"/></font>
+                    </Label>
+                    <Label text="Tổng doanh thu trong ngày" styleClass="stat-desc"/>
+                </VBox>
+            </HBox>
+
+            <!-- Tickets Table Section -->
+            <VBox styleClass="table-container" VBox.vgrow="ALWAYS">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <padding><Insets top="10" right="15" bottom="10" left="15"/></padding>
+                    <Label text="Danh sách vé gần đây" styleClass="section-title">
+                        <font><Font name="System Bold" size="16"/></font>
+                    </Label>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <TextField fx:id="txtSearch" promptText="Tìm mã vé / khách hàng..." prefWidth="250"/>
+                    <Button text="🔄 Làm mới" styleClass="btn-secondary"/>
+                </HBox>
+                
+                <TableView fx:id="tableTickets" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colMaVe" text="Mã vé" prefWidth="100"/>
+                        <TableColumn fx:id="colHanhKhach" text="Hành khách" prefWidth="150"/>
+                        <TableColumn fx:id="colTuyen" text="Tuyến" prefWidth="200"/>
+                        <TableColumn fx:id="colThoiGian" text="Thời gian" prefWidth="150"/>
+                        <TableColumn fx:id="colCho" text="Chỗ" prefWidth="80"/>
+                        <TableColumn fx:id="colTrangThai" text="Trạng thái" prefWidth="120"/>
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                    </columnResizePolicy>
+                </TableView>
+                
+                <HBox alignment="CENTER" styleClass="table-footer">
+                    <padding><Insets top="10" right="15" bottom="10" left="15"/></padding>
+                    <Label text="Hiển thị 100 vé mới nhất" styleClass="footer-text"/>
+                </HBox>
+            </VBox>
+            
+            <!-- Upcoming Trips Section -->
+            <VBox styleClass="sidebar-card" prefWidth="600" maxWidth="Infinity">
+                <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
+                <Label text="Chuyến tàu sắp khởi hành (24h tới)" styleClass="sidebar-title" wrapText="true">
+                    <font><Font name="System Bold" size="14"/></font>
+                </Label>
+                <Separator>
+                    <VBox.margin><Insets top="10" bottom="10"/></VBox.margin>
+                </Separator>
+                <ListView fx:id="listUpcomingTrips" prefHeight="150" styleClass="event-list">
+                    <VBox.margin><Insets top="5"/></VBox.margin>
+                </ListView>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>

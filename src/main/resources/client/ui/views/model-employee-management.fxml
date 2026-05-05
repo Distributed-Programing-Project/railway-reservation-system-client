@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            prefWidth="750" prefHeight="450">
+
+    <children>
+
+        <!-- Bọc nội dung vào ScrollPane -->
+        <ScrollPane layoutX="20" layoutY="20" prefWidth="710" prefHeight="370" fitToWidth="true" fitToHeight="false" pannable="true">
+            <content>
+                <HBox spacing="20" prefWidth="700" alignment="TOP_LEFT">
+
+                    <!-- Thông tin cơ bản -->
+                    <VBox spacing="10" prefWidth="350">
+                        <Label text="Thông Tin Cơ Bản" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+                        <Label text="Mã Nhân Viên" />
+                        <TextField fx:id="maNVField" promptText="Ví dụ: NV007"/>
+
+                        <Label text="Họ và Tên" />
+                        <TextField fx:id="hoTenField" promptText="Nhập họ và tên"/>
+
+                        <Label text="Số CCCD" />
+                        <TextField fx:id="cccdField" promptText="Nhập số CCCD"/>
+
+                        <Label text="Ngày Sinh" />
+                        <DatePicker fx:id="ngaySinhPicker"/>
+
+                        <Label text="Giới Tính" />
+                        <ComboBox fx:id="gioiTinhCombo" prefWidth="200"/>
+
+                        <Label text="Số Điện Thoại" />
+                        <TextField fx:id="sdtField" promptText="Nhập số điện thoại"/>
+
+                        <Label text="Email" />
+                        <TextField fx:id="emailField" promptText="Nhập email"/>
+                    </VBox>
+
+                    <!-- Thông tin công việc -->
+                    <VBox spacing="10" prefWidth="350">
+                        <Label text="Thông Tin Công Việc" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+                        <Label text="Chức Vụ"/>
+                        <ComboBox fx:id="chucVuCombo" prefWidth="200"/>
+
+                        <Label text="Trạng Thái"/>
+                        <ComboBox fx:id="trangThaiCombo" prefWidth="200"/>
+
+                        <Separator prefWidth="350"/>
+
+                        <Label text="Cấp Tài Khoản" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+                        <CheckBox fx:id="capTaiKhoanCheck" text="Tạo tài khoản đăng nhập hệ thống"/>
+
+                        <Label text="(Mật khẩu sẽ được tự động tạo từ CCCD)" 
+                               style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
+                    </VBox>
+
+                </HBox>
+            </content>
+        </ScrollPane>
+
+        <!-- Nút bấm -->
+        <HBox spacing="10" alignment="CENTER_RIGHT"
+              layoutX="20" layoutY="400" prefWidth="710">
+
+            <Button text="Hủy" fx:id="cancelButton" prefWidth="100" styleClass="button-cancel"/>
+            <Button text="Lưu" fx:id="saveButton" prefWidth="100" styleClass="button-save"/>
+        </HBox>
+
+    </children>
+
+</AnchorPane>

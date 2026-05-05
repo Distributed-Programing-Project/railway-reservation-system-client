@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns="http://javafx.com/javafx/22"
+           xmlns:fx="http://javafx.com/fxml/1"
+           prefWidth="520" prefHeight="320"
+           style="-fx-background-color: #f5f6fa;">
+
+    <VBox alignment="CENTER" spacing="18" prefWidth="360">
+
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+
+        <VBox alignment="CENTER" spacing="4">
+            <Label text="HỆ THỐNG BÁN VÉ TÀU"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        </VBox>
+
+        <VBox spacing="8" alignment="CENTER" prefWidth="320">
+            <ProgressBar fx:id="progressBar"
+                         prefWidth="320"
+                         prefHeight="14"/>
+
+            <Label fx:id="loadingLabel"
+                   text="Đang khởi động hệ thống..."
+                   style="-fx-font-size: 12px; -fx-text-fill: #2c3e50;"/>
+
+            <Label fx:id="percentLabel"
+                   text="0%"
+                   style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        </VBox>
+
+        <Label text="PTUDN12 – Version 1.0"
+               style="-fx-font-size: 10px; -fx-text-fill: #95a5a6;"/>
+
+    </VBox>
+</StackPane>

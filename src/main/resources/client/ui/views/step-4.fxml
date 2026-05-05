@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.layout.Region?>
+
+<VBox fx:id="mainContainer" spacing="20.0" style="-fx-background-color: #ffffff;" 
+      styleClass="banve-content-wrapper" stylesheets="/client/ui/css/ban-ve.css" 
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="vn.edu.iuh.fit.client.controller.Step4PaymentController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+
+    <children>
+        <!-- Tiêu đề chính -->
+        <Label alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" styleClass="banve-title" text="BÁN VÉ TÀU" textAlignment="CENTER">
+            <font>
+                <Font size="38.0" />
+            </font>
+        </Label>
+
+        <!-- Thanh bước -->
+        <HBox alignment="CENTER" spacing="20.0" styleClass="step-indicator-box">
+            <children>
+                <Label alignment="CENTER" styleClass="step-button, step-button-done" text="Bước 1: Chọn chuyến tàu" />
+                <Label alignment="CENTER" styleClass="step-button, step-button-done" text="Bước 2: Chọn chỗ ngồi" />
+                <Label alignment="CENTER" styleClass="step-button, step-button-done" text="Bước 3: Thông tin hành khách" />
+                <Label alignment="CENTER" styleClass="step-button, step-button-active" text="Bước 4: Thanh toán" />
+            </children>
+        </HBox>
+
+        <!-- CONTENT CHÍNH -->
+        <HBox spacing="30.0" VBox.vgrow="ALWAYS">
+            <children>
+                <!-- === LEFT SECTION === -->
+                <VBox fx:id="leftSection" spacing="20.0" HBox.hgrow="ALWAYS">
+                    <!-- Box Xác nhận thông tin vé -->
+                    <VBox styleClass="box-section" VBox.vgrow="ALWAYS">
+                        <children>
+                            <Label text="Xác nhận thông tin vé" styleClass="box-title-bold" />
+                            <!-- Header Table -->
+                             <HBox fx:id="ticketHeaderRow" alignment="CENTER_LEFT" spacing="10.0" style="-fx-padding: 10px; -fx-border-color: #ccc; -fx-border-width: 0 0 2px 0;">
+                                <children>
+                                    <Label fx:id="headerChuyenTau" text="Chuyến tàu"/>
+                                    <Label fx:id="headerToaCho" text="Toa - Chỗ ngồi"/>
+                                    <Label fx:id="headerHanhKhach" text="Hành khách"/>
+                                    <Label fx:id="headerLoaiVe" text="Loại vé"/>
+                                    <Label fx:id="headerDonGia" text="Đơn giá" alignment="CENTER_RIGHT"/> </children>
+                            </HBox>
+                            <!-- ScrollPane chứa các hàng vé -->
+                            <ScrollPane fx:id="scrollPaneVe" fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
+                                <content>
+                                    <!-- VBox này sẽ được nạp các hàng vé bằng code -->
+                                    <VBox fx:id="containerVe" spacing="5.0" />
+                                </content>
+                            </ScrollPane>
+                        </children>
+                    </VBox>
+
+                    <!-- Box Chi tiết thanh toán -->
+                    <VBox styleClass="box-section" spacing="10.0">
+                         <Label text="Chi tiết thanh toán" styleClass="box-title-bold"/>
+                         <!-- GridPane cho các đề mục -->
+                         <GridPane fx:id="gridPaymentDetails" hgap="10.0" vgap="5.0" styleClass="grid-payment-details">
+                           <columnConstraints>
+                             <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+                             <ColumnConstraints hgrow="NEVER" minWidth="10.0" /> <!-- Cột giá tiền -->
+                           </columnConstraints>
+                           <rowConstraints>
+                             <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                             <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                             <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                               <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                               <RowConstraints minHeight="10.0" prefHeight="5.0" vgrow="SOMETIMES" /> <!-- Dòng kẻ -->
+                               <RowConstraints minHeight="10.0" vgrow="SOMETIMES" /> <!-- Tổng -->
+                           </rowConstraints>
+                            <children>
+                                <Label fx:id="lblTitleTongTien" text="Tổng tiền vé:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                <Label fx:id="lblDetailTongTienVe" text="0 VNĐ" GridPane.columnIndex="1" GridPane.rowIndex="0" alignment="CENTER_RIGHT"/>
+
+                                <Label fx:id="lblTitleGiamDoiTuong" text="Giảm giá theo đối tượng:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                <Label fx:id="lblDetailGiamDoiTuong" text="0 VNĐ" GridPane.columnIndex="1" GridPane.rowIndex="1" alignment="CENTER_RIGHT"/>
+
+                                <Label text="Giảm giá từ điểm tích lũy:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                <Label fx:id="lblDetailGiamDiem" text="0 VNĐ" GridPane.columnIndex="1" GridPane.rowIndex="2" alignment="CENTER_RIGHT"/>
+
+                                <Label fx:id="lblTitleBaoHiem" text="Bảo hiểm:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                                <Label fx:id="lblDetailBaoHiem" text="0 VNĐ" GridPane.columnIndex="1" GridPane.rowIndex="3" alignment="CENTER_RIGHT"/>
+                               
+                               <!-- Dòng kẻ ngang -->
+                               <VBox style="-fx-border-color: #ccc; -fx-border-width: 1 0 0 0;" GridPane.columnSpan="2" GridPane.rowIndex="4">
+                                   <GridPane.margin>
+                                       <Insets top="5.0" bottom="5.0"/>
+                                   </GridPane.margin>
+                               </VBox>
+                               
+                               <!-- Tổng thanh toán -->
+                               <Label text="Tổng thanh toán:" style="-fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                               <Label fx:id="lblDetailTongThanhToan" text="0 VNĐ" style="-fx-font-weight: bold; -fx-text-fill: #c0392b;" GridPane.columnIndex="1" GridPane.rowIndex="5" alignment="CENTER_RIGHT"/>
+                            </children>
+                         </GridPane>
+                         <!-- Hàng nút chức năng -->
+                          <HBox spacing="10.0" alignment="CENTER_LEFT">
+                              <children>
+                                  <Button fx:id="btnXuatHoaDon" text="Xuất hoá đơn VAT" onAction="#handleXuatHoaDon" styleClass="action-button" disable="true"/>
+                                  <Button fx:id="btnDoiDiem" text="Đổi điểm tích lũy" onAction="#handleDoiDiem" styleClass="action-button"/>
+                                  <Button fx:id="btnTichDiem" text="Tích điểm khách hàng" onAction="#handleTichDiem" styleClass="action-button"/>
+                              </children>
+                              <VBox.margin>
+                                  <Insets top="10.0"/>
+                              </VBox.margin>
+                          </HBox>
+                    </VBox>
+                </VBox>
+
+                <!-- === RIGHT SECTION === -->
+                <VBox fx:id="rightSection" spacing="15.0" prefWidth="500.0">
+                    <VBox fx:id="calculatorBox" styleClass="box-section" spacing="15.0" VBox.vgrow="ALWAYS">
+                        <Label text="Tính tiền" styleClass="box-title-bold"/>
+                        
+                        <!-- Tổng thanh toán -->
+                        <VBox alignment="CENTER" spacing="5.0" style="-fx-background-color: #FFFACD; -fx-padding: 15px; -fx-background-radius: 4px;">
+                             <Label text="Tổng thanh toán"/>
+                             <Label fx:id="lblDisplayTongThanhToan" text="0 VNĐ" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #c0392b;"/>
+                        </VBox>
+                        
+                        <!-- Tiền khách đưa -->
+                        <VBox spacing="5.0">
+                            <Label text="Tiền khách đưa:"/>
+                            <TextField fx:id="txtTienKhachDua" promptText="Nhập số tiền khách đưa" styleClass="tien-khach-dua"/>
+                        </VBox>
+                        
+                        <!-- Gợi ý mệnh giá -->
+                        <VBox spacing="8.0">
+                            <Label text="Gợi ý mệnh giá:"/>
+                            <!-- FlowPane để các nút tự xuống dòng -->
+                            <FlowPane fx:id="flowPaneSuggestions" hgap="10.0" vgap="10.0">
+                                <!-- Các nút gợi ý sẽ được thêm bằng code -->
+                            </FlowPane>
+                        </VBox>
+                        
+                        <!-- Tiền thối lại -->
+                         <VBox alignment="CENTER" spacing="5.0" style="-fx-background-color: #90EE90; -fx-padding: 15px; -fx-background-radius: 4px;">
+                             <Label text="Tiền thối lại"/>
+                             <Label fx:id="lblTienThoiLai" text="0 VNĐ" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #006400;"/>
+                        </VBox>
+                        
+                        <Region VBox.vgrow="ALWAYS" />
+        
+                        <VBox spacing="10.0">
+                            <StackPane>
+                                <children>
+                                    <Button fx:id="btnXacNhanVaIn" 
+                                            onAction="#handleXacNhanVaIn" 
+                                            text="THANH TOÁN &amp; IN VÉ" 
+                                            style="-fx-background-color: #0066CC; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px; -fx-padding: 12;" 
+                                            maxWidth="Infinity" />
+
+                                    <Button fx:id="btnHoanTat" 
+                                            onAction="#handleHoanTat" 
+                                            text="HOÀN TẤT GIAO DỊCH" 
+                                            style="-fx-background-color: #008000; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px; -fx-padding: 12;" 
+                                            maxWidth="Infinity" 
+                                            visible="false" /> 
+                                    </children>
+                            </StackPane>
+                        </VBox>
+                    </VBox>
+                </VBox>
+            </children>
+        </HBox>
+
+        <!-- FOOTER - Nút Quay lại -->
+        <HBox alignment="BOTTOM_RIGHT" spacing="15" style="-fx-padding: 12 0 0 0;">
+            <children>
+                <Button fx:id="btnQuayLai"
+                        onAction="#handleQuayLai"
+                        text="Quay lại"
+                        styleClass="nav-button, nav-button-secondary"
+                        prefWidth="120" />
+            </children>
+            <VBox.margin>
+                <Insets top="20.0" />
+            </VBox.margin>
+        </HBox>
+    </children>
+</VBox>

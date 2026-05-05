@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="vn.edu.iuh.fit.client.controller.TrainManagementController"
+           stylesheets="@../css/train-management.css">
+
+    <!-- MAIN CONTENT -->
+    <VBox spacing="10">
+
+        <!-- Header -->
+        <HBox styleClass="page-header" alignment="CENTER_LEFT" spacing="16">
+            <Label text="Quản Lý Tàu" styleClass="page-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnRegisterCarriage" text="Đăng ký toa mới"
+                    styleClass="secondary-button" onAction="#handleRegisterCarriage"/>
+            <Button fx:id="btnCreateTrain" text="+ Lập tàu mới"
+                    styleClass="add-button" onAction="#handleCreateTrain"/>
+        </HBox>
+
+        <Separator/>
+
+        <!-- Filter bar -->
+        <HBox styleClass="filter-bar" spacing="10" alignment="CENTER_LEFT">
+            <padding><Insets top="4" bottom="4"/></padding>
+            <TextField fx:id="txtSearch" promptText="Tìm theo mác tàu..."
+                       styleClass="text-field" prefWidth="260"
+                       onAction="#handleSearch"/>
+            <Label text="Trạng thái:" styleClass="field-label"/>
+            <ComboBox fx:id="statusFilter" styleClass="filter-combo" prefWidth="165"/>
+            <Button text="Tìm kiếm" styleClass="primary-button" onAction="#handleSearch"/>
+            <Button text="Hiển thị tất cả" styleClass="secondary-button" onAction="#handleShowAll"/>
+        </HBox>
+
+        <!-- Table -->
+        <TableView fx:id="tableView" styleClass="data-table" VBox.vgrow="ALWAYS">
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+            </columnResizePolicy>
+            <columns>
+                <TableColumn fx:id="colTrainCode"       text="Mác tàu"      prefWidth="130"/>
+                <TableColumn fx:id="colStatus"          text="Trạng thái"   prefWidth="160"/>
+                <TableColumn fx:id="colTotalCarriages"  text="Số toa"       prefWidth="80"/>
+                <TableColumn fx:id="colTotalSeats"      text="Tổng ghế"     prefWidth="100"/>
+                <TableColumn fx:id="colActions"         text="Thao tác"     prefWidth="180"/>
+            </columns>
+        </TableView>
+
+    </VBox>
+
+    <!-- LOADING OVERLAY -->
+    <StackPane fx:id="loadingOverlay" visible="false" styleClass="loading-overlay">
+        <VBox alignment="CENTER" spacing="12" styleClass="loading-container">
+            <ProgressIndicator prefWidth="48" prefHeight="48"/>
+            <Label text="Đang tải..." styleClass="field-label"/>
+        </VBox>
+    </StackPane>
+
+</StackPane>

@@ -1,0 +1,260 @@
+/* === statistics-management-styles.css === */
+
+.root {
+    -primary: #0066cc;
+    -primary-hover: #004c99;
+    -primary-active: #003d7a;
+    -success: #008000;
+    -success-hover: #006600;
+    -danger: #c0392b;
+    -danger-hover: #a93226;
+    -warning: #f39c12;
+    -text: #1f2d3d;
+    -text-secondary: #5b6775;
+    -bg: #f4f6f9;
+    -bg-card: #ffffff;
+    -bg-subtle: #f6f8fb;
+    -bg-hover: #eef4ff;
+    -bg-selected: #e8f1ff;
+    -bg-overlay: rgba(0, 0, 0, 0.3);
+    -border: #d5dde6;
+    -border-focus: #0066cc;
+}
+
+/* === ScrollPane === */
+.content-scroll {
+    -fx-background-color: transparent;
+    -fx-background: -bg;
+    -fx-border-color: transparent;
+}
+.content-scroll > .viewport {
+    -fx-background-color: -bg;
+}
+
+/* === Page Header === */
+.page-header {
+    -fx-background-color: -bg-card;
+    -fx-border-color: -border;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 12 16;
+    -fx-alignment: CENTER_LEFT;
+}
+.page-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -text;
+}
+.period-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -text-secondary;
+    -fx-padding: 4 10;
+    -fx-background-color: -bg-subtle;
+    -fx-background-radius: 6;
+    -fx-border-color: -border;
+    -fx-border-radius: 6;
+    -fx-border-width: 1;
+}
+
+/* === Input TabPane === */
+.input-tab-pane {
+    -fx-background-color: -bg-card;
+
+    /* FIX:
+       Không set -fx-tab-min-height ở đây vì có thể làm TabPane tính sai chiều cao
+       khi nằm trong ScrollPane/VBox, khiến nút trong tab Ngày/Tuần bị che. */
+    -fx-min-height: 185px;
+    -fx-pref-height: 195px;
+}
+
+.input-tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: -bg-subtle;
+}
+.input-tab-pane .tab {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+}
+.input-tab-pane .tab:selected {
+    -fx-background-color: -bg-card;
+    -fx-border-color: -primary -border -bg-card -border;
+    -fx-border-width: 2 1 0 1;
+}
+.input-tab-pane .tab .tab-label {
+    -fx-text-fill: -text-secondary;
+    -fx-font-weight: 700;
+    -fx-font-size: 13px;
+}
+.input-tab-pane .tab:selected .tab-label {
+    -fx-text-fill: -primary;
+}
+.input-tab-pane .tab-content-area {
+    -fx-background-color: -bg-card;
+    -fx-border-color: -border;
+    -fx-border-width: 1 0 0 0;
+    -fx-min-height: 125px;
+    -fx-padding: 0;
+}
+
+/* === Tab Content === */
+.tab-content {
+    -fx-padding: 16;
+    -fx-background-color: -bg-card;
+    -fx-min-height: 115px;
+}
+
+/* Nếu dùng FlowPane cho dòng filter trong FXML */
+.filter-row {
+    -fx-hgap: 12;
+    -fx-vgap: 12;
+    -fx-alignment: center-left;
+}
+
+.week-range-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -primary;
+}
+
+/* === Buttons === */
+.primary-button {
+    -fx-font-weight: 700;
+    -fx-font-size: 13px;
+    -fx-padding: 9 16;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+
+    /* FIX: đảm bảo nút không bị co về 0 hoặc quá nhỏ */
+    -fx-min-width: 120px;
+    -fx-pref-width: 130px;
+    -fx-min-height: 36px;
+}
+/* === Inputs === */
+.field-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #34495e;
+}
+
+/* === KPI Section === */
+.kpi-section {
+    -fx-padding: 16;
+    -fx-background-color: -bg;
+}
+.stat-card {
+    -fx-background-color: -bg-card;
+    -fx-background-radius: 10;
+    -fx-padding: 18 20;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 10, 0, 0, 4);
+    -fx-border-width: 0 0 0 5;
+}
+.stat-card.card-blue   { -fx-border-color: #3182ce; }
+.stat-card.card-orange { -fx-border-color: #dd6b20; }
+.stat-card.card-green  { -fx-border-color: #38a169; }
+.stat-card.card-red    { -fx-border-color: #e53e3e; }
+
+.stat-label {
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -text-secondary;
+    -fx-padding: 0 0 8 0;
+}
+.stat-value {
+    -fx-font-size: 22px;
+    -fx-font-weight: 900;
+    -fx-text-fill: -text;
+    -fx-wrap-text: true;
+}
+.stat-highlight {
+    -fx-text-fill: #38a169;
+}
+
+/* === Breakdown Section === */
+.breakdown-section {
+    -fx-padding: 16;
+    -fx-background-color: -bg;
+}
+.section-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -text;
+    -fx-border-color: -border;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 0 0 8 0;
+}
+
+/* === BarChart === */
+.bar-chart {
+    -fx-background-color: -bg-card;
+    -fx-background-radius: 10;
+    -fx-border-color: -border;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-padding: 10;
+}
+.bar-chart .chart-plot-background {
+    -fx-background-color: -bg-subtle;
+}
+.bar-chart .chart-vertical-grid-lines { -fx-stroke: transparent; }
+.bar-chart .chart-horizontal-grid-lines {
+    -fx-stroke: -border;
+    -fx-stroke-dash-array: 4 4;
+}
+.bar-chart .default-color0.chart-bar {
+    -fx-bar-fill: #3182ce;
+    -fx-background-radius: 4 4 0 0;
+}
+.bar-chart .default-color0.chart-bar:hover {
+    -fx-bar-fill: #2b6cb0;
+}
+.bar-chart .axis {
+    -fx-tick-label-fill: -text-secondary;
+    -fx-font-size: 11px;
+}
+
+/* === Breakdown TableView === */
+.data-table {
+    -fx-background-color: -bg-card;
+    -fx-background-radius: 10;
+    -fx-border-color: -border;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+}
+.data-table .column-header-background {
+    -fx-background-color: #f1f4f7;
+    -fx-background-radius: 10 10 0 0;
+}
+.data-table .column-header,
+.data-table .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+.data-table .column-header .label {
+    -fx-text-fill: -text;
+    -fx-font-weight: 800;
+    -fx-font-size: 13px;
+}
+.data-table .table-cell {
+    -fx-padding: 9;
+    -fx-border-color: #eef2f6;
+    -fx-border-width: 0 0 1 0;
+    -fx-text-fill: -text;
+}
+.data-table .table-row-cell { -fx-background-color: -bg-card; }
+.data-table .table-row-cell:odd { -fx-background-color: -bg-subtle; }
+.data-table .table-row-cell:hover { -fx-background-color: -bg-hover; }
+.data-table .table-row-cell:selected { -fx-background-color: -bg-selected; }
+.data-table .table-row-cell:selected .table-cell { -fx-text-fill: -text; }
+
+/* === Loading Overlay === */
+.loading-overlay {
+    -fx-background-color: -bg-overlay;
+}
+.loading-container {
+    -fx-background-color: -bg-card;
+    -fx-border-color: -border;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.18), 18, 0, 0, 6);
+    -fx-padding: 30;
+}

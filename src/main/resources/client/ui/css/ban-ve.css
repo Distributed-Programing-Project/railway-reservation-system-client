@@ -1,0 +1,552 @@
+/* --- Sidebar Container --- */
+.sidebar {
+    -fx-background-color: #2c3e50; /* Giữ nguyên màu nền sidebar */
+    -fx-padding: 15px 0px 15px 0px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0.5, 0, 1);
+}
+
+/* --- Sidebar Title --- */
+.sidebar-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-alignment: center;
+    -fx-padding: 0 0 20px 0;
+    -fx-border-color: #34495e;
+    -fx-border-width: 0 0 1px 0;
+    -fx-pref-width: Infinity;
+    -fx-wrap-text: true;
+    -fx-text-alignment: center;
+}
+
+/* --- TitledPane (Menu Group) --- */
+.menu-titled-pane {
+    -fx-text-fill: #bdc3c7;
+    -fx-font-size: 14px;
+}
+.menu-titled-pane > .title {
+    -fx-background-color: transparent;
+    -fx-padding: 8px 15px;
+}
+.menu-titled-pane > .title > .arrow-button > .arrow {
+     -fx-background-color: #bdc3c7;
+}
+.menu-titled-pane:expanded > .title {
+     -fx-background-color: #34495e;
+     -fx-text-fill: white;
+}
+.menu-titled-pane:expanded > .title > .arrow-button > .arrow {
+      -fx-background-color: white;
+}
+.menu-titled-pane > .content {
+    -fx-background-color: #34495e;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
+
+/* --- VBox chứa các menu item trong TitledPane --- */
+.menu-vbox {
+    -fx-spacing: 0;
+}
+
+/* --- General Menu Item Button --- */
+.menu-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: #bdc3c7;
+    -fx-font-size: 13px;
+    -fx-alignment: center-left;
+    -fx-padding: 10px 15px 10px 30px;
+    -fx-pref-width: Infinity;
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-cursor: hand;
+}
+
+/* --- Hover effect for Menu Item --- */
+.menu-item:hover {
+    -fx-background-color: #0066CC; /* SỬA MÀU XANH HOVER */
+    -fx-text-fill: white;
+}
+
+/* --- Active state --- */
+/* Dùng màu xanh đậm hơn một chút cho trạng thái active/focused */
+.menu-item-selected, .menu-item:focused {
+    -fx-background-color: #004C99; /* MÀU XANH ĐẬM HƠN */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* --- Logout Button --- */
+.menu-item-logout {
+    -fx-background-color: transparent;
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 13px;
+    -fx-alignment: center-left;
+    -fx-padding: 10px 15px;
+    -fx-pref-width: Infinity;
+    -fx-border-width: 1px 0 0 0;
+    -fx-border-color: #34495e;
+    -fx-background-radius: 0;
+     -fx-cursor: hand;
+}
+.menu-item-logout:hover {
+    -fx-background-color: #c0392b;
+    -fx-text-fill: white;
+}
+
+/* --- Header Bar (Top Right) --- */
+.header-bar {
+    -fx-background-color: #ecf0f1;
+    -fx-padding: 10px 15px;
+    -fx-border-color: #bdc3c7;
+    -fx-border-width: 0 0 1px 0;
+}
+.datetime-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #34495e;
+}
+
+/* --- Content Pane --- */
+.content-pane {
+    -fx-background-color: white;
+    -fx-padding: 0px;
+}
+
+/* --- General Button Styles (for nav-button in steps) --- */
+.nav-button {
+    -fx-font-size: 14px;
+    -fx-padding: 8px 18px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-cursor: hand;
+}
+
+.nav-button-primary {
+    -fx-background-color: #0066CC; /* SỬA MÀU XANH PRIMARY */
+    -fx-text-fill: white;
+}
+.nav-button-primary:hover {
+    -fx-background-color: #004C99; /* MÀU XANH ĐẬM HƠN KHI HOVER */
+}
+
+.nav-button-secondary {
+    -fx-background-color: #bdc3c7;
+    -fx-text-fill: #34495e;
+}
+.nav-button-secondary:hover {
+     -fx-background-color: #95a5a6;
+}
+
+/* (Thêm các style class khác bạn cần cho các step...) */
+.box-section { /* Style cho các box trong step 3, 4 */
+    -fx-background-color: #f9f9f9;
+    -fx-padding: 15px;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.box-title-bold { /* Style cho tiêu đề box */
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+    -fx-padding-bottom: 10px; /* Thêm khoảng cách dưới */
+}
+
+/* Style cho hàng trong bảng step 3 */
+.passenger-row {
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 0 1px 0; /* Chỉ viền dưới */
+}
+
+/* Style cho các label nhỏ trong ô table step 3, 4 */
+.cell-title-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #666;
+}
+.cell-data-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333;
+}
+.cell-data-label-small { /* Thêm cho step 3 */
+     -fx-font-size: 12px;
+     -fx-text-fill: #333;
+}
+.cell-data-label-small-bold { /* Thêm cho step 3 */
+      -fx-font-size: 12px;
+      -fx-font-weight: bold;
+      -fx-text-fill: #333;
+}
+.cell-data-label-bold {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #c0392b; /* Màu đỏ cho thành tiền */
+}
+
+/* Style cho dòng tổng cộng step 3 */
+.total-row {
+    -fx-background-color: #f5f5f5;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1px 0 0 0;
+    -fx-padding: 15px 10px;
+}
+
+/* Style cho các nút action trong step 4 */
+.action-button {
+     -fx-background-color: #ecf0f1;
+     -fx-text-fill: #34495e;
+     -fx-border-color: #bdc3c7;
+     -fx-border-radius: 3px;
+     -fx-background-radius: 3px;
+     -fx-padding: 5px 10px;
+     -fx-cursor: hand;
+}
+.action-button:hover {
+      -fx-background-color: #dadedf;
+}
+.action-button:disabled { /* Style khi nút bị vô hiệu hóa */
+       -fx-opacity: 0.6;
+}
+
+/* ================================== */
+/* STYLE CHUNG */
+/* ================================== */
+.banve-content-wrapper {
+    -fx-padding: 20px;
+    -fx-spacing: 20px;
+    -fx-background-color: #f4f7f6;
+}
+
+/* Tiêu đề chính */
+.banve-title {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+    -fx-alignment: center;
+}
+
+/* ================================== */
+/* THANH BƯỚC */
+/* ================================== */
+
+.step-indicator-box {
+    -fx-spacing: 20px;
+    -fx-alignment: center;
+}
+
+.step-button {
+    -fx-padding: 10px 20px;
+    -fx-font-size: 16px;
+    -fx-text-fill: black;
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5;
+}
+
+.step-button-done {
+    -fx-background-color: #008000;
+    -fx-text-fill: white;
+    -fx-border-color: #008000;
+    -fx-font-weight: bold;
+}
+
+.step-button-active {
+    -fx-background-color: #0066CC;
+    -fx-text-fill: white;
+    -fx-border-color: #0066CC;
+    -fx-font-weight: bold;
+}
+
+/* ================================== */
+/* BOX & TITLED PANE */
+/* ================================== */
+
+.box-border {
+    -fx-background-color: white;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+}
+
+.section-title-pane > .title {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+}
+
+/* ================================== */
+/* COMBOBOX */
+/* ================================== */
+
+.custom-combo-box {
+    -fx-background-color: white;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+    -fx-pref-height: 35px;
+    -fx-pref-width: 400px;
+    -fx-font-size: 14px;
+    -fx-margin: 30px
+}
+
+.custom-combo-box .list-cell {
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}
+
+.custom-combo-box .list-cell:hover {
+    -fx-background-color: #f0f0f0;
+}
+
+/* ================================== */
+/* DATE-PICKER */
+/* ================================== */
+.date-picker {
+    -fx-pref-width: 400px;
+    -fx-pref-height: 35px;
+    -fx-background-color: white;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+    -fx-font-size: 14px;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: #f0f0f0;
+    -fx-border-color: black;
+    -fx-border-width: 0 0 0 1px;
+}
+
+.date-picker .arrow-button:hover {
+    -fx-background-color: #e0e0e0;
+}
+
+.date-picker .text-field {
+    -fx-background-color: transparent;
+    -fx-padding: 5 10;
+    -fx-text-fill: black;
+    -fx-font-size: 14px;
+}
+
+.btnTimKiem {
+    -fx-background-color: #0066CC;
+    -fx-text-fill: white;
+    -fx-border-color: #0066CC;
+    -fx-font-weight: bold;
+    -fx-border-radius: 5px;
+}
+
+.lblText {
+    -fx-font-size: 16px;
+}
+
+/* --- Css cho danh sách chuyến tàu --- */
+.no-border-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+.no-border-scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.train-card {
+    -fx-background-color: #fff;  /* Nền trắng */
+    -fx-border-color: #000;      /* Viền đen */
+    -fx-border-width: 0.5px;   /* Viền 0.5px */
+    -fx-border-radius: 5px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+}
+
+/* --- CSS MỚI: LÀM CHO TẤT CẢ LABEL TRONG CARD ĐỀU IN ĐẬM --- */
+.train-card .label {
+    -fx-font-weight: bold;
+}
+
+/* CSS khi di chuột vào card (Giữ nguyên, vẫn đẹp) */
+.train-card:hover {
+    -fx-border-color: #0078D7; 
+}
+
+/* CSS cho card đã được chọn (Giữ nguyên) */
+.train-card-selected {
+    -fx-background-color: #E6F3FF; 
+    -fx-border-color: #005A9E; 
+    -fx-border-width: 1.5px;
+}
+
+/* CSS cho tên chuyến tàu (Giữ nguyên) */
+.train-card-title {
+    -fx-font-size: 18px;
+    -fx-text-fill: #333333;
+}
+
+/* CSS cho số ghế đã đặt (Giữ nguyên) */
+.train-card-booked {
+    -fx-font-size: 16px;
+    -fx-text-fill: #D90000; /* Màu đỏ */
+}
+
+/* CSS cho số ghế còn trống (Giữ nguyên) */
+.train-card-available {
+    -fx-font-size: 16px;
+    -fx-text-fill: #008000; /* Màu xanh lá */
+}
+
+.nav-button {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-pref-height: 40px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+}
+
+/* Nút chính (Tiếp theo) - Nền xanh, chữ trắng */
+.nav-button-primary {
+    -fx-background-color: #0078D7; /* Màu xanh dương */
+    -fx-text-fill: #FFFFFF; /* Chữ trắng */
+}
+.nav-button-primary:hover {
+    -fx-background-color: #005A9E; /* Xanh đậm hơn khi hover */
+}
+
+/* Nút phụ (Quay lại) - Nền trắng, viền xám */
+.nav-button-secondary {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #333333; /* Chữ đen */
+    -fx-border-color: #B0B0B0; /* Viền xám */
+    -fx-border-width: 1px;
+}
+.nav-button-secondary:hover {
+    -fx-background-color: #F4F4F4; /* Hơi xám khi hover */
+    -fx-border-color: #555555;
+}
+
+.trip-direction-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #005A9E; /* Màu xanh đậm */
+    -fx-padding: 5px 0 0 0; /* Thêm chút padding ở trên */
+}
+
+/* Step 2 */
+.box-section {
+    -fx-border-color: #ccc;
+    -fx-border-width: 1;
+    -fx-background-color: #f9f9f9;
+    -fx-padding: 15;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+}
+
+.box-title-bold {
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-padding: 0 0 10 0;
+}
+
+.note-label {
+    -fx-background-color: #ffefc5;
+    -fx-padding: 8 12 8 12;
+    -fx-font-size: 13px;
+}
+
+.train-info-label {
+    -fx-background-color: #cce0ff;
+    -fx-padding: 8 12;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4;
+}
+
+.nav-button-primary {
+    -fx-background-color: #0066cc;
+    -fx-text-fill: white;
+}
+
+.nav-button-secondary {
+    -fx-background-color: white;
+    -fx-text-fill: black;
+    -fx-border-color: black;
+    -fx-border-width: 1;
+}
+
+/* step-3.css */
+.box-section {
+    -fx-background-color: #f9f9f9;
+    -fx-padding: 15px;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.box-title-bold {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+.passenger-row {
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 0 1px 0; /* Chỉ viền dưới */
+}
+
+.cell-title-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #666;
+}
+
+.cell-data-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333;
+}
+
+.cell-data-label-bold {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #c0392b;
+}
+
+.total-row {
+    -fx-background-color: #f5f5f5;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1px 0 0 0;
+    -fx-padding: 15px 10px;
+}
+
+/* step-4.css */
+.grid-payment-details {
+    -fx-background-color: #fff;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1px 0 0 0;
+    -fx-padding: 15px 10px;
+}
+
+.action-button {
+    -fx-padding: 5px 10px;
+    -fx-font-size: 16px;
+    -fx-text-fill: #fff;
+    -fx-background-color: #0066CC;
+}
+
+.tien-khach-dua {
+    -fx-padding: 10px 20px;
+    -fx-font-size: 16px;
+    -fx-height: 50px;
+}
+
+/* Style cho các nút gợi ý mệnh giá tiền */
+.money-suggestion-button {
+    -fx-background-color: #0066CC; /* Xanh dương */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 15 8 15;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 3, 0, 0, 1);
+}
+
+.money-suggestion-button:hover {
+    -fx-background-color: #004C99; /* Xanh đậm hơn khi hover */
+}

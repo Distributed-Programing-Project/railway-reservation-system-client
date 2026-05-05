@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="vn.edu.iuh.fit.client.controller.DashboardController"
+            stylesheets="@../css/dashboard-style.css"
+            prefWidth="1200" prefHeight="700">
+
+    <left>
+        <VBox styleClass="sidebar" spacing="0" prefWidth="220">
+            <padding>
+                <Insets top="18" right="0" bottom="18" left="0"/>
+            </padding>
+
+            <VBox alignment="CENTER" styleClass="sidebar-header">
+                <padding>
+                    <Insets top="12" right="12" bottom="16" left="12"/>
+                </padding>
+
+                <Label text="HỆ THỐNG QUẢN LÝ BÁN" styleClass="sidebar-title" wrapText="true" alignment="CENTER"/>
+                <Label text="VÉ TÀU" styleClass="sidebar-title" wrapText="true" alignment="CENTER"/>
+
+                <VBox alignment="CENTER" spacing="4" styleClass="sidebar-userbox">
+                    <Label fx:id="lblUsername" text="Username"
+                           styleClass="sidebar-username" wrapText="true" maxWidth="190" alignment="CENTER"/>
+                    <Label fx:id="lblRole" text="Vai trò: --"
+                           styleClass="sidebar-role" alignment="CENTER"/>
+                </VBox>
+            </VBox>
+
+            <VBox spacing="0" VBox.vgrow="ALWAYS" styleClass="sidebar-menu">
+                <Button fx:id="btnHome" text="Trang Chủ"
+                        styleClass="menu-item menu-item-active" maxWidth="Infinity"/>
+
+                <Button fx:id="btnInvoice" text="Quản Lý Hóa Đơn"
+                        styleClass="menu-item" maxWidth="Infinity"/>
+
+                <Button fx:id="btnSellTicket" text="Bán Vé"
+                        styleClass="menu-item" maxWidth="Infinity"/>
+
+                <Button fx:id="btnExchangeTicket" text="Đổi Vé"
+                        styleClass="menu-item" maxWidth="Infinity"/>
+
+                <Button fx:id="btnReturnTicket" text="Trả Vé"
+                        styleClass="menu-item" maxWidth="Infinity"/>
+
+                <Button fx:id="btnCustomer" text="Quản Lý Khách Hàng"
+                        styleClass="menu-item" maxWidth="Infinity"/>
+                        
+                <Button fx:id="btnSchedule" text="Quản Lý Lịch Trình"
+                        styleClass="menu-item" maxWidth="Infinity"/>
+
+                <Button fx:id="btnRoute" text="Quản Lý Tuyến Đường"
+                        styleClass="menu-item" maxWidth="Infinity"/>
+
+                <Button fx:id="btnTrain" text="Quản Lý Tàu"
+                        styleClass="menu-item" maxWidth="Infinity"/>
+
+                <Button fx:id="btnEmployee" text="Quản Lý Nhân Viên"
+                        styleClass="menu-item" maxWidth="Infinity"/>
+
+                <Button fx:id="btnStatistics" text="Quản Lý Thống Kê"
+                        styleClass="menu-item" maxWidth="Infinity"/>
+
+                <Region VBox.vgrow="ALWAYS"/>
+            </VBox>
+
+            <Button fx:id="btnLogout" text="Đăng Xuất"
+                    styleClass="logout-button" maxWidth="Infinity">
+                <VBox.margin>
+                    <Insets top="14" right="12" bottom="0" left="12"/>
+                </VBox.margin>
+            </Button>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox styleClass="content-area">
+            <HBox styleClass="content-header" alignment="CENTER_LEFT" spacing="12">
+                <padding>
+                    <Insets top="18" right="24" bottom="18" left="24"/>
+                </padding>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Button text="About" styleClass="icon-button">
+                    <tooltip><Tooltip text="About"/></tooltip>
+                </Button>
+
+                <Button text="Help" styleClass="icon-button">
+                    <tooltip><Tooltip text="Help"/></tooltip>
+                </Button>
+
+                <Label fx:id="dateTimeLabel" styleClass="datetime-label"/>
+            </HBox>
+
+            <StackPane fx:id="contentPane" VBox.vgrow="ALWAYS" styleClass="content-pane">
+                <padding>
+                    <Insets top="18" right="24" bottom="24" left="24"/>
+                </padding>
+            </StackPane>
+        </VBox>
+    </center>
+
+</BorderPane>

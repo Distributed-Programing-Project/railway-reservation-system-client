@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Pos?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Root là HBox lớn chứa nhãn tầng và phần thân toa -->
+<HBox xmlns="http://javafx.com/javafx" 
+      xmlns:fx="http://javafx.com/fxml" 
+      alignment="CENTER_LEFT" spacing="15">
+      
+    <!-- Vùng chứa các nhãn tầng (T1, T2, T3) -->
+    <VBox fx:id="tierLabelsContainer" alignment="BOTTOM_LEFT" spacing="25">
+        <padding>
+            <javafx.geometry.Insets bottom="10.0" />
+        </padding>
+    </VBox>
+
+    <!-- Vùng chính chứa nhãn khoang và các giường -->
+    <VBox fx:id="rootLayout" spacing="10">
+        <children>
+            <!-- Một Region để đẩy mọi thứ xuống dưới, tạo khoảng trống ở trên -->
+            <Region VBox.vgrow="ALWAYS" />
+            
+            <!-- HBox chứa các nhãn khoang (Khoang 1, Khoang 2...) -->
+            <HBox fx:id="compartmentLabelsContainer" alignment="CENTER" />
+            
+            <!-- HBox chứa lưới các giường và vách ngăn -->
+            <HBox fx:id="bedsLayoutContainer" styleClass="beds-grid-container" />
+        </children>
+    </VBox>
+    
+</HBox>

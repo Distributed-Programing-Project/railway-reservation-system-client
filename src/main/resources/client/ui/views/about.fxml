@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      spacing="20" styleClass="about-container">
+
+    <padding>
+        <Insets top="40" right="40" bottom="40" left="40"/>
+    </padding>
+
+    <!-- Title -->
+    <Label text="Về Hệ Thống Quản Lý Bán Vé Tàu" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1a202c;"/>
+
+    <!-- Divider -->
+    <Separator/>
+
+    <!-- Content -->
+    <VBox spacing="15">
+        <Label text="Thông Tin Phiên Bản" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2d3748;"/>
+        <HBox spacing="10">
+            <Label text="Phiên bản:" style="-fx-font-weight: bold;"/>
+            <Label text="1.0.0" style="-fx-text-fill: #718096;"/>
+        </HBox>
+        <HBox spacing="10">
+            <Label text="Ngày phát hành:" style="-fx-font-weight: bold;"/>
+            <Label text="Tháng 12 năm 2025" style="-fx-text-fill: #718096;"/>
+        </HBox>
+
+        <Separator/>
+
+        <Label text="Về Ứng Dụng Này" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2d3748;"/>
+        <Label text="Hệ Thống Quản Lý Bán Vé Tàu là một nền tảng toàn diện được thiết kế để hợp lý hóa các hoạt động bán vé. Hệ thống này cung cấp quản lý hiệu quả các tuyến đường, lịch trình, tàu, nhân viên, hóa đơn và tương tác khách hàng." wrapText="true" style="-fx-text-fill: #4a5568; -fx-font-size: 13px;"/>
+
+        <Separator/>
+
+        <Label text="Tính Năng Chính" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2d3748;"/>
+        <VBox spacing="8" style="-fx-padding: 0 0 0 20;">
+            <Label text="- Quản Lý Tuyến Đường: Tạo và quản lý các tuyến tàu với thông tin chi tiết" style="-fx-text-fill: #4a5568;"/>
+            <Label text="- Quản Lý Lịch Trình: Lập kế hoạch và theo dõi lịch trình tàu một cách hiệu quả" style="-fx-text-fill: #4a5568;"/>
+            <Label text="- Bán Vé: Xử lý đặt chỗ và bán vé cho khách hàng" style="-fx-text-fill: #4a5568;"/>
+            <Label text="- Theo Dõi Tài Chính: Giám sát doanh thu và tạo báo cáo tài chính" style="-fx-text-fill: #4a5568;"/>
+            <Label text="- Quản Lý Nhân Viên: Quản lý nhân viên và các chức vụ của họ" style="-fx-text-fill: #4a5568;"/>
+            <Label text="- Dashboard Thống Kê: Xem thống kê và phân tích theo thời gian thực" style="-fx-text-fill: #4a5568;"/>
+        </VBox>
+
+        <Separator/>
+
+        <Label text="Công Nghệ Sử Dụng" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2d3748;"/>
+        <HBox spacing="20">
+            <VBox spacing="5">
+                <Label text="Giao Diện:" style="-fx-font-weight: bold;"/>
+                <Label text="JavaFX 22" style="-fx-text-fill: #718096;"/>
+            </VBox>
+            <VBox spacing="5">
+                <Label text="Backend:" style="-fx-font-weight: bold;"/>
+                <Label text="Java 11" style="-fx-text-fill: #718096;"/>
+            </VBox>
+            <VBox spacing="5">
+                <Label text="Cơ Sở Dữ Liệu:" style="-fx-font-weight: bold;"/>
+                <Label text="SQL Server 2019" style="-fx-text-fill: #718096;"/>
+            </VBox>
+        </HBox>
+
+        <Separator/>
+
+        <Label text="Hỗ Trợ &amp; Liên Hệ" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2d3748;"/>
+        <Label text="Để được hỗ trợ kỹ thuật hoặc có các thắc mắc, vui lòng liên hệ với đội ngũ phát triển." style="-fx-text-fill: #4a5568;"/>
+        <HBox spacing="10">
+            <Label text="Email:" style="-fx-font-weight: bold;"/>
+            <Label text="support@hethongquanly.vn" style="-fx-text-fill: #718096;"/>
+        </HBox>
+
+    </VBox>
+
+    <Region VBox.vgrow="ALWAYS"/>
+
+    <!-- Footer -->
+    <Label text="Bản quyền 2025. Tất cả các quyền được bảo lưu." style="-fx-font-size: 11px; -fx-text-fill: #a0aec0; -fx-alignment: center;"/>
+
+</VBox>

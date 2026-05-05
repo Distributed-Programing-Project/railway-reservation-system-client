@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="vn.edu.iuh.fit.client.controller.SellTicketWizardController"
+           stylesheets="@../css/styles.css"
+           prefWidth="1200" prefHeight="700">
+
+    <BorderPane>
+        <center>
+            <VBox spacing="14" styleClass="main-content" maxWidth="Infinity">
+                <padding>
+                    <Insets top="18" right="18" bottom="18" left="18"/>
+                </padding>
+
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label text="Bán Vé Tàu" styleClass="page-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="btnResetAll" text="Làm mới" styleClass="secondary-button" onAction="#handleResetAll"/>
+                </HBox>
+
+                <HBox fx:id="stepIndicator" alignment="CENTER" spacing="12">
+                    <Label fx:id="lblStep1" text="Bước 1: Chọn chuyến" styleClass="secondary-button"/>
+                    <Label fx:id="lblStep2" text="Bước 2: Chọn chỗ" styleClass="secondary-button"/>
+                    <Label fx:id="lblStep3" text="Bước 3: Hành khách" styleClass="secondary-button"/>
+                    <Label fx:id="lblStep4" text="Bước 4: Thanh toán" styleClass="secondary-button"/>
+                </HBox>
+
+                <StackPane fx:id="stepContainer" VBox.vgrow="ALWAYS">
+
+                    <!-- STEP 1 -->
+                    <VBox fx:id="step1Pane" spacing="12" visible="true" managed="true">
+                        <TitledPane text="Thông tin hành trình" expanded="true" collapsible="false">
+                            <content>
+                                <GridPane hgap="10" vgap="10">
+                                    <columnConstraints>
+                                        <ColumnConstraints percentWidth="12"/>
+                                        <ColumnConstraints percentWidth="28"/>
+                                        <ColumnConstraints percentWidth="12"/>
+                                        <ColumnConstraints percentWidth="28"/>
+                                        <ColumnConstraints percentWidth="20"/>
+                                    </columnConstraints>
+                                    <children>
+                                        <Label text="Ga đi:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                        <ComboBox fx:id="cbDepartureStation" promptText="Chọn ga đi" styleClass="filter-combo"
+                                                  GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                                        <Label text="Ga đến:" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                                        <ComboBox fx:id="cbDestinationStation" promptText="Chọn ga đến" styleClass="filter-combo"
+                                                  GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+
+                                        <HBox spacing="12" alignment="CENTER_LEFT" GridPane.columnIndex="4" GridPane.rowIndex="0">
+                                            <RadioButton fx:id="rbOneWay" text="Một chiều" selected="true"/>
+                                            <RadioButton fx:id="rbRoundTrip" text="Khứ hồi"/>
+                                        </HBox>
+
+                                        <Label text="Ngày đi:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                        <DatePicker fx:id="dpDepartureDate" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                                        <Label text="Ngày về:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                                        <DatePicker fx:id="dpReturnDate" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+
+                                        <Button fx:id="btnSearchSchedules" text="Tìm kiếm" styleClass="primary-button"
+                                                onAction="#handleSearchSchedules"
+                                                GridPane.columnIndex="4" GridPane.rowIndex="1"/>
+                                    </children>
+                                </GridPane>
+                            </content>
+                        </TitledPane>
+
+                        <VBox spacing="10" VBox.vgrow="ALWAYS">
+                            <Label text="Danh sách chuyến (Chiều đi)"/>
+                            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+                                <content>
+                                    <TilePane fx:id="outboundCardsPane" hgap="10" vgap="10" prefColumns="2" />
+                                </content>
+                            </ScrollPane>
+
+                            <VBox fx:id="returnCardsSection" spacing="10" visible="false" managed="false">
+                                <Label text="Danh sách chuyến (Chiều về)"/>
+                                <ScrollPane fitToWidth="true">
+                                    <content>
+                                        <TilePane fx:id="returnCardsPane" hgap="10" vgap="10" prefColumns="2" />
+                                    </content>
+                                </ScrollPane>
+                            </VBox>
+                        </VBox>
+                    </VBox>
+
+                    <!-- STEP 2 -->
+                    <VBox fx:id="step2Pane" spacing="12" visible="false" managed="false">
+                        <HBox spacing="14" VBox.vgrow="ALWAYS">
+                            <VBox spacing="10" HBox.hgrow="ALWAYS">
+                                <Label text="Chiều đi" style="-fx-font-weight: bold;"/>
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <Label text="Toa:"/>
+                                    <ComboBox fx:id="cbOutboundCarriage" promptText="Chọn toa" styleClass="filter-combo" prefWidth="240"/>
+                                    <Label fx:id="lblOutboundSeatHint" text=""/>
+                                </HBox>
+                                <GridPane fx:id="gridOutboundSeats" hgap="6" vgap="6" VBox.vgrow="ALWAYS"/>
+
+                                <Label text="Giỏ vé (chiều đi)" />
+                                <TableView fx:id="tblOutboundCart" prefHeight="160">
+                                    <columns>
+                                        <TableColumn fx:id="colOutboundCartCarriage" text="Toa" prefWidth="70"/>
+                                        <TableColumn fx:id="colOutboundCartSeat" text="Ghế" prefWidth="70"/>
+                                        <TableColumn fx:id="colOutboundCartPrice" text="Giá" prefWidth="120"/>
+                                        <TableColumn fx:id="colOutboundCartAction" text="Xóa" prefWidth="60"/>
+                                    </columns>
+                                </TableView>
+                                <Label fx:id="lblOutboundTotal" text="Tổng (đi): 0" />
+                            </VBox>
+
+                            <VBox fx:id="returnSeatSection" spacing="10" HBox.hgrow="ALWAYS" visible="false" managed="false">
+                                <Label text="Chiều về" style="-fx-font-weight: bold;"/>
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <Label text="Toa:"/>
+                                    <ComboBox fx:id="cbReturnCarriage" promptText="Chọn toa" styleClass="filter-combo" prefWidth="240"/>
+                                    <Label fx:id="lblReturnSeatHint" text=""/>
+                                </HBox>
+                                <GridPane fx:id="gridReturnSeats" hgap="6" vgap="6" VBox.vgrow="ALWAYS"/>
+
+                                <Label text="Giỏ vé (chiều về)" />
+                                <TableView fx:id="tblReturnCart" prefHeight="160">
+                                    <columns>
+                                        <TableColumn fx:id="colReturnCartCarriage" text="Toa" prefWidth="70"/>
+                                        <TableColumn fx:id="colReturnCartSeat" text="Ghế" prefWidth="70"/>
+                                        <TableColumn fx:id="colReturnCartPrice" text="Giá" prefWidth="120"/>
+                                        <TableColumn fx:id="colReturnCartAction" text="Xóa" prefWidth="60"/>
+                                    </columns>
+                                </TableView>
+                                <Label fx:id="lblReturnTotal" text="Tổng (về): 0" />
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <!-- STEP 3 -->
+                    <VBox fx:id="step3Pane" spacing="12" visible="false" managed="false">
+                        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+                            <content>
+                                <VBox spacing="14">
+                                    <VBox spacing="8">
+                                        <Label text="Hành khách (chiều đi)" style="-fx-font-weight: bold;"/>
+                                        <VBox fx:id="boxOutboundPassengers" spacing="10"/>
+                                    </VBox>
+
+                                    <VBox fx:id="boxReturnPassengersSection" spacing="8" visible="false" managed="false">
+                                        <Label text="Hành khách (chiều về)" style="-fx-font-weight: bold;"/>
+                                        <VBox fx:id="boxReturnPassengers" spacing="10"/>
+                                    </VBox>
+
+                                    <Separator/>
+
+                                    <VBox spacing="10">
+                                        <Label text="Thông tin người mua (đại diện)" style="-fx-font-weight: bold;"/>
+                                        <GridPane hgap="10" vgap="10">
+                                            <columnConstraints>
+                                                <ColumnConstraints percentWidth="18"/>
+                                                <ColumnConstraints percentWidth="32"/>
+                                                <ColumnConstraints percentWidth="18"/>
+                                                <ColumnConstraints percentWidth="32"/>
+                                            </columnConstraints>
+                                            <children>
+                                                <Label text="Họ tên:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                                <TextField fx:id="txtBuyerName" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                                                <Label text="Email:" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                                                <TextField fx:id="txtBuyerEmail" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+
+                                                <Label text="SĐT:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                                <TextField fx:id="txtBuyerPhone" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                                                <HBox spacing="10" alignment="CENTER_LEFT" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                                    <Label text="Giấy tờ:"/>
+                                                    <ComboBox fx:id="cbBuyerDocType" prefWidth="120" styleClass="filter-combo"/>
+                                                </HBox>
+                                                <TextField fx:id="txtBuyerDocNumber" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+                                            </children>
+                                        </GridPane>
+
+                                        <HBox spacing="12" alignment="CENTER_LEFT">
+                                            <CheckBox fx:id="chkHasAccount" text="Có tài khoản tích điểm"/>
+                                            <Button fx:id="btnLookupCustomer" text="Tra cứu khách" styleClass="secondary-button" onAction="#handleLookupCustomer"/>
+                                            <Label fx:id="lblCustomerInfo" text="Điểm: --"/>
+                                        </HBox>
+                                    </VBox>
+                                </VBox>
+                            </content>
+                        </ScrollPane>
+                    </VBox>
+
+                    <!-- STEP 4 -->
+                    <VBox fx:id="step4Pane" spacing="12" visible="false" managed="false">
+                        <TableView fx:id="tblSummary" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="colSumLeg" text="Chiều" prefWidth="70"/>
+                                <TableColumn fx:id="colSumSeat" text="Toa-Ghế" prefWidth="100"/>
+                                <TableColumn fx:id="colSumPassenger" text="Hành khách" prefWidth="200"/>
+                                <TableColumn fx:id="colSumType" text="Đối tượng" prefWidth="120"/>
+                                <TableColumn fx:id="colSumBase" text="Giá gốc" prefWidth="120"/>
+                                <TableColumn fx:id="colSumDiscount" text="Giảm" prefWidth="120"/>
+                                <TableColumn fx:id="colSumFinal" text="Thành tiền" prefWidth="130"/>
+                            </columns>
+                        </TableView>
+
+                        <HBox spacing="18">
+                            <VBox spacing="10" HBox.hgrow="ALWAYS">
+                                <Label text="Điểm tích lũy" style="-fx-font-weight: bold;"/>
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <CheckBox fx:id="chkRedeemPoints" text="Khách yêu cầu đổi điểm"/>
+                                    <Label fx:id="lblPointsCap" text="Tối đa: --"/>
+                                </HBox>
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <Label text="Điểm dùng:"/>
+                                    <Spinner fx:id="spnPointsToRedeem" prefWidth="140"/>
+                                    <Label fx:id="lblPointsDiscount" text="Giảm: 0"/>
+                                </HBox>
+                            </VBox>
+
+                            <VBox spacing="10" HBox.hgrow="ALWAYS">
+                                <Label text="VAT (tùy chọn)" style="-fx-font-weight: bold;"/>
+                                <GridPane hgap="10" vgap="10">
+                                    <columnConstraints>
+                                        <ColumnConstraints percentWidth="28"/>
+                                        <ColumnConstraints percentWidth="72"/>
+                                    </columnConstraints>
+                                    <children>
+                                        <Label text="Công ty:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                        <TextField fx:id="txtVatCompany" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                        <Label text="MST:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                        <TextField fx:id="txtVatTaxCode" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                        <Label text="Địa chỉ:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                        <TextField fx:id="txtVatAddress" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                    </children>
+                                </GridPane>
+                            </VBox>
+                        </HBox>
+
+                        <Separator/>
+
+                        <HBox spacing="18" alignment="CENTER_LEFT">
+                            <VBox spacing="8" prefWidth="320">
+                                <Label text="Phương thức thanh toán" style="-fx-font-weight: bold;"/>
+                                <HBox spacing="10">
+                                    <RadioButton fx:id="rbPayCash" text="Tiền mặt" selected="true"/>
+                                    <RadioButton fx:id="rbPayOnline" text="Online"/>
+                                </HBox>
+                                <HBox fx:id="cashBox" spacing="10" alignment="CENTER_LEFT">
+                                    <Label text="Tiền khách đưa:"/>
+                                    <TextField fx:id="txtAmountPaid" prefWidth="150"/>
+                                    <Label fx:id="lblChangeAmount" text="Thối lại: 0"/>
+                                </HBox>
+                            </VBox>
+
+                            <VBox fx:id="onlineBox" spacing="8" visible="false" managed="false" HBox.hgrow="ALWAYS">
+                                <Label text="Thanh toán online (QR + trạng thái)" style="-fx-font-weight: bold;"/>
+                                <HBox spacing="12" alignment="CENTER_LEFT">
+                                    <Button fx:id="btnCreatePayment" text="Tạo thanh toán" styleClass="primary-button" onAction="#handleCreatePayment"/>
+                                    <Button fx:id="btnConfirmPayment" text="Xác nhận (demo)" styleClass="secondary-button" onAction="#handleConfirmPayment"/>
+                                    <Label fx:id="lblPaymentStatus" text="Trạng thái: --"/>
+                                </HBox>
+                                <HBox spacing="12" alignment="CENTER_LEFT">
+                                    <ImageView fx:id="imgQr" fitWidth="140" fitHeight="140" preserveRatio="true"/>
+                                    <VBox spacing="6">
+                                        <Label fx:id="lblPaymentRef" text="REF: --"/>
+                                        <Label fx:id="lblPaymentExpire" text="Hết hạn: --"/>
+                                        <Label fx:id="lblPaymentOrderId" text="Order: --"/>
+                                    </VBox>
+                                </HBox>
+                            </VBox>
+
+                            <VBox spacing="10" alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                                <Label fx:id="lblTotalAmount" text="Tổng thanh toán: 0" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+                                <Button fx:id="btnFinishSale" text="Hoàn tất giao dịch" styleClass="primary-button" onAction="#handleFinishSale"/>
+                                <HBox spacing="10">
+                                    <Button fx:id="btnPrintTickets" text="In vé" styleClass="secondary-button" onAction="#handlePrintTickets" disable="true"/>
+                                    <Button fx:id="btnPrintInvoice" text="In hóa đơn" styleClass="secondary-button" onAction="#handlePrintInvoice" disable="true"/>
+                                    <Button fx:id="btnPrintChildVouchers" text="In phiếu trẻ &lt;6" styleClass="secondary-button" onAction="#handlePrintChildVouchers" disable="true"/>
+                                </HBox>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                </StackPane>
+
+                <HBox fx:id="navBar" alignment="CENTER_RIGHT" spacing="12">
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="btnBack" text="Quay lại" styleClass="secondary-button" onAction="#handleBack"/>
+                    <Button fx:id="btnNext" text="Tiếp theo" styleClass="primary-button" onAction="#handleNext"/>
+                </HBox>
+            </VBox>
+        </center>
+    </BorderPane>
+
+    <StackPane fx:id="loadingOverlay" visible="false" managed="false" style="-fx-background-color: rgba(0,0,0,0.25);">
+        <ProgressIndicator/>
+    </StackPane>
+</StackPane>
+

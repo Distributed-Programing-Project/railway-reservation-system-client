@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      spacing="20" prefWidth="400" styleClass="dialog-content">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <!-- Title -->
+    <Label text="Thêm Tuyến Mới" styleClass="dialog-title"/>
+
+    <!-- Start Station -->
+    <VBox spacing="8">
+        <Label text="Điểm đi:" styleClass="field-label"/>
+        <ComboBox fx:id="startStationCombo" promptText="Hà Nội" maxWidth="Infinity" prefHeight="35"/>
+    </VBox>
+
+    <!-- End Station -->
+    <VBox spacing="8">
+        <Label text="Điểm đến:" styleClass="field-label"/>
+        <ComboBox fx:id="endStationCombo" promptText="Quảng Ngãi" maxWidth="Infinity" prefHeight="35"/>
+    </VBox>
+
+    <!-- Duration -->
+    <VBox spacing="8">
+        <Label text="Thời gian dự kiến (Giờ:Phút)" styleClass="field-label"/>
+        <TextField fx:id="durationField" promptText="12:33 --" prefHeight="35"/>
+    </VBox>
+
+    <!-- Buttons -->
+    <HBox spacing="15" alignment="CENTER_RIGHT">
+        <VBox.margin>
+            <Insets top="10"/>
+        </VBox.margin>
+        <Button text="Hủy" styleClass="secondary-button" prefWidth="80"/>
+        <Button text="Lưu" styleClass="primary-button" prefWidth="80"/>
+    </HBox>
+</VBox>

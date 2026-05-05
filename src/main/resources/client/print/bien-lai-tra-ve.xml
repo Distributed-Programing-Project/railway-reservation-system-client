@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="BienLaiTraVe" pageWidth="595" pageHeight="420" orientation="Landscape" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="7a5c9b49-9dc5-422a-ac69-e92cf61ef530">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<parameter name="p_MaGiaoDich" class="java.lang.String"/>
+	<parameter name="p_NgayTra" class="java.lang.String"/>
+	<parameter name="p_NhanVien" class="java.lang.String"/>
+	<parameter name="p_MaVe" class="java.lang.String"/>
+	<parameter name="p_KhachHang" class="java.lang.String"/>
+	<parameter name="p_SoGiayTo" class="java.lang.String"/>
+	<parameter name="p_Tau" class="java.lang.String"/>
+	<parameter name="p_GaDi" class="java.lang.String"/>
+	<parameter name="p_GaDen" class="java.lang.String"/>
+	<parameter name="p_NgayDi" class="java.lang.String"/>
+	<parameter name="p_Toa" class="java.lang.String"/>
+	<parameter name="p_Ghe" class="java.lang.String"/>
+	<parameter name="p_GiaVeGoc" class="java.lang.Double"/>
+	<parameter name="p_LePhi" class="java.lang.Double"/>
+	<parameter name="p_ThucNhan" class="java.lang.Double"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="90" splitType="Stretch">
+			<staticText>
+				<reportElement x="127" y="50" width="300" height="30" uuid="f27c3d18-09ac-4027-a029-79873d939798"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BIÊN LAI TRẢ VÉ / HOÀN TIỀN]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="380" y="0" width="170" height="20" uuid="7cfd7237-774f-4d98-8547-0742f928e3b7"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Mã GD: " + $P{p_MaGiaoDich}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="380" y="20" width="170" height="20" uuid="73045618-8f85-4877-bb89-0824ac027419"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Ngày: " + $P{p_NgayTra}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="230" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="10" width="555" height="110" uuid="a7102021-39c4-42c2-843e-f63897f2c694"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Dashed"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="10" y="20" width="100" height="20" uuid="884395b7-781e-42c0-a8ce-93910c78a08d"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Họ tên khách hàng:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="110" y="20" width="200" height="20" uuid="77399f57-e892-4f33-8742-99881827453d"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{p_KhachHang}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="320" y="20" width="80" height="20" uuid="6f519398-e79e-4340-9799-798839884523"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Số giấy tờ:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="400" y="20" width="140" height="20" uuid="52984534-7832-4749-8973-774534228945"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{p_SoGiayTo}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="10" y="45" width="530" height="1" uuid="81822384-2394-4392-8822-772239423884"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="10" y="50" width="100" height="20" uuid="e7228834-2222-4232-2342-987654321012"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Thông tin vé trả:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="110" y="50" width="430" height="20" uuid="f8837463-7363-4737-8373-374637463746"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Mã vé: " + $P{p_MaVe}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="110" y="70" width="200" height="20" uuid="aa838383-8383-8383-8383-838383838383"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Tàu: " + $P{p_Tau} + " (" + $P{p_GaDi} + " - " + $P{p_GaDen} + ")"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="320" y="70" width="220" height="20" uuid="bb838383-8383-8383-8383-838383838383"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Ngày đi: " + $P{p_NgayDi}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="110" y="90" width="200" height="20" uuid="cc838383-8383-8383-8383-838383838383"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Toa: " + $P{p_Toa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="320" y="90" width="220" height="20" uuid="dd838383-8383-8383-8383-838383838383"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Chỗ số: " + $P{p_Ghe}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="140" width="120" height="20" uuid="ee838383-8383-8383-8383-838383838383"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<text><![CDATA[Giá vé gốc:]]></text>
+			</staticText>
+			<textField pattern="#,##0 VNĐ">
+				<reportElement x="130" y="140" width="100" height="20" uuid="ff838383-8383-8383-8383-838383838383"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{p_GiaVeGoc}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="160" width="120" height="20" uuid="12345678-1234-1234-1234-123456789abc"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<text><![CDATA[Phí trả vé:]]></text>
+			</staticText>
+			<textField pattern="#,##0 VNĐ">
+				<reportElement x="130" y="160" width="100" height="20" uuid="23456789-2345-2345-2345-23456789abcd"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{p_LePhi}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="280" y="150" width="120" height="30" uuid="34567890-3456-3456-3456-34567890cdef"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[THỰC NHẬN:]]></text>
+			</staticText>
+			<textField pattern="#,##0 VNĐ">
+				<reportElement x="400" y="150" width="140" height="30" forecolor="#FF0000" uuid="45678901-4567-4567-4567-45678901defa"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{p_ThucNhan}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="200" width="555" height="1" uuid="56789012-5678-5678-5678-56789012efab"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="60" splitType="Stretch">
+			<staticText>
+				<reportElement x="20" y="10" width="150" height="20" uuid="67890123-6789-6789-6789-67890123fabc"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Khách hàng]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="20" y="30" width="150" height="20" uuid="78901234-7890-7890-7890-78901234abcd"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[(Ký, ghi rõ họ tên)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="380" y="10" width="150" height="20" uuid="89012345-8901-8901-8901-89012345bcde"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nhân viên lập phiếu]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

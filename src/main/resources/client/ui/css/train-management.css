@@ -1,0 +1,72 @@
+@import "employee-management-styles.css";
+
+/* === Status badges (train-specific) === */
+.status-success {
+    -fx-background-color: -status-success-bg;
+    -fx-text-fill: -status-success-fg;
+    -fx-padding: 4 10;
+    -fx-background-radius: 999;
+    -fx-font-weight: 800;
+    -fx-font-size: 11px;
+}
+.status-warning {
+    -fx-background-color: -status-warning-bg;
+    -fx-text-fill: -status-warning-fg;
+    -fx-padding: 4 10;
+    -fx-background-radius: 999;
+    -fx-font-weight: 800;
+    -fx-font-size: 11px;
+}
+.status-muted {
+    -fx-background-color: -status-muted-bg;
+    -fx-text-fill: -status-muted-fg;
+    -fx-padding: 4 10;
+    -fx-background-radius: 999;
+    -fx-font-weight: 800;
+    -fx-font-size: 11px;
+}
+
+
+/* === Text utilities === */
+.text-sm {
+    -fx-font-size: 12px;
+    -fx-text-fill: -text-secondary;
+}
+.text-lg {
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -text;
+}
+
+/* === Section box === */
+.box-section {
+    -fx-background-color: -bg-subtle;
+    -fx-border-color: -border;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 12;
+}
+
+/* === Dialog carriage panels === */
+.panel-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -text;
+}
+.count-badge {
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-padding: 2 8;
+    -fx-background-radius: 999;
+    -fx-background-color: -status-success-bg;
+    -fx-text-fill: -status-success-fg;
+}
+.count-badge-warn {
+    -fx-background-color: -status-warning-bg;
+    -fx-text-fill: -status-warning-fg;
+}
+.count-badge-error {
+    -fx-background-color: -status-muted-bg;
+    -fx-text-fill: -status-muted-fg;
+}

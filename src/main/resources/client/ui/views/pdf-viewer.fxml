@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="vn.edu.iuh.fit.client.controller.PdfViewerController"
+            stylesheets="@../css/styles.css"
+            prefWidth="1000" prefHeight="800">
+
+    <!-- ĐÃ XÓA PHẦN <top> (ToolBar cũ) -->
+
+    <!-- Vùng hiển thị chính -->
+    <center>
+        <ScrollPane fx:id="scrollPane" pannable="true" fitToWidth="true" style="-fx-background-color: #525659;">
+            <!-- spacing="10": giảm khoảng cách giữa các trang (nếu có nhiều trang) -->
+			<!-- padding: 5px 20px: Cách trên dưới 5px, cách trái phải 20px -->
+			<VBox fx:id="pageContainer" alignment="TOP_CENTER" spacing="10" style="-fx-padding: 5px 20px;">
+                <ImageView fx:id="pageImageView">
+                    <effect>
+                        <DropShadow color="#000000B2" radius="15" offsetX="0" offsetY="5"/>
+                    </effect>
+                </ImageView>
+            </VBox>
+        </ScrollPane>
+    </center>
+
+    <!-- Thanh công cụ dưới cùng -->
+    <bottom>
+        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-background-color: #f0f0f0; -fx-padding: 10px; -fx-border-color: #ccc; -fx-border-width: 1 0 0 0;">
+            
+            <!-- 1. NHÓM ZOOM (BÊN TRÁI) -->
+            <HBox alignment="CENTER" spacing="5">
+                <Button fx:id="btnZoomOut" text="-" style="-fx-font-weight: bold; -fx-min-width: 30px;" onAction="#handleZoomOut"/>
+                <Label fx:id="zoomLabel" text="100%" style="-fx-min-width: 45px;" alignment="CENTER"/>
+                <Button fx:id="btnZoomIn" text="+" style="-fx-font-weight: bold; -fx-min-width: 30px;" onAction="#handleZoomIn"/>
+            </HBox>
+
+            <!-- Spacer 1: Đẩy nhóm giữa ra xa nhóm trái -->
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- 2. NHÓM ĐIỀU HƯỚNG TRANG (Ở GIỮA) -->
+            <HBox alignment="CENTER" spacing="10">
+                <Button fx:id="prevPageButton" text="&lt; Trước" onAction="#handlePrev"/>
+                <Label fx:id="pageLabel" text="Trang 1 / 1" style="-fx-font-weight: bold;"/>
+                <Button fx:id="nextPageButton" text="Sau &gt;" onAction="#handleNext"/>
+            </HBox>
+
+            <!-- Spacer 2: Đẩy nhóm phải ra xa nhóm giữa -->
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- 3. NÚT IN (BÊN PHẢI) -->
+            <Button fx:id="btnPrint" text="In" styleClass="primary-button" onAction="#handlePrint"/>
+            
+        </HBox>
+    </bottom>
+</BorderPane>

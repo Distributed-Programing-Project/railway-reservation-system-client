@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Pos?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Controller trỏ tới HardSeatCarController mới -->
+<VBox xmlns="http://javafx.com/javafx" 
+      xmlns:fx="http://javafx.com/fxml"
+      alignment="CENTER" spacing="35">
+
+    <!-- Khung chứa cho dãy ghế trên -->
+    <HBox fx:id="topSeatBlock" alignment="CENTER" />
+
+    <!-- Khung chứa cho dãy ghế dưới -->
+    <HBox fx:id="bottomSeatBlock" alignment="CENTER" />
+
+</VBox>

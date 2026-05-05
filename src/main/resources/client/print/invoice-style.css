@@ -1,0 +1,192 @@
+/* ===================================================================== */
+/*                       PHIÃŠN Báº¢N CSS CUá»I CÃ™NG                         */
+/*             TÃ¡ch biá»‡t Ä‘á»‹nh dáº¡ng cho MÃ n hÃ¬nh vÃ  In áº¥n              */
+/* ===================================================================== */
+
+/* --- 1. CÃC QUY Táº®C CHUNG (Ãp dá»¥ng cho cáº£ hai) --- */
+@page {
+    size: A4;
+    margin: 1.5cm;
+}
+
+.invoice-container {
+    font-family: 'Arial', 'DejaVu Sans', 'Liberation Sans', sans-serif;
+    font-size: 11pt;
+    background-color: white;
+    box-sizing: border-box;
+}
+
+/* Layout báº±ng Table (á»•n Ä‘á»‹nh) */
+.header-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+.header-table td { vertical-align: top; border: none; padding: 0; }
+.logo-cell { width: 25%; }
+.title-cell { width: 50%; text-align: center; }
+.info-cell { width: 25%; text-align: right; }
+.logo-img { max-width: 150px; }
+.title-cell h1 { margin: 0; color: #003366; font-size: 18pt; }
+.info-cell p { margin: 2px 0; font-size: 10pt; }
+
+/* ... (táº¥t cáº£ cÃ¡c quy táº¯c Ä‘á»‹nh dáº¡ng ná»™i dung khÃ¡c giá»¯ nguyÃªn) ... */
+.party-info p { margin: 4px 0; }
+.info-line { overflow: hidden; } .info-line p:first-child { float: left; } .info-line p:last-child { float: right; }
+.separator { border: none; border-top: 1px dashed #000; margin: 10px 0; clear: both; }
+
+.items-table table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    table-layout: fixed;
+    margin-top: 5px;
+    font-size: 9pt;
+}
+.items-table th, .items-table td {
+    border: 1px solid black;
+    padding: 3px;
+    vertical-align: top;
+    word-wrap: break-word;
+    white-space: normal;
+}
+.items-table th { font-size: 10pt; }
+.items-table thead { background-color: #f2f2f2; }
+
+.items-table col.col-stt { width: 4%; }
+.items-table col.col-ma-ve { width: 12%; }
+.items-table col.col-ten-dich-vu { width: 26%; }
+.items-table col.col-dvt { width: 5%; }
+.items-table col.col-so-luong { width: 6%; }
+.items-table col.col-don-gia { width: 9%; }
+.items-table col.col-thanh-tien { width: 9%; }
+.items-table col.col-thue-suat { width: 6%; }
+.items-table col.col-thue-gtgt { width: 9%; }
+.items-table col.col-thanh-toan { width: 14%; }
+
+.items-table td.ticket-id {
+    font-size: 8pt;
+    word-break: break-all;
+}
+
+.summary-section table { width: 100%; border-collapse: collapse; margin-top: 1px; }
+.summary-section td { border: 1px solid black; padding: 5px; } 
+.summary-section .no-border { border: none; }
+
+.final-summary { margin-top: 2px; } 
+.final-summary p { margin: 2px 0; }
+
+.invoice-totals { margin-top: 6px; clear: both; }
+.totals-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    table-layout: fixed;
+    font-size: 9pt;
+}
+.totals-table th, .totals-table td {
+    border: 1px solid black;
+    padding: 3px;
+    vertical-align: middle;
+}
+.totals-table thead th {
+    text-align: center;
+    background-color: #f2f2f2;
+}
+.totals-table th.no-border, .totals-table td.no-border {
+    border: none;
+}
+.totals-table col.totals-label { width: 55%; }
+.totals-table col.totals-col { width: 15%; }
+
+.signature-table { width: 100%; margin-top: 2px; text-align: center; border-collapse: collapse; page-break-inside: avoid;}
+.signature-table td { width: 50%; border: none; padding: 0; vertical-align: top; /* Äáº©y ná»™i dung lÃªn trÃªn cÃ¹ng */ }
+
+.sign-title { margin-bottom: 2px; }
+.sign-note { margin-top: 0; font-style: italic; }
+
+.digital-signature-table {
+    /* QUAN TRá»ŒNG: Tá»± Ä‘á»™ng co giÃ£n chiá»u rá»™ng theo ná»™i dung chá»¯ */
+    width: auto; 
+    display: inline-table; /* GiÃºp khung bao sÃ¡t ná»™i dung hÆ¡n */
+    
+    /* CÄƒn giá»¯a khung Ä‘á» náº±m trong Ã´ 50% bÃªn pháº£i */
+    margin-top: 2px;
+    margin-left: auto;
+    margin-right: auto;
+    
+    /* Giao diá»‡n khung Ä‘á» */
+    border: 2px solid red;
+    color: red;
+    font-size: 9pt;
+    background-color: white;
+}
+.digital-signature-table td {
+    /* Reset láº¡i cÃ¡c thuá»™c tÃ­nh cá»§a td cha Ä‘á»ƒ khÃ´ng bá»‹ áº£nh hÆ°á»Ÿng */
+    width: auto; 
+    border: none; 
+    padding: 5px 10px; /* ThÃªm padding Ä‘á»ƒ khung Ä‘á» thoÃ¡ng hÆ¡n */
+    text-align: left; /* Chá»¯ bÃªn trong khung Ä‘á» cÄƒn trÃ¡i cho Ä‘áº¹p */
+    vertical-align: middle;
+}
+/* Dáº¥u tÃ­ch xanh */
+.check-mark {
+    color: green;
+    font-size: 24pt;
+    font-weight: bold;
+    line-height: 1;
+}
+
+footer { margin-top: 30px; font-size: 10pt; page-break-inside: avoid;}
+.text-right { text-align: right; } 
+.text-center { text-align: center; } 
+.strong { font-weight: bold; }
+
+.items-table .empty-row td {
+    color: #fff; /* LÃ m cho dáº¥u '...' tráº¯ng vÃ  gáº§n nhÆ° vÃ´ hÃ¬nh */
+}
+.items-table .calculation-rule-row {
+    font-weight: normal;
+    background-color: #fafafa; /* Má»™t mÃ u xÃ¡m ráº¥t nháº¡t Ä‘á»ƒ phÃ¢n biá»‡t */
+}
+.items-table .calculation-rule-row th {
+    font-weight: normal;
+}
+
+.items-table thead th { text-align: center; } 
+.items-table td.strong { font-weight: bold; }
+
+/* --- QUY Táº®C NGáº®T TRANG Tá»° Äá»˜NG --- */
+.items-table thead {
+    display: table-header-group; /* Láº·p láº¡i header trÃªn má»—i trang */
+}
+.items-table tr {
+    page-break-inside: avoid; /* TrÃ¡nh ngáº¯t trang giá»¯a má»™t dÃ²ng */
+}
+/* ------------------------------------ */
+
+/* --- 2. QUY Táº®C CHá»ˆ DÃ€NH CHO XEM TRÆ¯á»šC TRÃŠN MÃ€N HÃŒNH (WEBVIEW) --- */
+@media screen {
+    body {
+        background-color: #525659;
+        margin: 0;
+        padding: 20px 0;
+    }
+
+    .invoice-container {
+        width: 210mm;
+        min-height: 297mm;
+        margin: 0 auto 20px auto;
+        /* -webkit-user-select: text; */
+        /* user-select: text; */
+    }
+}
+
+/* --- 3. QUY Táº®C CHá»ˆ DÃ€NH CHO VIá»†C IN RA PDF --- */
+@media print {
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    .invoice-container {
+        width: 100%;
+        height: 100%;
+    }
+}

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="vn.edu.iuh.fit.client.controller.EmployeeManagementController"
+           stylesheets="@../css/employee-management-styles.css">
+
+    <!-- MAIN CONTENT -->
+    <VBox spacing="10">
+
+        <!-- Header -->
+        <HBox styleClass="page-header" alignment="CENTER_LEFT" spacing="20">
+            <Label text="Quản Lý Nhân Viên" styleClass="page-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnAdd" text="+ Thêm nhân viên"
+                    styleClass="add-button" onAction="#handleAdd"/>
+        </HBox>
+
+        <Separator/>
+
+        <!-- Filter bar -->
+        <HBox styleClass="filter-bar" spacing="12" alignment="CENTER_LEFT">
+            <padding><Insets top="4" bottom="4"/></padding>
+            <TextField fx:id="txtSearch"
+                       promptText="Tìm theo mã NV hoặc tên NV..."
+                       styleClass="text-field"
+                       prefWidth="280"/>
+            <Label text="Trạng thái:" styleClass="field-label"/>
+            <ComboBox fx:id="statusFilter" styleClass="filter-combo" prefWidth="130"/>
+            <Label text="Tài khoản:" styleClass="field-label"/>
+            <ComboBox fx:id="accountFilter" styleClass="filter-combo" prefWidth="150"/>
+            <Button text="Làm mới" styleClass="secondary-button" onAction="#handleRefresh"/>
+        </HBox>
+
+        <!-- Table -->
+        <TableView fx:id="tableView"
+                   styleClass="data-table"
+                   VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colCode"       text="Mã NV"/>
+                <TableColumn fx:id="colName"       text="Họ tên"/>
+                <TableColumn fx:id="colNationalId" text="CCCD"/>
+                <TableColumn fx:id="colPhone"      text="SĐT"/>
+                <TableColumn fx:id="colEmail"      text="Email"/>
+                <TableColumn fx:id="colType"       text="Loại"/>
+                <TableColumn fx:id="colStatus"     text="Trạng thái"/>
+                <TableColumn fx:id="colActions"    text="Thao tác"/>
+            </columns>
+        </TableView>
+
+        <!-- Pagination -->
+        <HBox styleClass="pagination-bar" alignment="CENTER" spacing="20">
+            <Button fx:id="btnPrev" text="◄"
+                    styleClass="secondary-button" onAction="#handlePrevPage"/>
+            <Label fx:id="pageLabel" text="1 / 1" styleClass="page-label"/>
+            <Button fx:id="btnNext" text="►"
+                    styleClass="secondary-button" onAction="#handleNextPage"/>
+        </HBox>
+
+    </VBox>
+
+    <!-- LOADING OVERLAY -->
+    <StackPane fx:id="loadingOverlay"
+               visible="false"
+               styleClass="loading-overlay">
+
+        <VBox alignment="CENTER" spacing="12" styleClass="loading-container">
+            <ProgressIndicator prefWidth="48" prefHeight="48"/>
+            <Label text="Đang tải..." styleClass="field-label"/>
+        </VBox>
+
+    </StackPane>
+
+</StackPane>
