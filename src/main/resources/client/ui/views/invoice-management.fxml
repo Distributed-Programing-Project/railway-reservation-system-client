@@ -5,10 +5,10 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
@@ -16,62 +16,174 @@
 
 <StackPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
-           stylesheets="@../css/styles.css"
-           prefWidth="1200" prefHeight="700">
+           fx:controller="vn.edu.iuh.fit.client.controller.InvoiceManagementController"
+           stylesheets="@../css/invoice-management-styles.css">
 
-<BorderPane>
+    <VBox spacing="12"
+          maxWidth="Infinity"
+          maxHeight="Infinity">
 
-    <center>
-        <VBox spacing="20" styleClass="main-content">
+        <!-- Header -->
+        <HBox styleClass="page-header"
+              alignment="CENTER_LEFT"
+              spacing="12"
+              maxWidth="Infinity">
             <padding>
-                <Insets top="30" right="30" bottom="30" left="30"/>
+                <Insets top="12" right="18" bottom="12" left="18"/>
+            </padding>
+            <Label text="Quản lý Hoá đơn" styleClass="page-title"/>
+        </HBox>
+
+        <!-- Filter bar -->
+        <HBox styleClass="filter-bar"
+              alignment="CENTER_LEFT"
+              spacing="10"
+              maxWidth="Infinity">
+            <padding>
+                <Insets left="18" right="18"/>
             </padding>
 
-            <HBox alignment="CENTER">
-                <Label text="Quản Lý Hóa Đơn" styleClass="page-title"/>
-            </HBox>
+            <TextField fx:id="txtKeyword"
+                       promptText="Tìm mã HĐ hoặc tên khách hàng..."
+                       styleClass="text-field"
+                       prefWidth="360"
+                       maxWidth="Infinity"
+                       minHeight="38"
+                       HBox.hgrow="ALWAYS"/>
 
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Tìm tên khách:" styleClass="form-label"/>
-                <TextField fx:id="searchField" promptText="Nhập tên khách hàng..." prefWidth="200"/>
+            <Separator orientation="VERTICAL" prefHeight="30"/>
 
-                <Label text=" | Lọc ngày:" styleClass="form-label"/>
-                <ComboBox fx:id="dayFilterCombo" promptText="Ngày" prefWidth="80"/>
-                <ComboBox fx:id="monthFilterCombo" promptText="Tháng" prefWidth="80"/>
-                <ComboBox fx:id="yearFilterCombo" promptText="Năm" prefWidth="100"/>
-                <Button text="Lọc" styleClass="primary-button"/>
-                <Button text="Làm mới" styleClass="secondary-button"/>
-                
-                <Region HBox.hgrow="ALWAYS"/>
-                <Button text="Hiển thị tất cả" styleClass="secondary-button"/>
-            </HBox>
+            <Label text="Ngày:" styleClass="filter-label"/>
+            <ComboBox fx:id="cmbDay"
+                      styleClass="filter-combo"
+                      prefWidth="105"
+                      minWidth="100"
+                      minHeight="38"
+                      visibleRowCount="10"/>
 
-            <TableView fx:id="invoiceTable" VBox.vgrow="ALWAYS">
-                <columnResizePolicy>
-                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                </columnResizePolicy>
+            <Label text="Tháng:" styleClass="filter-label"/>
+            <ComboBox fx:id="cmbMonth"
+                      styleClass="filter-combo"
+                      prefWidth="110"
+                      minWidth="105"
+                      minHeight="38"
+                      visibleRowCount="10"/>
+
+            <Label text="Năm:" styleClass="filter-label"/>
+            <ComboBox fx:id="cmbYear"
+                      styleClass="filter-combo"
+                      prefWidth="120"
+                      minWidth="115"
+                      minHeight="38"
+                      visibleRowCount="8"/>
+
+            <Separator orientation="VERTICAL" prefHeight="30"/>
+
+            <Label text="Loại:" styleClass="filter-label"/>
+            <ComboBox fx:id="cmbType"
+                      styleClass="filter-combo"
+                      prefWidth="220"
+                      minWidth="200"
+                      minHeight="38"
+                      visibleRowCount="6"/>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button text="Lọc"
+                    fx:id="btnSearch"
+                    minWidth="64"
+                    minHeight="38"
+                    styleClass="primary-button"
+                    onAction="#handleSearch"/>
+
+            <Button text="Làm mới"
+                    fx:id="btnRefresh"
+                    minWidth="82"
+                    minHeight="38"
+                    styleClass="secondary-button"
+                    onAction="#handleRefresh"/>
+        </HBox>
+
+        <!-- Table -->
+        <VBox VBox.vgrow="ALWAYS"
+              spacing="0"
+              maxWidth="Infinity"
+              maxHeight="Infinity">
+            <padding>
+                <Insets left="18" right="18"/>
+            </padding>
+
+            <TableView fx:id="tableView"
+                       styleClass="data-table"
+                       VBox.vgrow="ALWAYS"
+                       maxWidth="Infinity"
+                       maxHeight="Infinity"
+                       fixedCellSize="44">
                 <columns>
-                    <TableColumn fx:id="idColumn" text="Mã Hóa đơn" minWidth="150"/>
-                    <TableColumn fx:id="employeeColumn" text="Nhân viên lập" minWidth="200"/>
-                    <TableColumn fx:id="customerColumn" text="Khách hàng" minWidth="200"/>
-                    <TableColumn fx:id="dateColumn" text="Ngày lập" minWidth="180"/>
-                    <TableColumn fx:id="typeColumn" text="Loại hóa đơn" minWidth="150"/>
+                    <TableColumn text="Mã HĐ" fx:id="colId" prefWidth="145" minWidth="110"/>
+                    <TableColumn text="Khách hàng" fx:id="colCustomer" prefWidth="200" minWidth="140"/>
+                    <TableColumn text="Nhân viên" fx:id="colEmployee" prefWidth="165" minWidth="120"/>
+                    <TableColumn text="Ngày phát sinh" fx:id="colDate" prefWidth="165" minWidth="140"/>
+                    <TableColumn text="Loại" fx:id="colType" prefWidth="110" minWidth="90"/>
+                    <TableColumn text="Số vé" fx:id="colCount" prefWidth="75" minWidth="60"/>
+                    <TableColumn text="Tổng tiền" fx:id="colAmount" prefWidth="145" minWidth="120"/>
+                    <TableColumn text="Thao tác" fx:id="colActions" prefWidth="210" minWidth="200"/>
                 </columns>
+                <placeholder>
+                    <Label text="Không có hoá đơn nào phù hợp với tiêu chí đã chọn"/>
+                </placeholder>
             </TableView>
-
-            <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label fx:id="totalInvoicesLabel" styleClass="total-count-label"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <HBox spacing="15" alignment="CENTER_RIGHT">
-                    <Button text="In" styleClass="primary-button"/>
-                </HBox>
-            </HBox>
         </VBox>
-    </center>
-</BorderPane>
 
-    <StackPane fx:id="loadingOverlay" visible="false" style="-fx-background-color: rgba(0, 0, 0, 0.5);">
-        <ProgressIndicator maxWidth="60" maxHeight="60"/>
+        <!-- Pagination -->
+        <HBox styleClass="pagination-bar"
+              alignment="CENTER"
+              spacing="18"
+              maxWidth="Infinity">
+            <padding>
+                <Insets bottom="12"/>
+            </padding>
+
+            <Button text="◄"
+                    fx:id="btnPrev"
+                    minWidth="42"
+                    minHeight="34"
+                    styleClass="secondary-button"
+                    onAction="#handlePrevPage"/>
+
+            <Label fx:id="lblPage"
+                   text="1 / 1"
+                   styleClass="page-label"/>
+
+            <Button text="►"
+                    fx:id="btnNext"
+                    minWidth="42"
+                    minHeight="34"
+                    styleClass="secondary-button"
+                    onAction="#handleNextPage"/>
+        </HBox>
+    </VBox>
+
+    <!-- Loading overlay -->
+    <StackPane fx:id="loadingOverlay"
+               visible="false"
+               managed="false"
+               maxWidth="Infinity"
+               maxHeight="Infinity"
+               style="-fx-background-color: rgba(0,0,0,0.35);">
+
+        <VBox alignment="CENTER"
+              spacing="10"
+              maxWidth="260"
+              style="-fx-background-color: white;
+                     -fx-background-radius: 10;
+                     -fx-padding: 24;
+                     -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.15),18,0,0,6);">
+
+            <ProgressIndicator prefWidth="48" prefHeight="48"/>
+            <Label text="Đang tải..."
+                   style="-fx-font-size: 13px; -fx-text-fill: #5b6775;"/>
+        </VBox>
     </StackPane>
 
 </StackPane>
