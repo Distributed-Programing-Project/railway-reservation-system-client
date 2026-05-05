@@ -332,8 +332,8 @@ public class EmployeeManagementController {
             return;
         }
 
-        String loggedInEmployeeCode = SessionManager.getInstance().getUsername();
-        if (employee.getEmployeeCode() != null && employee.getEmployeeCode().equals(loggedInEmployeeCode)) {
+        String loggedInId = SessionManager.getInstance().getEmployeeId();
+        if (loggedInId != null && loggedInId.equals(employee.getEmployeeId())) {
             showAlert(Alert.AlertType.ERROR, "Không thể xoá", "Bạn không thể xoá tài khoản của chính mình.");
             return;
         }
