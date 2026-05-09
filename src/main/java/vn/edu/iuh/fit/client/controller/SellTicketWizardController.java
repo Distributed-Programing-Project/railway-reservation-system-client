@@ -31,6 +31,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -60,6 +61,8 @@ import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import vn.edu.iuh.fit.client.service.SaleClientService;
 import vn.edu.iuh.fit.client.service.SocketRequestService;
+import vn.edu.iuh.fit.client.session.ClientSessionContext;
+import vn.edu.iuh.fit.client.session.SaleWizardState;
 import vn.edu.iuh.fit.common.command.ActionType;
 import vn.edu.iuh.fit.common.constant.DocumentType;
 import vn.edu.iuh.fit.common.constant.PaymentMethod;
@@ -135,6 +138,7 @@ public class SellTicketWizardController {
   private PaymentCreateResponseDTO currentPayment;
   private PaymentStatus status = PaymentStatus.PENDING;
   private SaleCreateResponseDTO lastSaleResult;
+  private vn.edu.iuh.fit.common.dto.ExchangeTicketResponseDTO lastExchangeResult;
 
   // BIẾN CHO CHẾ ĐỘ ĐỔI VÉ
   private boolean isExchangeMode = false;
@@ -1575,6 +1579,7 @@ public class SellTicketWizardController {
             SaleRedeemPointsDTO.builder().redeemRequested(chkRedeemPoints.isSelected()).pointsToRedeem(redeem).build())
         .paymentMethod(PaymentMethod.ONLINE)
         .paymentOrderId(currentPayment != null ? currentPayment.getPaymentOrderId() : null)
+        .employeeId(resolveEmployeeIdForSale())
         .build();
   }
 
@@ -1679,7 +1684,7 @@ public class SellTicketWizardController {
           .builder()
           .oldTicketIds(exchangeOldTicketIds)
           .newScheduleDetailIds(outboundCart.stream().map(CartItem::scheduleDetailId).toList())
-          .employeeId(vn.edu.iuh.fit.client.session.ClientSessionContext.getInstance().getEmployeeId())
+          .employeeId(resolveEmployeeIdForSale())
           .clientSessionId(clientSessionId)
           .build();
 
@@ -1693,11 +1698,24 @@ public class SellTicketWizardController {
       exTask.setOnSucceeded(e -> {
         setLoading(false);
         Response res = exTask.getValue();
-        if (res != null && res.isSuccess()) {
+        if (res != null && res.isSuccess()
+            && res.getData() instanceof vn.edu.iuh.fit.common.dto.ExchangeTicketResponseDTO dto) {
           stopHoldKeepAlive();
+          lastExchangeResult = dto;
+          lastSaleResult = null;
           showInfo("Thành công", "Giao dịch đổi vé thành công!");
           btnFinishSale.setDisable(true);
           btnPrintTickets.setDisable(false);
+          btnPrintInvoice.setDisable(true);
+          btnPrintChildVouchers.setDisable(true);
+
+          Alert ask = new Alert(Alert.AlertType.CONFIRMATION);
+          ask.setTitle("In vé");
+          ask.setHeaderText(null);
+          ask.setContentText("Bạn có muốn in vé mới ngay không?");
+          if (ask.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+            handlePrintTickets();
+          }
         } else {
           showError("Lỗi đổi vé", res != null ? res.getMessage() : "Lỗi Server.");
         }
@@ -1725,6 +1743,7 @@ public class SellTicketWizardController {
           .paymentMethod(pm)
           .amountPaid(amountPaid)
           .paymentOrderId(paymentOrderId)
+          .employeeId(resolveEmployeeIdForSale())
           .build();
 
       submitSaleAsync(request, null);
@@ -1732,6 +1751,10 @@ public class SellTicketWizardController {
   }
 
   private void submitSaleAsync(SaleCreateRequestDTO request, Runnable afterSuccess) {
+    if (request == null || request.getEmployeeId() == null || request.getEmployeeId().isBlank()) {
+      showError("Bán vé", "Không xác định được nhân viên xử lý giao dịch.");
+      return;
+    }
     setLoading(true);
     Task<Response> task = new Task<>() {
       @Override
@@ -1745,6 +1768,7 @@ public class SellTicketWizardController {
       if (res != null && res.isSuccess() && res.getData() instanceof SaleCreateResponseDTO dto) {
         stopHoldKeepAlive();
         lastSaleResult = dto;
+        lastExchangeResult = null;
         btnPrintTickets.setDisable(false);
         btnPrintInvoice.setDisable(false);
         btnPrintChildVouchers.setDisable(dto.getChildVouchers() == null || dto.getChildVouchers().isEmpty());
@@ -1815,8 +1839,20 @@ public class SellTicketWizardController {
 
   @FXML
   public void handlePrintTickets() {
-    if (lastSaleResult == null || lastSaleResult.getTickets() == null)
+    if (isExchangeMode) {
+      if (lastExchangeResult == null || lastExchangeResult.getNewTickets() == null
+          || lastExchangeResult.getNewTickets().isEmpty()) {
+        showWarning("In vé", "Chưa có dữ liệu vé mới để in.");
+        return;
+      }
+      openPreview("In vé (vé mới)", lastExchangeResult.getNewTickets());
       return;
+    }
+
+    if (lastSaleResult == null || lastSaleResult.getTickets() == null) {
+      showWarning("In vé", "Chưa có dữ liệu vé để in.");
+      return;
+    }
     openPreview("In vé", lastSaleResult.getTickets());
   }
 
@@ -1826,21 +1862,15 @@ public class SellTicketWizardController {
       return;
     // Invoice preview hiện tại dùng 1 trang tóm tắt (không bám sát mẫu VAT ảnh), sẽ
     // nâng cấp sau nếu cần.
-    IssuedTicketDTO summary = IssuedTicketDTO.builder()
-        .ticketId("INVOICE-" + lastSaleResult.getInvoiceId())
-        .passengerName(normalize(txtBuyerName.getText()))
-        .passengerDocument(normalize(txtBuyerDocNumber.getText()))
-        .trainCode(rbRoundTrip.isSelected() ? "ROUND_TRIP" : "ONE_WAY")
-        .departureStation(selectedOutbound != null ? selectedOutbound.getDepartureStationName() : "")
-        .destinationStation(selectedOutbound != null ? selectedOutbound.getDestinationStationName() : "")
-        .departureTime(LocalDateTime.now())
-        .carriageName("")
-        .seatNumber("")
-        .ticketType(TicketType.NORMAL)
-        .price(lastSaleResult.getTotalAmount())
-        .qrCode(lastSaleResult.getInvoiceId())
-        .build();
-    openPreview("In hóa đơn (tóm tắt)", List.of(summary));
+    // In hóa đơn dùng template VAT/HTML (InvoiceRenderer). Không dùng summary giả
+    // lập.
+    try {
+      SaleWizardState renderState = buildInvoiceRenderState();
+      java.io.File pdf = InvoiceRenderer.renderPreviewPdf(lastSaleResult, renderState);
+      openPdfPreview("In hóa đơn VAT", pdf);
+    } catch (Exception e) {
+      showError("In hóa đơn", "Không thể tạo/xem trước hóa đơn: " + e.getMessage());
+    }
   }
 
   @FXML
@@ -1871,10 +1901,60 @@ public class SellTicketWizardController {
       stage.setTitle(title);
       stage.initModality(Modality.APPLICATION_MODAL);
       stage.setScene(new Scene(root, 1000, 800));
+      if (controller instanceof PdfViewerController pdf) {
+        pdf.setStage(stage);
+      }
       stage.show();
     } catch (Exception e) {
       showError("In", "Không thể mở xem trước: " + e.getMessage());
     }
+  }
+
+  private void openPdfPreview(String title, java.io.File pdfFile) {
+    try {
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/ui/views/pdf-viewer.fxml"));
+      Parent root = loader.load();
+      Object controller = loader.getController();
+      if (!(controller instanceof PdfViewerController pdf)) {
+        showError("In", "Không thể mở viewer PDF.");
+        return;
+      }
+
+      Stage stage = new Stage();
+      stage.setTitle(title);
+      stage.initModality(Modality.APPLICATION_MODAL);
+      stage.setScene(new Scene(root, 1000, 800));
+      pdf.setStage(stage);
+
+      if (pdfFile != null) {
+        pdf.loadDocument(pdfFile);
+      }
+      stage.show();
+    } catch (Exception e) {
+      showError("In", "Không thể mở xem trước PDF: " + e.getMessage());
+    }
+  }
+
+  private SaleWizardState buildInvoiceRenderState() {
+    SaleWizardState state = new SaleWizardState();
+    SaleWizardState.BuyerDraft buyer = new SaleWizardState.BuyerDraft();
+    buyer.setFullName(normalize(txtBuyerName != null ? txtBuyerName.getText() : null));
+    buyer.setPhoneNumber(normalize(txtBuyerPhone != null ? txtBuyerPhone.getText() : null));
+    buyer.setEmail(normalize(txtBuyerEmail != null ? txtBuyerEmail.getText() : null));
+    buyer.setDocumentType(cbBuyerDocType != null ? cbBuyerDocType.getValue() : null);
+    buyer.setDocumentNumber(normalize(txtBuyerDocNumber != null ? txtBuyerDocNumber.getText() : null));
+    buyer.setHasAccount(chkHasAccount != null && chkHasAccount.isSelected());
+    buyer.setCustomerId(buyer.isHasAccount() ? selectedCustomerId : null);
+    state.setBuyer(buyer);
+    return state;
+  }
+
+  private String resolveEmployeeIdForSale() {
+    String employeeId = ClientSessionContext.getInstance().getEmployeeId();
+    if (employeeId == null || employeeId.isBlank()) {
+      employeeId = ClientSessionContext.getInstance().getUsername();
+    }
+    return employeeId == null ? null : employeeId.trim();
   }
 
   private void updateStepUI() {

@@ -51,13 +51,16 @@
                         <children>
                             <Label text="Xác nhận thông tin vé" styleClass="box-title-bold" />
                             <!-- Header Table -->
-                             <HBox fx:id="ticketHeaderRow" alignment="CENTER_LEFT" spacing="10.0" style="-fx-padding: 10px; -fx-border-color: #ccc; -fx-border-width: 0 0 2px 0;">
+                             <HBox fx:id="ticketHeaderRow" alignment="CENTER_LEFT" spacing="10.0" 
+                                style="-fx-padding: 10px; -fx-border-color: #ccc; -fx-border-width: 0 0 2px 0; -fx-background-color: #f8f9fa;">
                                 <children>
-                                    <Label fx:id="headerChuyenTau" text="Chuyến tàu"/>
-                                    <Label fx:id="headerToaCho" text="Toa - Chỗ ngồi"/>
-                                    <Label fx:id="headerHanhKhach" text="Hành khách"/>
-                                    <Label fx:id="headerLoaiVe" text="Loại vé"/>
-                                    <Label fx:id="headerDonGia" text="Đơn giá" alignment="CENTER_RIGHT"/> </children>
+                                    <Label fx:id="headerChuyenTau" text="Chuyến tàu" style="-fx-font-weight: bold;"/>
+                                    <Label fx:id="headerToaCho" text="Toa - Chỗ ngồi" style="-fx-font-weight: bold;"/>
+                                    <Label fx:id="headerHanhKhach" text="Hành khách" style="-fx-font-weight: bold;"/>
+                                    <Label fx:id="headerLoaiVe" text="Loại vé" style="-fx-font-weight: bold;"/>
+                                    <Label fx:id="headerDonGia" text="Đơn giá" alignment="CENTER_RIGHT" 
+                                        maxWidth="Infinity" style="-fx-font-weight: bold;"/> 
+                                </children>
                             </HBox>
                             <!-- ScrollPane chứa các hàng vé -->
                             <ScrollPane fx:id="scrollPaneVe" fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">

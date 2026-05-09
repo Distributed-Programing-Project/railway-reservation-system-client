@@ -279,9 +279,21 @@ public class Step4PaymentController {
     }
 
     headerChuyenTau.setPrefWidth(180);
+    headerChuyenTau.setMinWidth(180);
+
     headerToaCho.setPrefWidth(150);
+    headerToaCho.setMinWidth(150);
+
+    // Cột hành khách của Header phải chiếm phần còn lại y hệt như hàng vé
+    headerHanhKhach.setMaxWidth(Double.MAX_VALUE);
+    HBox.setHgrow(headerHanhKhach, Priority.ALWAYS);
+
     headerLoaiVe.setPrefWidth(150);
+    headerLoaiVe.setMinWidth(150);
+
     headerDonGia.setPrefWidth(120);
+    headerDonGia.setMinWidth(120);
+    headerDonGia.setAlignment(Pos.CENTER_RIGHT); // Căn phải header đơn giá
 
     renderTicketSummary(state);
     computeAndRenderTotals(state);
@@ -376,7 +388,7 @@ public class Step4PaymentController {
     col2.setPrefWidth(headerToaCho.getPrefWidth());
 
     VBox col3 = new VBox(2);
-    HBox.setHgrow(col3, Priority.ALWAYS);
+    HBox.setHgrow(col3, Priority.ALWAYS); // Hàng vé dùng ALWAYS
     col3.getChildren().addAll(
         new Label(safe(passenger.getFullName())),
         new Label("ID: " + safe(passenger.getDocumentNumber())) {

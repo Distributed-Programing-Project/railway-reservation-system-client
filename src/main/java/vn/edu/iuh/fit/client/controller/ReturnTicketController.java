@@ -35,6 +35,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -55,6 +56,7 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import vn.edu.iuh.fit.client.service.ReturnTicketClientService;
 import vn.edu.iuh.fit.common.dto.RefundReceiptDTO;
+import vn.edu.iuh.fit.common.dto.RefundReceiptItemDTO;
 import vn.edu.iuh.fit.common.dto.ReturnTicketPreviewDTO;
 import vn.edu.iuh.fit.common.dto.ReturnTicketTicketDTO;
 import vn.edu.iuh.fit.common.dto.StationDTO;
@@ -574,11 +576,37 @@ public class ReturnTicketController {
       JasperDesign jasperDesign = JRXmlLoader.load(reportStream);
       JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
 
-      Map<String, Object> parameters = new HashMap<>();
-      parameters.put("p_MaGiaoDich", safe(dto.getTransactionCode()));
-      parameters.put("p_NgayTra", dto.getRefundDate() == null ? "--" : DATE_TIME.format(dto.getRefundDate()));
-      parameters.put("p_NhanVien", safe(dto.getEmployeeName()));
+      List<RefundReceiptItemDTO> items = dto.getItems();
+      if (items == null || items.isEmpty()) {
+        Map<String, Object> parameters = buildRefundReceiptParams(dto, null);
+        return JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
+      }
 
+      JasperPrint merged = null;
+      for (RefundReceiptItemDTO item : items) {
+        Map<String, Object> parameters = buildRefundReceiptParams(dto, item);
+        JasperPrint jp = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
+        if (merged == null) {
+          merged = jp;
+        } else {
+          merged.getPages().addAll(jp.getPages());
+        }
+      }
+      return merged;
+    } catch (JRException e) {
+      e.printStackTrace();
+      showError("In biên lai", "Lỗi tạo biên lai: " + e.getMessage());
+      return null;
+    }
+  }
+
+  private Map<String, Object> buildRefundReceiptParams(RefundReceiptDTO dto, RefundReceiptItemDTO item) {
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("p_MaGiaoDich", safe(dto.getTransactionCode()));
+    parameters.put("p_NgayTra", dto.getRefundDate() == null ? "--" : DATE_TIME.format(dto.getRefundDate()));
+    parameters.put("p_NhanVien", safe(dto.getEmployeeName()));
+
+    if (item == null) {
       parameters.put("p_MaVe", safe(dto.getTicketId()));
       parameters.put("p_KhachHang", safe(dto.getCustomerName()));
       parameters.put("p_SoGiayTo", safe(dto.getCustomerDocument()));
@@ -594,31 +622,58 @@ public class ReturnTicketController {
       parameters.put("p_GiaVeGoc", dto.getOriginalAmount());
       parameters.put("p_LePhi", dto.getRefundFee());
       parameters.put("p_ThucNhan", dto.getRefundAmount());
-
-      return JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
-    } catch (JRException e) {
-      e.printStackTrace();
-      showError("In biên lai", "Lỗi tạo biên lai: " + e.getMessage());
-      return null;
+      return parameters;
     }
+
+    parameters.put("p_MaVe", safe(item.getTicketId()));
+    parameters.put("p_KhachHang", safe(item.getPassengerName() == null || item.getPassengerName().isBlank()
+        ? dto.getCustomerName()
+        : item.getPassengerName()));
+    parameters.put("p_SoGiayTo", safe(item.getPassengerDocument() == null || item.getPassengerDocument().isBlank()
+        ? dto.getCustomerDocument()
+        : item.getPassengerDocument()));
+
+    parameters.put("p_Tau", safe(item.getTrainCode()));
+    parameters.put("p_GaDi", safe(item.getDepartureStation()));
+    parameters.put("p_GaDen", safe(item.getDestinationStation()));
+    parameters.put("p_NgayDi", item.getDepartureTime() == null ? "--" : DATE_TIME.format(item.getDepartureTime()));
+
+    parameters.put("p_Toa", safe(item.getCarriageName()));
+    parameters.put("p_Ghe", safe(item.getSeatNumber()));
+
+    parameters.put("p_GiaVeGoc", item.getOriginalAmount());
+    parameters.put("p_LePhi", item.getRefundFee());
+    parameters.put("p_ThucNhan", item.getRefundAmount());
+    return parameters;
   }
 
   private void showRefundReceiptPreview(JasperPrint jasperPrint) {
     try {
-      BufferedImage bufferedImage = (BufferedImage) JasperPrintManager.printPageToImage(jasperPrint, 0, 1.6f);
-      Image fxImage = SwingFXUtils.toFXImage(bufferedImage, null);
-
-      ImageView imageView = new ImageView(fxImage);
-      imageView.setPreserveRatio(true);
-      imageView.setFitHeight(650);
-
       Dialog<ButtonType> dialog = new Dialog<>();
       dialog.setTitle("Xem trước biên lai hoàn tiền");
       dialog.setHeaderText("Kiểm tra biên lai trước khi in.");
 
-      VBox content = new VBox(imageView);
+      VBox pagesBox = new VBox(10);
+      pagesBox.setPadding(new Insets(10));
+      pagesBox.setStyle("-fx-alignment: center; -fx-background-color: #eeeeee;");
+
+      int pageCount = jasperPrint.getPages() == null ? 0 : jasperPrint.getPages().size();
+      for (int i = 0; i < Math.max(1, pageCount); i++) {
+        BufferedImage bufferedImage = (BufferedImage) JasperPrintManager.printPageToImage(jasperPrint, i, 1.45f);
+        Image fxImage = SwingFXUtils.toFXImage(bufferedImage, null);
+
+        ImageView imageView = new ImageView(fxImage);
+        imageView.setPreserveRatio(true);
+        imageView.setFitWidth(520);
+        pagesBox.getChildren().add(imageView);
+      }
+
+      ScrollPane scrollPane = new ScrollPane(pagesBox);
+      scrollPane.setFitToWidth(true);
+      scrollPane.setPrefViewportHeight(650);
+
+      VBox content = new VBox(scrollPane);
       content.setPadding(new Insets(10));
-      content.setStyle("-fx-alignment: center; -fx-background-color: #eeeeee;");
       dialog.getDialogPane().setContent(content);
 
       ButtonType btnTypePrint = new ButtonType("In biên lai", ButtonData.OTHER);

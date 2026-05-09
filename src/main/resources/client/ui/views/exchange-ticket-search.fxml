@@ -20,7 +20,7 @@
       <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 8; -fx-border-color: #d5dde6; -fx-border-radius: 8;">
          <children>
             <Label text="Nhập CCCD / Hộ chiếu:" />
-            <TextField fx:id="txtSearchCCCD" prefWidth="300.0" promptText="Nhập giấy tờ của người mua..." />
+            <TextField fx:id="txtSearchCCCD" prefWidth="300.0" promptText="Mã vé / QR / CCCD / Hộ chiếu / Mã khách hàng" />
             <Button fx:id="btnTimKiem" mnemonicParsing="false" style="-fx-background-color: #0066cc; -fx-text-fill: white;" text="Tìm kiếm" />
          </children>
       </HBox>
