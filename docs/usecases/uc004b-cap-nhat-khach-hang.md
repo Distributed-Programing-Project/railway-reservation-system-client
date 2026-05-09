@@ -1,95 +1,88 @@
-# Use case UC004B: Cập nhật khách hàng
+# Usecase: Cập nhật khách hàng
 
 ## Actor
-- **Primary:** Nhân viên (`Employee`) thao tác trên màn hình Quản lý khách hàng
-- **Secondary:** Khách hàng (cung cấp/cập nhật thông tin)
-- **System:** JavaFX Client → TCP Socket Server → MariaDB
+- **Primary:** Nhân viên (`Employee`)
+- **Secondary:** Khách hàng (cung cấp thông tin cập nhật)
+- **System:** JavaFX Client → TCP Socket Server (`RequestRouter`) → MariaDB
+
+## Mô tả
+Nhân viên cập nhật thông tin hồ sơ khách hàng. Hệ thống đảm bảo khách hàng tồn tại, đang hoạt động và không trùng giấy tờ/email với khách khác.
 
 ## Tiền điều kiện
-- Khách hàng tồn tại trong DB và `Customer.isActive=true`.
-- Nhân viên đã chọn 1 dòng khách hàng để sửa.
+- Khách hàng tồn tại và `Customer.isActive=true`.
+- Nhân viên đang ở màn hình Quản lý khách hàng và đã chọn khách để sửa.
 
-## Hậu điều kiện (khi thành công)
-- Cập nhật thông tin `Customer` trong DB (tên, CCCD, SĐT, email).
-- Client nhận `CustomerDTO` đã cập nhật và reload danh sách.
-
----
+## Hậu điều kiện
+- Cập nhật `Customer` trong DB và trả về `CustomerDTO` mới.
 
 ## Luồng chính
-1. Client chọn khách hàng và mở dialog sửa (client: `CustomerManagementController.openEditCustomerDialog` → `KhachHangDialogController.initForEdit(CustomerDTO)`).
-2. Nhân viên chỉnh sửa thông tin và nhấn Lưu.
-3. Client validate nhanh (client-side) tương tự UC004A (phone/email format, giấy tờ không rỗng).
-4. Client gửi `Request(ActionType.UPDATE_CUSTOMER, CustomerDTO)` với `customerId` khác null/blank (client: `KhachHangDialogController.handleSave`).
-5. Server (`CustomerServiceImpl.updateCustomer`):
-   - Validate DTO bằng `ValidationUtils.validate(customerDTO)`.
-   - Nếu `customerId` null/blank ⇒ trả `Response.error(CustomerMessages.CUSTOMER_ID_REQUIRED)`.
-   - Load `existing = customerRepository.findCustomerById(em, customerId)`:
-     - Không tồn tại ⇒ `CustomerMessages.customerNotFound(customerId)`.
-     - `!existing.isActive()` ⇒ `CustomerMessages.customerInactive(customerId)`.
-   - Check trùng (loại trừ chính bản ghi đang sửa bằng `existing.getId()`):
-     - `existsByIdCard(..., existingId)` ⇒ `CustomerMessages.ID_CARD_DUPLICATE`.
-     - `existsByEmail(..., existingId)` ⇒ `CustomerMessages.EMAIL_DUPLICATE`.
-   - Update field:
-     - `existing.setName(customerDTO.fullName)`
-     - `existing.setIdCard(customerDTO.idCard)`
-     - `existing.setPhoneNumber(normalizeBlankToNull(customerDTO.phone))`
-     - `existing.setEmail(normalizeBlankToNull(customerDTO.email))`
-   - Persist `customerRepository.updateCustomer(em, existing)`.
-   - Trả `Response.success(CustomerMessages.UPDATE_SUCCESS, CustomerDTO)`.
-6. Client hiển thị message, đóng dialog, reload danh sách.
-
----
+1. Nhân viên chọn khách hàng và nhấn **Sửa**:
+   - `CustomerManagementController.openEditCustomerDialog()` mở `khach-hang-dialog.fxml`.
+2. Nhân viên chỉnh sửa và nhấn **Lưu**:
+   - `KhachHangDialogController.handleSave()` gửi `ActionType.UPDATE_CUSTOMER` với `CustomerDTO` (có `customerId`).
+3. Server `CustomerServiceImpl.updateCustomer(...)`:
+   - Validate: yêu cầu `customerId` không rỗng (`CustomerMessages.CUSTOMER_ID_REQUIRED`).
+   - Không tìm thấy → `CustomerMessages.customerNotFound(id)`.
+   - Inactive → `CustomerMessages.customerInactive(id)`.
+   - Check trùng CCCD/hộ chiếu/email (loại trừ chính record).
+   - Update fields và trả `CustomerMessages.UPDATE_SUCCESS` + `CustomerDTO`.
+4. Client đóng dialog và refresh danh sách.
 
 ## Luồng thay thế
-- **[Xóa SĐT/email]:** Client có thể để trống; server normalize blank → null (`normalizeBlankToNull`).
+- **[Đổi loại giấy tờ]:** Toggle CCCD/hộ chiếu trên form; Server chỉ yêu cầu có ít nhất một loại giấy tờ.
 
----
+## Luồng lỗi
+- **[Thiếu customerId]:** `CustomerMessages.CUSTOMER_ID_REQUIRED`.
+- **[Không tồn tại/inactive]:** `CustomerMessages.customerNotFound(...)`, `CustomerMessages.customerInactive(...)`.
+- **[Trùng dữ liệu]:** `CustomerMessages.ID_CARD_DUPLICATE`, `PASSPORT_DUPLICATE`, `EMAIL_DUPLICATE`.
+- **[Dữ liệu không hợp lệ]:** `CustomerMessages.DATA_INVALID_PREFIX + <errors>`.
+- **[Lỗi hệ thống]:** `CustomerMessages.UPDATE_FAILED_PREFIX + <message>`.
 
-## Luồng lỗi tiêu biểu (tham chiếu constant)
-- `CustomerMessages.DATA_INVALID_PREFIX + ...`: DTO fail validation.
-- `CustomerMessages.CUSTOMER_ID_REQUIRED`: thiếu `customerId` khi update.
-- `CustomerMessages.customerNotFound(id)`: không tìm thấy khách hàng.
-- `CustomerMessages.customerInactive(id)`: khách hàng đã bị vô hiệu hóa.
-- `CustomerMessages.ID_CARD_DUPLICATE`, `CustomerMessages.EMAIL_DUPLICATE`: trùng dữ liệu.
-- `CustomerMessages.UPDATE_FAILED_PREFIX + ...`: lỗi hệ thống.
+## Dữ liệu vào (Client → Server)
+| Field | Kiểu | Bắt buộc | Mô tả |
+|---|---|---|---|
+| `customerId` | `String` | ✓ | ID khách hàng cần cập nhật. |
+| `fullName` | `String` | ✓ | Họ tên. |
+| `idCard` | `String` |  | CCCD. |
+| `passport` | `String` |  | Hộ chiếu. |
+| `phone` | `String` |  | SĐT. |
+| `email` | `String` |  | Email. |
 
----
-
-## Business rules
-- Chỉ cập nhật khách hàng đang `isActive=true`.
-- CCCD/email không được trùng với khách khác (loại trừ chính khách đang sửa).
-- `customerId` bắt buộc khi update.
-
----
-
-## Dữ liệu vào/ra (I/O)
-
-### Client → Server
-| ActionType | DTO | Trường chính |
+## Dữ liệu ra (Server → Client)
+| Field | Kiểu | Mô tả |
 |---|---|---|
-| `UPDATE_CUSTOMER` | `CustomerDTO` | `customerId`, `fullName`, `idCard/passport`, `phone`, `email` |
+| `success` | `boolean` | Kết quả xử lý. |
+| `message` | `String` | Thành công: `CustomerMessages.UPDATE_SUCCESS`. |
+| `data` | `CustomerDTO` | Khách hàng sau cập nhật. |
 
-### Server → Client
-| Response.data |
-|---|
-| `CustomerDTO` |
-
----
-
-## Code Trace
-| Layer | File/Class | Ghi chú |
-|---|---|---|
-| FXML | `src/main/resources/client/ui/views/customer-management.fxml` | Màn hình danh sách khách hàng |
-| Controller | `src/main/java/vn/edu/iuh/fit/client/controller/CustomerManagementController.java` | Mở dialog sửa |
-| Controller | `src/main/java/vn/edu/iuh/fit/client/controller/KhachHangDialogController.java` | Gửi `UPDATE_CUSTOMER` |
-| Common | `vn.edu.iuh.fit.common.command.ActionType.UPDATE_CUSTOMER` | ActionType |
-| Common | `vn.edu.iuh.fit.common.dto.CustomerDTO` | Constraint + fields |
-| Common | `vn.edu.iuh.fit.common.message.CustomerMessages` | Message constants |
-| Router | `src/main/java/vn/edu/iuh/fit/server/network/RequestRouter.java` | Route `UPDATE_CUSTOMER` |
-| Server Service | `src/main/java/vn/edu/iuh/fit/server/service/impl/CustomerServiceImpl.java` | `updateCustomer` |
-| Entity/Table | `src/main/java/vn/edu/iuh/fit/server/model/Customer.java` (`customers`) | `isActive` |
+## Business Rules
+- **Không cập nhật khách inactive:** Nếu `isActive=false` → từ chối (`CustomerMessages.CUSTOMER_INACTIVE`).
+- **Chống trùng:** Unique theo CCCD/hộ chiếu/email.
+- **Giấy tờ bắt buộc:** Phải có CCCD hoặc hộ chiếu.
 
 ---
 
-## Notes / Missing / Partial
-- Đã fix: `CustomerServiceImpl.updateCustomer(...)` set `existing.passport` từ `CustomerDTO.passport` và check trùng passport (`CustomerRepository.existsByPassport(...)`), không phá luồng CCCD hiện tại.
+## Sơ đồ Use Case
+
+```mermaid
+graph LR
+    NV["👤 Nhân viên"]
+    KH["👤 Khách hàng"]
+
+    subgraph SYS ["🏢 Hệ thống — Cập nhật khách hàng"]
+        direction TB
+        UC_MAIN(["Cập nhật khách hàng"])
+        SUB_LOAD(["Tải Customer theo ID"])
+        SUB_VALIDATE(["Validate dữ liệu"])
+        SUB_DUP(["Kiểm tra trùng"])
+        SUB_SAVE(["Cập nhật Customer"])
+    end
+
+    NV --> UC_MAIN
+    KH --> UC_MAIN
+    UC_MAIN -. "«include»" .-> SUB_LOAD
+    UC_MAIN -. "«include»" .-> SUB_VALIDATE
+    UC_MAIN -. "«include»" .-> SUB_DUP
+    UC_MAIN -. "«include»" .-> SUB_SAVE
+```
+

@@ -1,155 +1,124 @@
-# Use case UC002: Đổi vé
+# Usecase: Đổi vé
 
 ## Actor
-- **Primary:** Nhân viên bán vé/quầy (`Employee`)
-- **Secondary:** Khách hàng (người mua)
-- **System:** JavaFX Client → TCP Socket Server → MariaDB
+- **Primary:** Nhân viên bán vé (`Employee`)
+- **Secondary:** Khách hàng (cung cấp thông tin vé/giấy tờ)
+- **System:** JavaFX Client → TCP Socket Server (`RequestRouter`) → MariaDB
+
+## Mô tả
+Nhân viên tra cứu vé đủ điều kiện đổi, chọn vé cũ và ghế mới (cùng ga đi/ga đến), xem trước phí đổi và tổng phải thu, xác nhận đổi vé để phát hành vé mới và hóa đơn đổi vé.
 
 ## Tiền điều kiện
-- Vé cần đổi đang ở trạng thái `TicketStatus.PAID`.
-- Vé chưa từng đổi:
-  - `Ticket.isExchanged = false`
-  - `Ticket.originalTicketId = null`
-- Thời gian đến giờ chạy của vé cũ còn ít nhất 24h (server check theo `ChronoUnit.HOURS`).
-- Nhân viên có `employeeId` để gửi trong `ExchangeTicketRequestDTO.employeeId`.
+- Nhân viên đã đăng nhập và có `employeeId` hợp lệ.
+- Vé cũ tồn tại và ở trạng thái `TicketStatus.PAID`.
+- Vé cũ chưa đổi (`Ticket.originalTicketId` null và `Ticket.isExchanged=false`) và chưa trả (`TicketStatus.RETURNED`).
+- Còn ≥ 24h đến giờ khởi hành của vé cũ (Server validate trong `TicketServiceImpl.validateBusinessRulesOrThrow(...)`).
+- Ghế mới đã được giữ bởi đúng `clientSessionId` trước khi preview/confirm (`SeatHoldStore.isHeldBy(...)`).
 
-## Hậu điều kiện (khi thành công)
-- Vé cũ được cập nhật:
-  - `Ticket.status = TicketStatus.EXCHANGED`
-  - `Ticket.isExchanged = true`
-  - `Ticket.qrCode = "INVALID"`
-- Vé mới được tạo:
-  - `Ticket.status = TicketStatus.PAID`
-  - `Ticket.qrCode = ticketId`
-  - `Ticket.originalTicketId = oldTicketId`
-- Tạo `Invoice` loại `InvoiceType.EXCHANGE` và `InvoiceDetail` cho các vé mới.
-- Hold ghế mới được nhả khỏi `SeatHoldStore` sau khi đổi thành công (`SeatHoldStore.releaseAll(...)`).
-
----
+## Hậu điều kiện
+- Vé cũ được cập nhật: `TicketStatus.EXCHANGED`, `exchanged=true`, `qrCode="INVALID"`.
+- Vé mới được tạo với `Ticket.originalTicketId=<id vé cũ>`.
+- Tạo `Invoice` loại `InvoiceType.EXCHANGE` và các `InvoiceDetail`.
+- Nhả hold ghế mới sau khi đổi xong (`SeatHoldStore.releaseAll(...)`).
 
 ## Luồng chính
-### Bước 1 — Tra cứu vé đủ điều kiện đổi
-1. Client (màn hình tra cứu đổi vé) gửi `Request(ActionType.SEARCH_TICKETS_FOR_EXCHANGE, ExchangeEligibleTicketSearchDTO{idCard})` (client: `ExchangeTicketClientService.searchTicketsForExchange`).
-2. Server (`TicketServiceImpl.searchTicketsForExchange`):
-   - Validate DTO (`ValidationUtils.validate`) và `idCard` (normalize).
-   - Query `TicketRepository.findTicketsByCustomerIdCardWithStatusForExchange(em, idCard, TicketStatus.PAID)`.
-   - Map sang `List<ExchangeEligibleTicketDTO>` (gồm `eligible/ineligibleReason`) và trả `Response.success(TicketMessages.EXCHANGE_SEARCH_SUCCESS, dtos)`.
-3. Client hiển thị danh sách và chỉ cho chọn các vé `eligible=true`.
-
-### Bước 2 — Chọn ghế mới và giữ chỗ
-4. Client mở wizard bán vé và bật chế độ đổi vé (`SellTicketWizardController.initExchangeMode(oldTicketIds)`):
-   - Khóa UI khứ hồi: chỉ đổi 1 chiều (`rbRoundTrip.setDisable(true)`).
-   - Ràng buộc số ghế mới phải đúng bằng số vé cũ (`outboundCart.size() == exchangeOldTicketIds.size()`).
-5. Nhân viên chọn chuyến mới và xem sơ đồ ghế mới (dùng API bán vé):
-   - `GET_SEATMAP_FOR_SCHEDULE` (`SaleClientService.getSeatMap`).
-6. Nhân viên chọn ghế mới và client giữ chỗ:
-   - `Request(ActionType.HOLD_SEATS_FOR_SALE, SeatHoldRequestDTO{scheduleId, scheduleDetailIds, clientSessionId})`.
-7. Server giữ chỗ trong `SeatHoldStore` (TTL 10 phút) và trả `SeatHoldResponseDTO`.
-
-### Bước 3 — Xem trước phí đổi và xác nhận đổi
-8. Client gửi xem trước phí đổi: `Request(ActionType.PREVIEW_EXCHANGE_TICKETS, ExchangeTicketPreviewRequestDTO{oldTicketIds, newScheduleDetailIds, clientSessionId})` (client: `ExchangeTicketClientService.previewExchangeTickets`).
-9. Server (`TicketServiceImpl.previewExchangeTickets`):
-   - Validate: danh sách cũ/mới cùng size, `clientSessionId` hợp lệ.
-   - Load `oldTickets` qua `TicketRepository.findTicketsForExchange(...)` và check business rules (`validateBusinessRulesOrThrow`):
-     - `status == PAID`, chưa đổi, chưa trả, còn >=24h.
-   - Check ghế mới đang được hold bởi đúng `clientSessionId`: `SeatHoldStore.isHeldBy(sdId, sessionId, nowEpoch)`.
-   - Tính giá vé cũ theo **actual paid amount**: `resolveActualPaidAmount(em, oldTicket)` (fallback về `ScheduleDetail.priceSeat` nếu không tìm thấy).
-   - Tính giá vé mới: tổng `ScheduleDetail.priceSeat` của danh sách ghế mới.
-   - Tính tiền phải thu:
-     - `feeTotal = oldTickets.size() * EXCHANGE_FEE` với `EXCHANGE_FEE = 20_000.0`.
-     - `diff = totalNewPrice - totalOldPrice`.
-     - `totalAmount = feeTotal + diff`, nếu âm thì `totalAmount = feeTotal` (không hoàn phần chênh lệch âm).
-   - Trả `Response.success(TicketMessages.EXCHANGE_PREVIEW_SUCCESS, ExchangeTicketPreviewDTO{...})`.
-10. Nhân viên xác nhận đổi vé, client gửi `Request(ActionType.EXCHANGE_TICKET, ExchangeTicketRequestDTO{oldTicketIds, newScheduleDetailIds, employeeId, clientSessionId, taxCode, companyName})`.
-11. Server (`TicketServiceImpl.exchangeTickets` → transactional `doExchangeTicketsOrThrow`):
-   - Resolve nhân viên theo `employeeId` hoặc `employee_code` (`findEmployeeByIdOrCode`).
-   - Re-validate vé cũ (PAID, chưa đổi, chưa trả, cutoff 24h).
-   - Re-validate hold ghế mới theo `SeatHoldStore.isHeldBy(...)`.
-   - Cập nhật vé cũ: `status=EXCHANGED`, `isExchanged=true`, `qrCode="INVALID"`.
-   - Tạo vé mới theo từng cặp (oldTicketId → newScheduleDetailId):
-     - `Ticket.originalTicketId = oldTicketId`, `status=PAID`, `qrCode=ticketId`.
-     - Check trùng ghế bằng `ScheduleDetailRepository.getSoldSeatIdsWithLock(...)`.
-   - Tạo `Invoice{type=EXCHANGE, totalAmount=finalAmount}` và `InvoiceDetail` cho từng vé mới (chia đều `subTotalPerTicket = finalAmount/newTickets.size()`).
-12. Server trả `Response.success(String.format(TicketMessages.EXCHANGE_SUCCESS,...), ExchangeTicketResponseDTO{invoiceId, totalAmount, newTickets,...})`.
-13. Client nhả hold ghế mới: `SeatHoldStore.releaseAll(newScheduleDetailIds, clientSessionId)` được gọi bên server sau khi đổi thành công.
-
----
+1. Nhân viên tra cứu vé cần đổi:
+   - Endpoint chuẩn: `ActionType.SEARCH_TICKETS_FOR_EXCHANGE` (`ExchangeTicketClientService.searchTicketsForExchange`) với `ExchangeEligibleTicketSearchDTO { idCard }`.
+   - Server `TicketServiceImpl.searchTicketsForExchange(...)` có thể tìm theo ticketId/QR, giấy tờ người mua (`Customer`) hoặc giấy tờ hành khách (`Ticket.passengerIdCard`), và trả `List<ExchangeEligibleTicketDTO>` kèm `eligible/ineligibleReason`.
+2. Nhân viên chọn vé cũ cần đổi.
+3. Nhân viên chọn chuyến/ghế mới và giữ chỗ:
+   - Dùng lại luồng bán vé: `SEARCH_SCHEDULES_FOR_SALE` → `GET_SEATMAP_FOR_SCHEDULE` → `HOLD_SEATS_FOR_SALE`.
+4. Client xem trước phí đổi:
+   - Gửi `ActionType.PREVIEW_EXCHANGE_TICKETS` với `ExchangeTicketPreviewRequestDTO { oldTicketIds, newScheduleDetailIds, clientSessionId }`.
+   - Server `TicketServiceImpl.previewExchangeTickets(...)`:
+     - Validate số lượng vé cũ = số ghế mới (`TicketMessages.COUNT_MISMATCH`).
+     - Validate điều kiện đổi + check hold.
+     - Tính `totalOldPrice` theo **actual paid** từ `InvoiceDetail` SALE (`resolveActualPaidAmount(...)`), fallback `ScheduleDetail.priceSeat`.
+     - Tính `totalNewPrice` theo `ScheduleDetail.priceSeat`.
+     - Phí đổi cố định `EXCHANGE_FEE = 20_000`/vé.
+     - Nếu vé mới rẻ hơn vé cũ thì **không hoàn chênh lệch âm**, chỉ thu phí đổi.
+     - Trả `ExchangeTicketPreviewDTO`.
+5. Nhân viên xác nhận đổi vé:
+   - Client gửi `ActionType.EXCHANGE_TICKET` với `ExchangeTicketRequestDTO { oldTicketIds, newScheduleDetailIds, employeeId, clientSessionId, taxCode, companyName }`.
+   - Server `TicketServiceImpl.exchangeTickets(...)` chạy transaction:
+     - Validate lại điều kiện đổi + check hold.
+     - Validate cùng ga đi/ga đến (`validateSameDepartureDestinationOrThrow(...)`).
+     - Cập nhật vé cũ sang `EXCHANGED`, tạo vé mới + `Invoice (EXCHANGE)` + `InvoiceDetail`.
+     - Trả `ExchangeTicketResponseDTO { invoiceId, totalAmount, newTickets }`.
+6. Client hiển thị kết quả và in:
+   - In vé mới: `PrintListController`.
+   - In biên lai đổi vé (nếu dùng flow wizard): `ExchangeReceiptRenderer` + template `/client/print/bien-lai-doi-ve.xml`.
 
 ## Luồng thay thế
-- **[Ghế mới rẻ hơn ghế cũ]:** Server vẫn thu `EXCHANGE_FEE` và **không hoàn lại** phần chênh lệch âm (rule trong `TicketServiceImpl.previewExchangeTickets` và `doExchangeTicketsOrThrow`).
-- **[Bỏ chọn ghế mới]:** Client gọi `RELEASE_HELD_SEATS_FOR_SALE` (API bán vé) để nhả ghế đã hold.
+- **[UI đổi vé đang reuse màn hình tra cứu trả vé]:** `ReturnTicketController` (mode đổi vé) có validate nhanh 24h và cờ `originalTicketId` trước khi chuyển qua bước chọn ghế; Server vẫn là source-of-truth (vẫn validate lại khi preview/confirm).
 
----
+## Luồng lỗi
+- **[Thiếu dữ liệu/không hợp lệ]:** `TicketMessages.OLD_TICKET_IDS_REQUIRED`, `NEW_SCHEDULE_DETAIL_IDS_REQUIRED`, `INVALID_SESSION`, `COUNT_MISMATCH`.
+- **[Vé không đủ điều kiện đổi]:** `TicketMessages.TICKET_NOT_PAID`, `TICKET_ALREADY_RETURNED`, `TICKET_ALREADY_EXCHANGED`, `EXCHANGE_TIME_EXPIRED`.
+- **[Ghế mới không được hold đúng session]:** `TicketMessages.SEAT_HELD_BY_OTHER`.
+- **[Không đổi khác hành trình]:** `TicketMessages.EXCHANGE_ROUTE_DATA_MISSING`, `EXCHANGE_ROUTE_MISMATCH`.
+- **[Xung đột dữ liệu ghế]:** `TicketMessages.DATA_CONFLICT` (OptimisticLock).
+- **[Lỗi nghiệp vụ khác]:** `TicketMessages.EXCHANGE_FAILED_PREFIX + <message>`.
 
-## Luồng lỗi tiêu biểu (tham chiếu constant)
-- `TicketMessages.ID_CARD_REQUIRED`: thiếu giấy tờ (DTO `ExchangeEligibleTicketSearchDTO.idCard` rỗng).
-- `TicketMessages.TICKET_NOT_PAID`: vé không phải `PAID`.
-- `TicketMessages.TICKET_ALREADY_EXCHANGED`: vé đã đổi (`isExchanged=true` hoặc `originalTicketId != null`).
-- `TicketMessages.TICKET_ALREADY_RETURNED`: vé đã trả.
-- `TicketMessages.EXCHANGE_TIME_EXPIRED`: còn <24h trước giờ chạy.
-- `TicketMessages.COUNT_MISMATCH`: số vé cũ và số ghế mới không khớp.
-- `TicketMessages.SEAT_HELD_BY_OTHER`: ghế mới chưa hold hoặc hold bởi phiên khác.
-- `TicketMessages.SEAT_NOT_AVAILABLE`: ghế mới đã có người mua (server check sold seat ids).
-- `TicketMessages.DATA_CONFLICT`: xung đột optimistic lock khi chiếm ghế (`OptimisticLockException`).
-- `TicketMessages.EXCHANGE_FAILED_PREFIX + ...`: lỗi nghiệp vụ khác trong đổi vé.
+## Dữ liệu vào (Client → Server)
+| ActionType | DTO | Field | Kiểu | Bắt buộc | Mô tả |
+|---|---|---|---|---|---|
+| `SEARCH_TICKETS_FOR_EXCHANGE` | `ExchangeEligibleTicketSearchDTO` | `idCard` | `String` | ✓ | Từ khóa tra cứu (tên field là `idCard`). |
+| `PREVIEW_EXCHANGE_TICKETS` | `ExchangeTicketPreviewRequestDTO` | `oldTicketIds` | `List<String>` | ✓ | Vé cũ. |
+| `PREVIEW_EXCHANGE_TICKETS` | `ExchangeTicketPreviewRequestDTO` | `newScheduleDetailIds` | `List<String>` | ✓ | Ghế mới (`ScheduleDetail.id`). |
+| `PREVIEW_EXCHANGE_TICKETS` | `ExchangeTicketPreviewRequestDTO` | `clientSessionId` | `String` | ✓ | Phiên client. |
+| `EXCHANGE_TICKET` | `ExchangeTicketRequestDTO` | `oldTicketIds` | `List<String>` | ✓ | Vé cũ. |
+| `EXCHANGE_TICKET` | `ExchangeTicketRequestDTO` | `newScheduleDetailIds` | `List<String>` | ✓ | Ghế mới. |
+| `EXCHANGE_TICKET` | `ExchangeTicketRequestDTO` | `employeeId` | `String` | ✓ | Nhân viên xử lý. |
+| `EXCHANGE_TICKET` | `ExchangeTicketRequestDTO` | `clientSessionId` | `String` | ✓ | Phiên client. |
+| `EXCHANGE_TICKET` | `ExchangeTicketRequestDTO` | `taxCode` | `String` |  | MST (<=20 ký tự). |
+| `EXCHANGE_TICKET` | `ExchangeTicketRequestDTO` | `companyName` | `String` |  | Tên công ty (<=200 ký tự). |
 
----
-
-## Business rules
-- **Chỉ đổi 1 lần:** server chặn nếu `Ticket.isExchanged=true` hoặc `Ticket.originalTicketId != null`.
-- **Điều kiện trạng thái:** chỉ đổi vé `TicketStatus.PAID`; không đổi vé `RETURNED`.
-- **Cutoff 24h:** `ChronoUnit.HOURS.between(now, departureTime) >= 24`.
-- **Hold bắt buộc:** ghế mới phải được hold bằng `clientSessionId` (dùng chung `SeatHoldStore` với UC001).
-- **Phí đổi:** `EXCHANGE_FEE = 20_000.0`/vé (cố định trong `TicketServiceImpl`).
-- **Giá vé cũ:** ưu tiên lấy từ “actual paid amount” theo invoice detail (`resolveActualPaidAmount`), fallback `ScheduleDetail.priceSeat`.
-- **Không hoàn tiền chênh âm:** nếu `totalNewPrice < totalOldPrice` thì vẫn thu ít nhất phí đổi.
-- **Invoice:** luôn tạo `InvoiceType.EXCHANGE` cho giao dịch đổi.
-
----
-
-## Dữ liệu vào/ra (I/O)
-
-### Client → Server
-| ActionType | DTO | Trường chính |
+## Dữ liệu ra (Server → Client)
+| Response.data | Kiểu | Mô tả |
 |---|---|---|
-| `SEARCH_TICKETS_FOR_EXCHANGE` | `ExchangeEligibleTicketSearchDTO` | `idCard` |
-| `GET_SEATMAP_FOR_SCHEDULE` | `SeatMapRequestDTO` | `scheduleId`, `clientSessionId` (dùng chung với UC001) |
-| `HOLD_SEATS_FOR_SALE` | `SeatHoldRequestDTO` | `scheduleId`, `scheduleDetailIds`, `clientSessionId` |
-| `PREVIEW_EXCHANGE_TICKETS` | `ExchangeTicketPreviewRequestDTO` | `oldTicketIds`, `newScheduleDetailIds`, `clientSessionId` |
-| `EXCHANGE_TICKET` | `ExchangeTicketRequestDTO` | `oldTicketIds`, `newScheduleDetailIds`, `employeeId`, `clientSessionId`, `taxCode`, `companyName` |
+| (SEARCH_TICKETS_FOR_EXCHANGE) | `List<ExchangeEligibleTicketDTO>` | Danh sách vé + cờ đủ điều kiện. |
+| (PREVIEW_EXCHANGE_TICKETS) | `ExchangeTicketPreviewDTO` | Tổng tiền vé cũ/mới, phí đổi, chênh lệch, tổng phải thu. |
+| (EXCHANGE_TICKET) | `ExchangeTicketResponseDTO` | Mã hóa đơn đổi vé + danh sách `IssuedTicketDTO` vé mới. |
 
-### Server → Client
-| Response.data |
-|---|
-| `List<ExchangeEligibleTicketDTO>` |
-| `ExchangeTicketPreviewDTO` |
-| `ExchangeTicketResponseDTO` |
-
----
-
-## Code Trace
-| Layer | File/Class | Ghi chú |
-|---|---|---|
-| FXML | `src/main/resources/client/ui/views/exchange-ticket-search.fxml` | Màn hình tra cứu đổi vé |
-| FXML | `src/main/resources/client/ui/views/sell-ticket-wizard.fxml` | Wizard chọn ghế mới (exchange mode) |
-| Controller | `src/main/java/vn/edu/iuh/fit/client/controller/ExchangeTicketSearchController.java` | Tra cứu và điều hướng sang wizard |
-| Controller | `src/main/java/vn/edu/iuh/fit/client/controller/SellTicketWizardController.java` | `initExchangeMode(...)`, chọn ghế mới, gọi preview/confirm đổi |
-| Client Service | `src/main/java/vn/edu/iuh/fit/client/service/ExchangeTicketClientService.java` | `SEARCH_TICKETS_FOR_EXCHANGE`, `PREVIEW_EXCHANGE_TICKETS`, `EXCHANGE_TICKET` |
-| Client Service | `src/main/java/vn/edu/iuh/fit/client/service/SaleClientService.java` | Dùng lại API seatmap/hold cho đổi vé |
-| Common | `vn.edu.iuh.fit.common.command.ActionType` | `SEARCH_TICKETS_FOR_EXCHANGE`, `PREVIEW_EXCHANGE_TICKETS`, `EXCHANGE_TICKET` |
-| Router | `src/main/java/vn/edu/iuh/fit/server/network/RequestRouter.java` | Route sang `TicketServiceImpl.*` |
-| Server Service | `src/main/java/vn/edu/iuh/fit/server/service/impl/TicketServiceImpl.java` | Core đổi vé + invoice EXCHANGE |
-| Server Service | `src/main/java/vn/edu/iuh/fit/server/service/impl/SaleServiceImpl.java` | Hold/release ghế (dùng chung) |
-| Repository | `.../repository/impl/TicketRepositoryImpl` | Search ticket by customer doc, resolve paid amount |
-| Repository | `.../repository/impl/ScheduleDetailRepositoryImpl` | Load ghế mới + sold seat ids lock |
-| Entity/Table | `.../model/Ticket` (`tickets`) | `status`, `qrCode`, `originalTicketId`, `exchanged` |
-| Entity/Table | `.../model/Invoice` (`invoices`) | `type=EXCHANGE` |
-| Entity/Table | `.../model/InvoiceDetail` (`invoice_details`) | `subTotal` được chia đều |
+## Business Rules
+- **Điều kiện đổi:** Vé `PAID`, chưa đổi, chưa trả và còn ≥24h.
+- **Giữ ghế mới:** Ghế mới phải được hold bởi đúng `clientSessionId` trước khi preview/confirm.
+- **Cùng hành trình:** Không đổi khác ga đi/ga đến.
+- **Phí đổi cố định:** `EXCHANGE_FEE = 20_000`/vé.
+- **Không hoàn chênh lệch âm:** Vé mới rẻ hơn → chỉ thu phí đổi.
+- **Giá vé cũ theo actual paid:** Ưu tiên lấy từ `InvoiceDetail` SALE, fallback `ScheduleDetail.priceSeat`.
+- **Vô hiệu QR vé cũ:** Sau đổi set `"INVALID"`.
 
 ---
 
-## Notes / Missing / Partial
-- **DIFFERENT:** Phí đổi vé hiện là `20_000.0`/vé (`TicketServiceImpl.EXCHANGE_FEE`). Nếu requirement cũ là 50k/20k khác, ghi nhận khác biệt này (không sửa code).
-- Đã fix: server enforce rule “giữ nguyên ga đi/ga đến” ở cả `TicketServiceImpl.previewExchangeTickets(...)` và `TicketServiceImpl.doExchangeTicketsOrThrow(...)` (reject `TicketMessages.EXCHANGE_ROUTE_MISMATCH` / `TicketMessages.EXCHANGE_ROUTE_DATA_MISSING`).
-- Search UI ghi “CCCD/Hộ chiếu”, nhưng DTO tên trường là `idCard`; repository JPQL lại match cả `Customer.id`, `Customer.idCard`, `Customer.passport` ⇒ hiểu là “mã giấy tờ/định danh” (uncertainty về naming).
-- Đã fix: client lưu `ExchangeTicketResponseDTO` (new tickets + invoiceId + totalAmount) và in vé mới sau đổi bằng flow in vé (không in vé cũ); lỗi in không rollback giao dịch đổi vé.
+## Sơ đồ Use Case
+
+```mermaid
+graph LR
+    NV["👤 Nhân viên bán vé"]
+    KH["👤 Khách hàng"]
+
+    subgraph SYS ["🏢 Hệ thống — Đổi vé"]
+        direction TB
+        UC_MAIN(["Đổi vé"])
+        SUB_SEARCH(["Tra cứu vé đổi"])
+        SUB_PICK(["Chọn ghế mới"])
+        SUB_HOLD(["Giữ ghế mới"])
+        SUB_PREVIEW(["Xem trước phí"])
+        SUB_CONFIRM(["Xác nhận đổi"])
+        SUB_ISSUE(["Tạo vé mới + hóa đơn"])
+        SUB_PRINT(["In vé/biên lai"])
+    end
+
+    NV --> UC_MAIN
+    KH --> UC_MAIN
+    UC_MAIN -. "«include»" .-> SUB_SEARCH
+    UC_MAIN -. "«include»" .-> SUB_PICK
+    UC_MAIN -. "«include»" .-> SUB_HOLD
+    UC_MAIN -. "«include»" .-> SUB_PREVIEW
+    UC_MAIN -. "«include»" .-> SUB_CONFIRM
+    UC_MAIN -. "«include»" .-> SUB_ISSUE
+    UC_MAIN -. "«include»" .-> SUB_PRINT
+```
+

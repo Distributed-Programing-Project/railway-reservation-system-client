@@ -1,80 +1,68 @@
-# Use case UC004D: Xem lịch sử khách hàng
+# Usecase: Xem lịch sử khách hàng
 
 ## Actor
 - **Primary:** Nhân viên (`Employee`)
-- **Secondary:** —
-- **System:** JavaFX Client → TCP Socket Server → MariaDB
+- **System:** JavaFX Client → TCP Socket Server (`RequestRouter`) → MariaDB
+
+## Mô tả
+Nhân viên xem lịch sử mua vé của một khách hàng: danh sách vé đã mua và tổng số tiền giao dịch.
 
 ## Tiền điều kiện
-- Nhân viên đã tra cứu và chọn được 1 khách hàng (`CustomerDTO.customerId`) trên màn hình quản lý khách hàng.
+- Nhân viên đang ở màn hình Quản lý khách hàng và đã chọn một khách hàng.
 
-## Hậu điều kiện (khi thành công)
-- Client nhận `CustomerHistoryResponseDTO` gồm:
-  - Danh sách lịch sử vé: `List<CustomerHistoryItemDTO>`
-  - Tổng tiền mua: `totalAmount`
-
----
+## Hậu điều kiện
+- Client nhận `CustomerHistoryResponseDTO` để hiển thị lịch sử và tổng tiền.
 
 ## Luồng chính
-1. Nhân viên chọn khách hàng và nhấn “Lịch sử mua vé” (client: `CustomerManagementController.openCustomerHistory`).
-2. Client mở view lịch sử và khởi tạo dữ liệu (client: `CustomerHistoryController.initCustomer(CustomerDTO)` → `loadHistory()`).
-3. Client gửi `Request(ActionType.GET_CUSTOMER_HISTORY, CustomerHistoryRequestDTO{customerId})`.
-4. Server (`CustomerServiceImpl.getCustomerHistory`):
-   - Validate DTO (`ValidationUtils.validate`), nếu lỗi trả `Response.error(CustomerMessages.DATA_INVALID_PREFIX + ...)`.
-   - Query:
-     - `customerRepository.findCustomerTicketHistory(em, customerId)`
-     - `customerRepository.sumCustomerInvoiceTotalAmount(em, customerId)`
-   - Trả `Response.success("Lấy lịch sử mua vé thành công", CustomerHistoryResponseDTO{items, totalAmount})` (message hiện hard-code).
-5. Client render bảng lịch sử và hiển thị `totalAmount`.
-
----
+1. Nhân viên chọn khách hàng và nhấn **Xem lịch sử mua vé**:
+   - `CustomerManagementController.openCustomerHistory()` mở `customer-history-view.fxml`.
+2. Client gửi `ActionType.GET_CUSTOMER_HISTORY` với `CustomerHistoryRequestDTO { customerId }`.
+3. Server `CustomerServiceImpl.getCustomerHistory(...)`:
+   - Validate `customerId`.
+   - Query `CustomerRepository.findCustomerTicketHistory(...)` và `sumCustomerInvoiceTotalAmount(...)`.
+   - Trả `CustomerHistoryResponseDTO { items, totalAmount }`.
+4. Client hiển thị bảng lịch sử (`CustomerHistoryItemDTO`) và tổng tiền.
 
 ## Luồng thay thế
-- —
+- **[Không có lịch sử]:** `items=[]`, `totalAmount=0`.
 
----
+## Luồng lỗi
+- **[Thiếu customerId]:** Server trả lỗi validation (prefix `CustomerMessages.DATA_INVALID_PREFIX`).
+- **[Lỗi truy vấn]:** Server trả message hardcode `"Lỗi khi lấy lịch sử mua vé: " + <message>`.
 
-## Luồng lỗi tiêu biểu (tham chiếu constant)
-- `CustomerMessages.DATA_INVALID_PREFIX + ...`: thiếu `customerId`.
-- Error message hard-code:
-  - `"Lỗi khi lấy lịch sử mua vé: " + e.getMessage()` từ server.
+## Dữ liệu vào (Client → Server)
+| Field | Kiểu | Bắt buộc | Mô tả |
+|---|---|---|---|
+| `customerId` | `String` | ✓ | Mã khách hàng cần xem lịch sử. |
 
----
-
-## Business rules
-- History được truy vấn theo `customerId` (không thấy filter theo `isActive` trong service).
-- Tổng tiền lấy từ tổng hóa đơn của khách (`sumCustomerInvoiceTotalAmount`) (chi tiết cách tính nằm ở repository ⇒ uncertainty).
-
----
-
-## Dữ liệu vào/ra (I/O)
-
-### Client → Server
-| ActionType | DTO | Trường chính |
+## Dữ liệu ra (Server → Client)
+| Response.data | Kiểu | Mô tả |
 |---|---|---|
-| `GET_CUSTOMER_HISTORY` | `CustomerHistoryRequestDTO` | `customerId` |
+| `items` | `List<CustomerHistoryItemDTO>` | Lịch sử mua vé. |
+| `totalAmount` | `double` | Tổng tiền giao dịch. |
 
-### Server → Client
-| Response.data |
-|---|
-| `CustomerHistoryResponseDTO` (`items: List<CustomerHistoryItemDTO>`, `totalAmount`) |
-
----
-
-## Code Trace
-| Layer | File/Class | Ghi chú |
-|---|---|---|
-| FXML | `src/main/resources/client/ui/views/customer-history-view.fxml` | View lịch sử mua vé |
-| Controller | `src/main/java/vn/edu/iuh/fit/client/controller/CustomerHistoryController.java` | Gửi `GET_CUSTOMER_HISTORY` và render |
-| Controller | `src/main/java/vn/edu/iuh/fit/client/controller/CustomerManagementController.java` | Điều hướng sang view lịch sử |
-| Common | `vn.edu.iuh.fit.common.command.ActionType.GET_CUSTOMER_HISTORY` | ActionType |
-| Common | `vn.edu.iuh.fit.common.dto.CustomerHistoryRequestDTO`, `CustomerHistoryResponseDTO`, `CustomerHistoryItemDTO` | DTO |
-| Router | `src/main/java/vn/edu/iuh/fit/server/network/RequestRouter.java` | Route `GET_CUSTOMER_HISTORY` |
-| Server Service | `src/main/java/vn/edu/iuh/fit/server/service/impl/CustomerServiceImpl.java` | `getCustomerHistory` |
-| Entity/Table | `.../model/Ticket` (`tickets`), `.../model/Invoice` (`invoices`) | Nguồn dữ liệu history (query ở repository) |
+## Business Rules
+- **Theo customerId:** Lịch sử/tổng tiền được thống kê theo ID khách hàng.
 
 ---
 
-## Notes / Missing / Partial
-- Message success/error trong `CustomerServiceImpl.getCustomerHistory` hiện hard-code, không dùng `CustomerMessages.*` ⇒ ghi nhận để trace lỗi đúng chuỗi (không sửa code).
+## Sơ đồ Use Case
+
+```mermaid
+graph LR
+    NV["👤 Nhân viên"]
+
+    subgraph SYS ["🏢 Hệ thống — Xem lịch sử khách hàng"]
+        direction TB
+        UC_MAIN(["Xem lịch sử khách hàng"])
+        SUB_VALIDATE(["Validate customerId"])
+        SUB_QUERY(["Query lịch sử"])
+        SUB_VIEW(["Trả dữ liệu"])
+    end
+
+    NV --> UC_MAIN
+    UC_MAIN -. "«include»" .-> SUB_VALIDATE
+    UC_MAIN -. "«include»" .-> SUB_QUERY
+    UC_MAIN -. "«include»" .-> SUB_VIEW
+```
 

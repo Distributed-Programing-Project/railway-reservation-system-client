@@ -1,150 +1,119 @@
-# Use case UC003: Trả vé
+# Usecase: Trả vé
 
 ## Actor
-- **Primary:** Nhân viên bán vé/quầy (`Employee`)
-- **Secondary:** Khách hàng (người mua)
-- **System:** JavaFX Client → TCP Socket Server → MariaDB
+- **Primary:** Nhân viên bán vé (`Employee`)
+- **Secondary:** Khách hàng (cung cấp thông tin vé/giấy tờ)
+- **System:** JavaFX Client → TCP Socket Server (`RequestRouter`) → MariaDB
+
+## Mô tả
+Nhân viên tra cứu vé đã thanh toán có thể trả, xem trước phí trả và số tiền hoàn, xác nhận trả vé để tạo hóa đơn hoàn vé và (tuỳ chọn) in biên lai hoàn tiền.
 
 ## Tiền điều kiện
-- Vé cần trả ở trạng thái `TicketStatus.PAID`.
-- Còn ít nhất 4 giờ trước giờ chạy của vé (`MINUTES_4H = 4*60` trong server).
-- Nhân viên đã đăng nhập và client lấy được `employeeId` để gửi trong `ReturnTicketConfirmDTO.employeeId`.
+- Nhân viên đã đăng nhập và có `employeeId` hợp lệ.
+- Vé tồn tại và ở trạng thái `TicketStatus.PAID`.
+- Còn **ít nhất 4 giờ** tới giờ khởi hành (Server validate `MINUTES_4H = 4*60`).
+- Nếu trả theo lô, tất cả vé phải thuộc **cùng khách hàng** (`TicketMessages.CUSTOMER_MISMATCH`).
 
-## Hậu điều kiện (khi thành công)
-- Vé được cập nhật:
-  - `Ticket.status = TicketStatus.RETURNED`
-  - `Ticket.qrCode = "INVALID"`
-- Tạo `Invoice` loại `InvoiceType.REFUND` và `InvoiceDetail` hoàn tiền cho từng vé.
-- Cập nhật `InvoiceDetail` của `InvoiceType.SALE` tương ứng:
-  - `InvoiceDetail.isReturned = true`
-  - `InvoiceDetail.refundAmount = ...` theo tính toán
-
----
+## Hậu điều kiện
+- Tạo `Invoice` loại `InvoiceType.REFUND` và `InvoiceDetail` refund (`isReturned=true`, `refundAmount`).
+- Update `InvoiceDetail` SALE tương ứng: `returned=true`, set `refundAmount`.
+- Update `Ticket.status=TicketStatus.RETURNED` và `Ticket.qrCode="INVALID"`.
+- Thu hồi reward points earned từ các vé trả (không hoàn lại redeemed points theo comment trong code).
 
 ## Luồng chính
-### Bước 1 — Tra cứu vé trả
-1. Client gửi `Request(ActionType.SEARCH_TICKETS_FOR_RETURN, ReturnTicketSearchDTO{query, queryType=AUTO})` (client: `ReturnTicketClientService.searchTicketsForReturn`).
-2. Server (`TicketServiceImpl.searchTicketsForReturn`):
-   - Nếu `query` rỗng/null: load mặc định danh sách vé `TicketStatus.PAID` bằng `TicketRepository.findTicketsByStatusWithSchedule(...)`.
-   - Nếu có `query`:
-     - `ReturnTicketSearchType.TICKET_ID`: tìm theo `Ticket.id` hoặc `Ticket.qrCode` (`findTicketByIdOrQrWithSchedule`).
-     - `BUYER_DOCUMENT`: tìm theo định danh người mua (`findTicketsByCustomerIdCardWithStatus`), JPQL match `Customer.id` / `Customer.idCard` / `Customer.passport`.
-     - `PASSENGER_DOCUMENT`: tìm theo `Ticket.passengerIdCard`.
-     - `AUTO`: thử theo `Ticket.id/qrCode` trước, nếu không có thì merge kết quả BUYER_DOCUMENT + PASSENGER_DOCUMENT.
-   - Filter lại `status==PAID` và trả `Response.success(TicketMessages.FIND_SUCCESS, List<ReturnTicketTicketDTO>)`.
-3. Client hiển thị danh sách và cho phép chọn 1 hoặc nhiều vé để trả.
-
-### Bước 2 — Xem trước tiền hoàn
-4. Khi người dùng chọn vé, client gọi xem trước: `Request(ActionType.PREVIEW_RETURN_TICKETS, ReturnTicketPreviewRequestDTO{ticketIds})` (client: `ReturnTicketClientService.previewReturnTickets`).
-5. Server (`TicketServiceImpl.previewReturnTickets`):
-   - Validate DTO (`ValidationUtils.validate`), loại trùng id (`TICKET_IDS_DUPLICATE`) và đảm bảo đủ số vé load được (`SOME_TICKETS_INVALID`).
-   - Tính toán refund qua `doComputeReturn(em, ticketIds)`:
-     - Mỗi vé phải `status==PAID`, có `scheduleDetail.schedule.departureTime`.
-     - Cutoff: `Duration.between(now, departureTime).toMinutes() >= MINUTES_4H`.
-     - Giá gốc dùng **actual paid amount**: `resolveActualPaidAmount(em, ticket)` (fallback `ScheduleDetail.priceSeat`).
-     - Phí trả vé: `computeReturnFee(price, exchanged, minutesToDeparture)`:
-       - Nếu vé đã đổi (`ticket.originalTicketId != null` hoặc `ticket.isExchanged==true`) ⇒ 30%.
-       - Else nếu còn <24h ⇒ 20%; còn >=24h ⇒ 10%.
-       - Min fee mỗi vé: `10_000` (`MIN_RETURN_FEE_PER_TICKET`).
-       - Làm tròn phí lên bội số 1.000 (`ceil(fee/1000)*1000`), và không vượt quá giá vé.
-     - `refundAmount = price - fee` (không âm).
-   - Rule batch: tất cả vé phải thuộc cùng 1 `Customer` (`validateSameCustomer`), nếu không trả `TicketMessages.CUSTOMER_MISMATCH`.
-   - Trả `Response.success(TicketMessages.PREVIEW_SUCCESS, ReturnTicketPreviewDTO{totalTicketPrice, refundFee, refundAmount})`.
-
-### Bước 3 — Xác nhận trả vé và in biên lai (tuỳ chọn)
-6. Nhân viên xác nhận trả, client gửi `Request(ActionType.CONFIRM_RETURN_TICKETS, ReturnTicketConfirmDTO{ticketIds, refundAmount, employeeId})`.
-7. Server (`TicketServiceImpl.confirmReturnTickets` → transactional `doConfirmReturnTickets`):
-   - Re-compute refund bằng `doComputeReturn(...)`.
-   - Chống “đổi số tiền”: nếu `abs(confirmDTO.refundAmount - computed.totalRefundAmount) > REFUND_TOLERANCE (1.0)` ⇒ lỗi `TicketMessages.REFUND_AMOUNT_MISMATCH`.
-   - Resolve nhân viên theo `employeeId` hoặc `employee_code` (`findEmployeeByIdOrCode`).
-   - Tạo `Invoice{type=REFUND, totalAmount=totalRefundAmount}` và persist.
-   - Tạo `InvoiceDetail` refund cho từng vé:
-     - `subTotal = ticketPrice`, `isReturned=true`, `refundAmount=...`, `insurance=0` (non-refundable theo comment).
-   - Update các `InvoiceDetail` của invoice SALE theo ticketIds:
-     - `setReturned(true)` và set `refundAmount`.
-   - Update vé: `status=RETURNED`, `qrCode="INVALID"`.
-   - Trả `Response.success(TicketMessages.RETURN_SUCCESS, refundInvoiceId)`.
-8. Client xóa vé vừa trả khỏi bảng, reset panel preview, reload danh sách vé PAID, và hỏi in biên lai.
-9. Nếu chọn in, client gửi `Request(ActionType.GET_REFUND_RECEIPT, RefundReceiptRequestDTO{refundInvoiceId})`.
-10. Server (`TicketServiceImpl.getRefundReceipt`) build `RefundReceiptDTO` từ `Invoice` REFUND và trả `Response.success("Lấy dữ liệu biên lai hoàn tiền thành công.", dto)`.
-11. Client tạo Jasper report từ template `/client/print/bien-lai-tra-ve.xml` và hiển thị preview/in (`ReturnTicketController.createRefundReceiptReport` → `JasperPrintManager.printReport`).
-
----
+1. Nhân viên mở màn hình trả vé:
+   - UI: `tra-ve.fxml` + `ReturnTicketController` (mode trả vé khi không set `mainController`).
+2. Nhân viên tra cứu vé trả:
+   - Client gửi `ActionType.SEARCH_TICKETS_FOR_RETURN` với `ReturnTicketSearchDTO { query, queryType=AUTO }` qua `ReturnTicketClientService.searchTicketsForReturn(query)`.
+   - Server `TicketServiceImpl.searchTicketsForReturn(...)` tìm theo ticketId/QR, giấy tờ người mua hoặc hành khách; nếu query rỗng thì load danh sách `PAID`.
+   - Trả `List<ReturnTicketTicketDTO>`.
+3. Nhân viên chọn vé cần trả.
+4. Client xem trước tiền hoàn:
+   - Gửi `ActionType.PREVIEW_RETURN_TICKETS` với `ReturnTicketPreviewRequestDTO { ticketIds }`.
+   - Server `TicketServiceImpl.previewReturnTickets(...)`:
+     - Validate danh sách không rỗng, không trùng (`TicketMessages.TICKET_IDS_DUPLICATE`).
+     - Check từng vé phải `PAID`, có schedule hợp lệ, và còn ≥4h (`TicketMessages.NOT_ELIGIBLE_BY_TIME`).
+     - Check cùng khách hàng (`TicketMessages.CUSTOMER_MISMATCH`).
+     - Tính phí theo `computeReturnFee(...)` và trả `ReturnTicketPreviewDTO`.
+5. Nhân viên xác nhận trả vé:
+   - Client gửi `ActionType.CONFIRM_RETURN_TICKETS` với `ReturnTicketConfirmDTO { ticketIds, refundAmount, employeeId }`.
+   - Server `TicketServiceImpl.confirmReturnTickets(...)`:
+     - Recompute và so với `refundAmount` với sai số `REFUND_TOLERANCE=1.0` (`TicketMessages.REFUND_AMOUNT_MISMATCH` nếu lệch).
+     - Tạo `Invoice (REFUND)` + `InvoiceDetail` refund cho từng vé.
+     - Update `InvoiceDetail` SALE, thu hồi điểm, update `Ticket` sang `RETURNED` và QR `"INVALID"`.
+     - Trả `refundInvoiceId`.
+6. (Tuỳ chọn) In biên lai hoàn tiền:
+   - Client gửi `ActionType.GET_REFUND_RECEIPT` với `RefundReceiptRequestDTO { refundInvoiceId }`.
+   - Server `TicketServiceImpl.getRefundReceipt(...)` trả `RefundReceiptDTO` (hỗ trợ multi-ticket qua `items`).
+   - Client preview/in bằng template `/client/print/bien-lai-tra-ve.xml`.
 
 ## Luồng thay thế
-- **[Tra cứu không nhập query]:** client gửi `query=""` để server load danh sách vé `PAID` mặc định.
-- **[Trả nhiều vé một lần]:** client gửi danh sách `ticketIds`. Server bắt buộc cùng `Customer` và sẽ tạo 1 `InvoiceType.REFUND` cho cả lô.
-- **[Không in biên lai]:** client bỏ qua bước `GET_REFUND_RECEIPT`.
+- **[Trả nhiều vé]:** Chọn nhiều vé ở bước 3; Server bắt buộc cùng khách hàng.
 
----
+## Luồng lỗi
+- **[Vé không trả được]:** `TicketMessages.TICKET_NOT_RETURNABLE`, `TicketMessages.SOME_TICKETS_INVALID`.
+- **[Không đủ điều kiện thời gian]:** `TicketMessages.NOT_ELIGIBLE_BY_TIME`.
+- **[Danh sách vé trùng]:** `TicketMessages.TICKET_IDS_DUPLICATE`.
+- **[Không cùng khách hàng]:** `TicketMessages.CUSTOMER_MISMATCH`.
+- **[Tiền hoàn không khớp]:** `TicketMessages.REFUND_AMOUNT_MISMATCH`.
+- **[Thiếu nhân viên]:** `TicketMessages.EMPLOYEE_ID_REQUIRED` hoặc message từ `EmployeeMessages.notFoundById(...)`.
+- **[Lỗi lấy biên lai]:** Server có thể trả message nghiệp vụ (ví dụ “Mã biên lai hoàn tiền không hợp lệ.”).
 
-## Luồng lỗi tiêu biểu (tham chiếu constant)
-- `TicketMessages.TICKET_IDS_REQUIRED`: danh sách vé rỗng khi preview/confirm.
-- `TicketMessages.TICKET_IDS_DUPLICATE`: danh sách ticketIds có trùng.
-- `TicketMessages.SOME_TICKETS_INVALID`: có vé không tồn tại/không load đủ.
-- `TicketMessages.TICKET_NOT_RETURNABLE`: vé không ở trạng thái `PAID`.
-- `TicketMessages.NOT_ELIGIBLE_BY_TIME`: còn <4h trước giờ chạy.
-- `TicketMessages.SCHEDULE_NOT_FOUND`: thiếu schedule/departureTime.
-- `TicketMessages.CUSTOMER_MISMATCH`: trả theo lô nhưng khác khách hàng.
-- `TicketMessages.REFUND_AMOUNT_MISMATCH`: client gửi số tiền hoàn không khớp tính toán server.
-- `TicketMessages.DATA_CONFLICT`: xung đột optimistic lock khi confirm (`OptimisticLockException`).
-- `TicketMessages.SEARCH_FAILED_PREFIX`, `PREVIEW_FAILED_PREFIX`, `RETURN_FAILED_PREFIX`: lỗi hệ thống khi search/preview/confirm.
+## Dữ liệu vào (Client → Server)
+| ActionType | DTO | Field | Kiểu | Bắt buộc | Mô tả |
+|---|---|---|---|---|---|
+| `SEARCH_TICKETS_FOR_RETURN` | `ReturnTicketSearchDTO` | `query` | `String` |  | Từ khóa tra cứu. |
+| `SEARCH_TICKETS_FOR_RETURN` | `ReturnTicketSearchDTO` | `queryType` | `ReturnTicketSearchType` |  | UI dùng `AUTO`. |
+| `PREVIEW_RETURN_TICKETS` | `ReturnTicketPreviewRequestDTO` | `ticketIds` | `List<String>` | ✓ | Danh sách vé. |
+| `CONFIRM_RETURN_TICKETS` | `ReturnTicketConfirmDTO` | `ticketIds` | `List<String>` | ✓ | Danh sách vé. |
+| `CONFIRM_RETURN_TICKETS` | `ReturnTicketConfirmDTO` | `refundAmount` | `double` | ✓ | Số tiền hoàn theo preview. |
+| `CONFIRM_RETURN_TICKETS` | `ReturnTicketConfirmDTO` | `employeeId` | `String` | ✓ | Nhân viên xử lý. |
+| `GET_REFUND_RECEIPT` | `RefundReceiptRequestDTO` | `refundInvoiceId` | `String` | ✓ | ID hóa đơn hoàn vé. |
 
----
-
-## Business rules
-- **Cutoff trả vé:** tối thiểu 4 giờ trước giờ chạy (`MINUTES_4H`).
-- **Fee rate:**
-  - Vé đã đổi ⇒ 30% (ưu tiên theo flag exchanged).
-  - Vé thường: <24h ⇒ 20%, >=24h ⇒ 10% (`MINUTES_24H`).
-- **Min fee:** 10.000/ vé; **round up** bội số 1.000.
-- **Refund base amount:** ưu tiên “actual paid amount” theo invoice SALE detail (`resolveActualPaidAmount`), fallback `ScheduleDetail.priceSeat` (server có log cảnh báo).
-- **Chống double refund:** vé phải `PAID` tại thời điểm confirm; sau confirm sẽ chuyển `RETURNED` và `qrCode="INVALID"`.
-- **Refund invoice:** luôn tạo `InvoiceType.REFUND` và lưu `InvoiceDetail.isReturned=true`.
-- **Batch constraint:** tất cả vé trong 1 lần trả phải cùng `Customer`.
-
----
-
-## Dữ liệu vào/ra (I/O)
-
-### Client → Server
-| ActionType | DTO | Trường chính |
+## Dữ liệu ra (Server → Client)
+| Response.data | Kiểu | Mô tả |
 |---|---|---|
-| `SEARCH_TICKETS_FOR_RETURN` | `ReturnTicketSearchDTO` | `query`, `queryType` (`AUTO/TICKET_ID/BUYER_DOCUMENT/PASSENGER_DOCUMENT`) |
-| `PREVIEW_RETURN_TICKETS` | `ReturnTicketPreviewRequestDTO` | `ticketIds` |
-| `CONFIRM_RETURN_TICKETS` | `ReturnTicketConfirmDTO` | `ticketIds`, `refundAmount`, `employeeId` |
-| `GET_REFUND_RECEIPT` | `RefundReceiptRequestDTO` | `refundInvoiceId` |
+| (SEARCH_TICKETS_FOR_RETURN) | `List<ReturnTicketTicketDTO>` | Danh sách vé trả. |
+| (PREVIEW_RETURN_TICKETS) | `ReturnTicketPreviewDTO` | `totalTicketPrice`, `refundFee`, `refundAmount`. |
+| (CONFIRM_RETURN_TICKETS) | `String` | `refundInvoiceId`. |
+| (GET_REFUND_RECEIPT) | `RefundReceiptDTO` | Dữ liệu biên lai hoàn tiền. |
 
-### Server → Client
-| Response.data |
-|---|
-| `List<ReturnTicketTicketDTO>` |
-| `ReturnTicketPreviewDTO` |
-| `refundInvoiceId` (String) |
-| `RefundReceiptDTO` |
-
----
-
-## Code Trace
-| Layer | File/Class | Ghi chú |
-|---|---|---|
-| FXML | `src/main/resources/client/ui/views/tra-ve.fxml` | Màn hình trả vé |
-| Controller | `src/main/java/vn/edu/iuh/fit/client/controller/ReturnTicketController.java` | Search/preview/confirm/in biên lai |
-| Client Service | `src/main/java/vn/edu/iuh/fit/client/service/ReturnTicketClientService.java` | Wrap các `ActionType` trả vé |
-| Socket client | `src/main/java/vn/edu/iuh/fit/client/service/SocketRequestService.java` | TCP ObjectStream |
-| Common | `vn.edu.iuh.fit.common.command.ActionType` | `SEARCH_TICKETS_FOR_RETURN`, `PREVIEW_RETURN_TICKETS`, ... |
-| Common | `vn.edu.iuh.fit.common.message.TicketMessages` | Message constants chính |
-| Router | `src/main/java/vn/edu/iuh/fit/server/network/RequestRouter.java` | Route sang `TicketServiceImpl.*` |
-| Server Service | `src/main/java/vn/edu/iuh/fit/server/service/impl/TicketServiceImpl.java` | Core trả vé + receipt DTO |
-| Repository | `.../repository/impl/TicketRepositoryImpl` | Search ticket theo id/qr/buyer/passenger |
-| Repository | `.../repository/impl/InvoiceDetailRepositoryImpl` | Update SALE details + tạo REFUND details (uncertainty: method name không mở trong task) |
-| Entity/Table | `.../model/Ticket` (`tickets`) | `status`, `qrCode` |
-| Entity/Table | `.../model/Invoice` (`invoices`) | `type=REFUND` |
-| Entity/Table | `.../model/InvoiceDetail` (`invoice_details`) | `isReturned`, `refundAmount` |
-| Print template | `src/main/resources/client/print/bien-lai-tra-ve.xml` | JasperReports template |
+## Business Rules
+- **Cutoff trả vé:** Còn ≥4h tới giờ khởi hành.
+- **Phí trả vé (`computeReturnFee(...)`):**
+  - Vé đã đổi (`originalTicketId` != null hoặc `isExchanged=true`) → 30%.
+  - Vé chưa đổi: <24h → 20%, ≥24h → 10%.
+  - Tối thiểu 10.000đ/vé (`MIN_RETURN_FEE_PER_TICKET=10_000`).
+  - Làm tròn lên bội 1.000đ và không vượt quá giá vé.
+- **Giá vé gốc:** Ưu tiên lấy actual paid từ `InvoiceDetail` SALE, fallback `ScheduleDetail.priceSeat`.
+- **Chống hoàn trùng:** Chỉ cho trả vé `PAID`; sau trả set `RETURNED` và QR `"INVALID"`.
+- **Điểm thưởng:** Thu hồi điểm earned theo `floor(totalTicketPrice/10000)`; không hoàn lại redeemed points.
 
 ---
 
-## Notes / Missing / Partial
-- Đã fix: `TicketServiceImpl.buildRefundReceiptDTO(...)` build biên lai hoàn tiền từ **tất cả** `invoice.details` và trả về `RefundReceiptDTO.items` (backward-compatible: vẫn set các field single-item theo item đầu tiên).
-- Đã fix: `TicketServiceImpl.doConfirmReturnTickets(...)` revoke điểm tích lũy theo phần vé trả (không hoàn điểm đã redeem; không để âm).
+## Sơ đồ Use Case
+
+```mermaid
+graph LR
+    NV["👤 Nhân viên bán vé"]
+    KH["👤 Khách hàng"]
+
+    subgraph SYS ["🏢 Hệ thống — Trả vé"]
+        direction TB
+        UC_MAIN(["Trả vé"])
+        SUB_SEARCH(["Tra cứu vé"])
+        SUB_PREVIEW(["Xem trước hoàn"])
+        SUB_CONFIRM(["Xác nhận trả"])
+        SUB_ISSUE(["Tạo hóa đơn hoàn"])
+        SUB_PRINT(["In biên lai"])
+    end
+
+    NV --> UC_MAIN
+    KH --> UC_MAIN
+    UC_MAIN -. "«include»" .-> SUB_SEARCH
+    UC_MAIN -. "«include»" .-> SUB_PREVIEW
+    UC_MAIN -. "«include»" .-> SUB_CONFIRM
+    UC_MAIN -. "«include»" .-> SUB_ISSUE
+    UC_MAIN -. "«include»" .-> SUB_PRINT
+```
+

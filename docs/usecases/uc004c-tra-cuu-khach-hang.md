@@ -1,80 +1,73 @@
-# Use case UC004C: Tra cứu khách hàng
+# Usecase: Tra cứu khách hàng
 
 ## Actor
 - **Primary:** Nhân viên (`Employee`)
-- **Secondary:** —
-- **System:** JavaFX Client → TCP Socket Server → MariaDB
+- **System:** JavaFX Client → TCP Socket Server (`RequestRouter`) → MariaDB
+
+## Mô tả
+Nhân viên tra cứu danh sách khách hàng đang hoạt động theo từ khóa, có phân trang để hiển thị trên bảng.
 
 ## Tiền điều kiện
-- Nhân viên đang ở màn hình Quản lý khách hàng.
+- Nhân viên đang ở màn hình Quản lý khách hàng (`customer-management.fxml`).
 
-## Hậu điều kiện (khi thành công)
-- Client nhận danh sách khách hàng đang hoạt động (`isActive=true`) theo từ khóa và phân trang.
-
----
+## Hậu điều kiện
+- Client nhận `CustomerPageDTO` để hiển thị danh sách khách hàng và điều khiển phân trang.
 
 ## Luồng chính
-1. Nhân viên nhập từ khóa (tên/CCCD/hộ chiếu/SĐT/email) và nhấn Tìm kiếm hoặc đổi trang (client: `CustomerManagementController.loadCustomers(keyword, pageIndex)`).
-2. Client gửi `Request(ActionType.SEARCH_CUSTOMERS, CustomerSearchDTO{keyword, page, size})`.
-3. Server (`CustomerServiceImpl.searchCustomers`):
-   - Normalize request: nếu `searchDTO==null` thì dùng `new CustomerSearchDTO()`.
-   - Validate DTO (`ValidationUtils.validate`), nếu lỗi trả `Response.error(String.join(", ", errors))`.
-   - Chuẩn hóa phân trang: `size<=0` → 20; `page<0` → 0.
-   - Query:
-     - `CustomerRepository.searchActiveCustomers(em, keyword, page, size)`
-     - `CustomerRepository.countActiveCustomers(em, keyword)`
-   - Build `CustomerPageDTO{customers, totalElements, totalPages, currentPage}`.
-   - Trả `Response.success(CustomerMessages.SEARCH_SUCCESS, CustomerPageDTO)`.
-4. Client hiển thị danh sách và cập nhật `Pagination.pageCount` theo `totalPages`.
-
----
+1. Nhân viên nhập từ khóa và nhấn **Tìm kiếm**:
+   - Client gửi `ActionType.SEARCH_CUSTOMERS` với `CustomerSearchDTO { keyword, page, size }`.
+2. Server `CustomerServiceImpl.searchCustomers(...)`:
+   - Validate `page >= 0`, `size >= 1` (bean validation).
+   - Query `CustomerRepository.searchActiveCustomers(...)` và `countActiveCustomers(...)`.
+   - Trả `CustomerPageDTO { customers, totalElements, totalPages, currentPage }` với `CustomerMessages.SEARCH_SUCCESS`.
+3. Client cập nhật bảng và Pagination.
 
 ## Luồng thay thế
-- **[Không nhập keyword]:** client gửi `keyword=null`; server trả danh sách active customers theo trang.
+- **[Hiển thị tất cả]:** `keyword=null` hoặc rỗng để load toàn bộ khách active.
+- **[Refresh trang hiện tại]:** Gọi lại search với `page` đang đứng.
 
----
+## Luồng lỗi
+- **[Lỗi validate page/size]:** Server trả message từ `ValidationUtils`.
+- **[Lỗi truy vấn]:** `CustomerMessages.SEARCH_FAILED_PREFIX + <message>`.
 
-## Luồng lỗi tiêu biểu (tham chiếu constant)
-- Validation error message (không có prefix): ví dụ `"Page size phải lớn hơn 0"` từ `CustomerSearchDTO`.
-- `CustomerMessages.SEARCH_FAILED_PREFIX + ...`: lỗi hệ thống khi query.
+## Dữ liệu vào (Client → Server)
+| Field | Kiểu | Bắt buộc | Mô tả |
+|---|---|---|---|
+| `keyword` | `String` |  | Từ khóa tìm kiếm. |
+| `page` | `int` | ✓ | Trang (0-based). |
+| `size` | `int` | ✓ | Số dòng/trang. |
 
----
-
-## Business rules
-- Chỉ trả về khách hàng đang hoạt động (`searchActiveCustomers`/`countActiveCustomers`).
-- `page` tối thiểu 0; `size` tối thiểu 1 (server fallback về 20 nếu size<=0).
-
----
-
-## Dữ liệu vào/ra (I/O)
-
-### Client → Server
-| ActionType | DTO | Trường chính |
+## Dữ liệu ra (Server → Client)
+| Response.data | Kiểu | Mô tả |
 |---|---|---|
-| `SEARCH_CUSTOMERS` | `CustomerSearchDTO` | `keyword`, `page`, `size` |
+| `customers` | `List<CustomerDTO>` | Danh sách khách hàng. |
+| `totalElements` | `long` | Tổng số kết quả. |
+| `totalPages` | `int` | Tổng số trang. |
+| `currentPage` | `int` | Trang hiện tại. |
 
-### Server → Client
-| Response.data |
-|---|
-| `CustomerPageDTO` (`customers: List<CustomerDTO>`, `totalElements`, `totalPages`, `currentPage`) |
-
----
-
-## Code Trace
-| Layer | File/Class | Ghi chú |
-|---|---|---|
-| FXML | `src/main/resources/client/ui/views/customer-management.fxml` | Màn hình tra cứu + phân trang |
-| Controller | `src/main/java/vn/edu/iuh/fit/client/controller/CustomerManagementController.java` | `loadCustomers(...)` gửi `SEARCH_CUSTOMERS` |
-| Socket client | `src/main/java/vn/edu/iuh/fit/client/service/SocketRequestService.java` | TCP ObjectStream |
-| Common | `vn.edu.iuh.fit.common.command.ActionType.SEARCH_CUSTOMERS` | ActionType |
-| Common | `vn.edu.iuh.fit.common.dto.CustomerSearchDTO`, `CustomerPageDTO`, `CustomerDTO` | DTO/response |
-| Common | `vn.edu.iuh.fit.common.message.CustomerMessages` | `SEARCH_SUCCESS`, `SEARCH_FAILED_PREFIX` |
-| Router | `src/main/java/vn/edu/iuh/fit/server/network/RequestRouter.java` | Route `SEARCH_CUSTOMERS` |
-| Server Service | `src/main/java/vn/edu/iuh/fit/server/service/impl/CustomerServiceImpl.java` | `searchCustomers` |
-| Entity/Table | `src/main/java/vn/edu/iuh/fit/server/model/Customer.java` (`customers`) | `isActive` |
+## Business Rules
+- **Chỉ trả khách active:** Search dùng repository `searchActiveCustomers`/`countActiveCustomers`.
+- **Fallback phân trang:** Server normalize `size<=0 → 20`, `page<0 → 0`.
 
 ---
 
-## Notes / Missing / Partial
-- Server side chỉ search active customers; nếu cần tra cứu cả khách đã “xóa mềm” (`isActive=false`) thì hiện «missing».
+## Sơ đồ Use Case
+
+```mermaid
+graph LR
+    NV["👤 Nhân viên"]
+
+    subgraph SYS ["🏢 Hệ thống — Tra cứu khách hàng"]
+        direction TB
+        UC_MAIN(["Tra cứu khách hàng"])
+        SUB_VALIDATE(["Validate page/size"])
+        SUB_QUERY(["Query khách active"])
+        SUB_PAGE(["Trả phân trang"])
+    end
+
+    NV --> UC_MAIN
+    UC_MAIN -. "«include»" .-> SUB_VALIDATE
+    UC_MAIN -. "«include»" .-> SUB_QUERY
+    UC_MAIN -. "«include»" .-> SUB_PAGE
+```
 
